@@ -16,6 +16,9 @@ class ComprasYPagos extends Component
 
     public function mount()
     {
+        if (auth()->user()->role !== 'admin') {
+            return redirect()->route('dashboard');
+        }
         $this->loadData();
     }
 

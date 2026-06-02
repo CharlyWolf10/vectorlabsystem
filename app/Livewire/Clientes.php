@@ -12,6 +12,9 @@ class Clientes extends Component
 
     public function mount()
     {
+        if (auth()->user()->role !== 'admin') {
+            return redirect()->route('dashboard');
+        }
         $this->loadData();
     }
 
@@ -25,10 +28,13 @@ class Clientes extends Component
     {
         Cliente::create([
             'nombre' => $data['nombre'],
-            'telefono' => $data['telefono'],
-            'email' => $data['email'],
-            'limite_credito' => $data['limite_credito'],
-            'saldo_actual' => 0
+            'apellidos' => $data['apellidos'],
+            'es_estudiante' => $data['es_estudiante'],
+            'matricula' => $data['matricula'] ?? null,
+            'telefono' => $data['telefono'] ?? null,
+            'email' => $data['email'] ?? null,
+            'limite_credito' => $data['limite_credito'] ?? 0,
+            'saldo_pendiente' => 0
         ]);
         $this->loadData();
         $this->dispatch('swal:success', ['title' => '¡Éxito!', 'text' => 'Cliente guardado correctamente.']);

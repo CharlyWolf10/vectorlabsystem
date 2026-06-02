@@ -118,7 +118,7 @@
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Guardar Proveedor',
+                confirmButtonText: 'Continuar',
                 cancelButtonText: 'Cancelar',
                 preConfirm: () => {
                     const nombre = document.getElementById('prov_nombre').value;
@@ -137,7 +137,20 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch('guardarProveedor', { data: result.value });
+                    Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: "¿Deseas guardar este proveedor?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#0066ff',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sí, guardar',
+                        cancelButtonText: 'Cancelar'
+                    }).then((confirmResult) => {
+                        if (confirmResult.isConfirmed) {
+                            Livewire.dispatch('guardarProveedor', { data: result.value });
+                        }
+                    });
                 }
             });
         }
@@ -151,7 +164,7 @@
                     '<select id="metodo" class="swal2-input"><option value="transferencia">Transferencia</option><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta</option><option value="credito">Crédito (Añadir a Cuentas por Pagar)</option></select>',
                 focusConfirm: false,
                 showCancelButton: true,
-                confirmButtonText: 'Registrar',
+                confirmButtonText: 'Continuar',
                 cancelButtonText: 'Cancelar',
                 preConfirm: () => {
                     const concepto = document.getElementById('concepto').value;
@@ -168,7 +181,20 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch('registrarGasto', { proveedorId: proveedorId, data: result.value });
+                    Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: "¿Confirmas el registro de este gasto?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#0066ff',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sí, registrar',
+                        cancelButtonText: 'Cancelar'
+                    }).then((confirmResult) => {
+                        if (confirmResult.isConfirmed) {
+                            Livewire.dispatch('registrarGasto', { proveedorId: proveedorId, data: result.value });
+                        }
+                    });
                 }
             });
         }

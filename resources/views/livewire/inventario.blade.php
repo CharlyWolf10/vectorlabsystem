@@ -83,11 +83,18 @@
                 `,
                 focusConfirm: false,
                 showCancelButton: true,
-                confirmButtonText: 'Guardar',
+                confirmButtonText: 'Continuar',
+                cancelButtonText: 'Cancelar',
                 preConfirm: () => {
+                    const codigo = document.getElementById('prod_codigo').value;
+                    const nombre = document.getElementById('prod_nombre').value;
+                    if(!codigo || !nombre) {
+                        Swal.showValidationMessage('Código y Nombre son obligatorios');
+                        return false;
+                    }
                     return {
-                        codigo: document.getElementById('prod_codigo').value,
-                        nombre: document.getElementById('prod_nombre').value,
+                        codigo: codigo,
+                        nombre: nombre,
                         precio_compra: document.getElementById('prod_costo').value || 0,
                         precio_venta: document.getElementById('prod_venta').value || 0,
                         stock: document.getElementById('prod_stock').value || 0,
@@ -96,11 +103,20 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    if(!result.value.codigo || !result.value.nombre) {
-                        Swal.fire('Error', 'Código y Nombre son obligatorios', 'error');
-                        return;
-                    }
-                    Livewire.dispatch('guardarProducto', { data: result.value });
+                    Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: "¿Deseas guardar este producto en el inventario?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#0066ff',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sí, guardar',
+                        cancelButtonText: 'Cancelar'
+                    }).then((confirmResult) => {
+                        if (confirmResult.isConfirmed) {
+                            Livewire.dispatch('guardarProducto', { data: result.value });
+                        }
+                    });
                 }
             });
         }

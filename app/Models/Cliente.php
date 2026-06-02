@@ -10,8 +10,15 @@ class Cliente extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'nombre', 'email', 'telefono', 'acepta_marketing', 
-        'limite_credito', 'saldo_pendiente'
+        'nombre',
+        'apellidos',
+        'es_estudiante',
+        'matricula',
+        'email',
+        'telefono',
+        'acepta_marketing',
+        'limite_credito',
+        'saldo_pendiente'
     ];
 
     public function ventas()

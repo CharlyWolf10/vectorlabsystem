@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('clientes', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->string('email')->unique();
+            $table->string('apellidos');
+            $table->boolean('es_estudiante')->default(false);
+            $table->string('matricula')->nullable();
+            $table->string('email')->nullable()->unique();
             $table->string('telefono')->nullable();
             $table->boolean('acepta_marketing')->default(true);
             $table->decimal('limite_credito', 12, 2)->default(0);

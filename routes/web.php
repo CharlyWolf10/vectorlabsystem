@@ -23,6 +23,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/inventario', \App\Livewire\Inventario::class)->name('inventario');
     Route::get('/clientes', \App\Livewire\Clientes::class)->name('clientes');
     Route::get('/punto-de-venta', \App\Livewire\PuntoDeVenta::class)->name('pos');
+    Route::get('/arqueos', \App\Livewire\Arqueos::class)->name('arqueos');
+    Route::get('/usuarios', \App\Livewire\Usuarios::class)->name('usuarios');
 });
 
 require __DIR__.'/auth.php';

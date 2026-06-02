@@ -56,25 +56,42 @@
                             <p class="text-xs font-semibold text-vl-text-muted uppercase tracking-wider">Módulos</p>
                         </div>
 
-                        <a href="{{ route('compras') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('compras') ? 'bg-vl-blue hover:bg-vl-blue' : '' }}">
-                            <i class="fas fa-shopping-cart w-6 text-center text-vl-text-muted group-hover:text-white {{ request()->routeIs('compras') ? 'text-white' : '' }}"></i>
-                            <span class="ml-3 text-sm font-medium">Compras y Pagos</span>
-                        </a>
-                        
-                        <a href="{{ route('inventario') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('inventario') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
-                            <i class="fas fa-boxes w-6 text-center group-hover:text-white {{ request()->routeIs('inventario') ? 'text-white' : 'text-vl-text-muted' }}"></i>
-                            <span class="ml-3 text-sm font-medium">Inventario</span>
-                        </a>
-                        
-                        <a href="{{ route('clientes') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('clientes') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
-                            <i class="fas fa-users w-6 text-center group-hover:text-white {{ request()->routeIs('clientes') ? 'text-white' : 'text-vl-text-muted' }}"></i>
-                            <span class="ml-3 text-sm font-medium">Clientes (CRM)</span>
-                        </a>
+                        @if(Auth::user()->role === 'admin')
+                            <a href="{{ route('compras') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('compras') ? 'bg-vl-blue hover:bg-vl-blue' : '' }}">
+                                <i class="fas fa-shopping-cart w-6 text-center text-vl-text-muted group-hover:text-white {{ request()->routeIs('compras') ? 'text-white' : '' }}"></i>
+                                <span class="ml-3 text-sm font-medium">Compras y Pagos</span>
+                            </a>
+                            
+                            <a href="{{ route('inventario') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('inventario') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
+                                <i class="fas fa-boxes w-6 text-center group-hover:text-white {{ request()->routeIs('inventario') ? 'text-white' : 'text-vl-text-muted' }}"></i>
+                                <span class="ml-3 text-sm font-medium">Inventario</span>
+                            </a>
+                            
+                            <a href="{{ route('clientes') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('clientes') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
+                                <i class="fas fa-users w-6 text-center group-hover:text-white {{ request()->routeIs('clientes') ? 'text-white' : 'text-vl-text-muted' }}"></i>
+                                <span class="ml-3 text-sm font-medium">Clientes (CRM)</span>
+                            </a>
+                        @endif
                         
                         <a href="{{ route('pos') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('pos') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
                             <i class="fas fa-cash-register w-6 text-center group-hover:text-white {{ request()->routeIs('pos') ? 'text-white' : 'text-vl-text-muted' }}"></i>
                             <span class="ml-3 text-sm font-medium">Punto de Venta</span>
                         </a>
+
+                        <a href="{{ route('arqueos') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('arqueos') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
+                            <i class="fas fa-calculator w-6 text-center group-hover:text-white {{ request()->routeIs('arqueos') ? 'text-white' : 'text-vl-text-muted' }}"></i>
+                            <span class="ml-3 text-sm font-medium">Corte de Caja</span>
+                        </a>
+
+                        @if(Auth::user()->role === 'admin')
+                            <div class="pt-4 pb-2">
+                                <p class="text-xs font-semibold text-vl-text-muted uppercase tracking-wider">Ajustes</p>
+                            </div>
+                            <a href="{{ route('usuarios') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('usuarios') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
+                                <i class="fas fa-user-shield w-6 text-center group-hover:text-white {{ request()->routeIs('usuarios') ? 'text-white' : 'text-vl-text-muted' }}"></i>
+                                <span class="ml-3 text-sm font-medium">Control de Usuarios</span>
+                            </a>
+                        @endif
                     </nav>
                 </div>
             </aside>
