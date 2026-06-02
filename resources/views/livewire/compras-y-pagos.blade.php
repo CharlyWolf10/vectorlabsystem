@@ -140,18 +140,48 @@
         function nuevoProveedor() {
             Swal.fire({
                 title: 'Nuevo Proveedor',
+                width: '900px',
                 html: `
-                    <div class="flex flex-col gap-3 text-left">
-                        <input id="prov_nombre" class="swal2-input !mt-0 w-full mx-0" placeholder="Nombre completo o Empresa" oninput="this.value = this.value.toUpperCase()" required>
-                        <input id="prov_telefono" type="text" class="swal2-input !mt-0 w-full mx-0" placeholder="Teléfono">
-                        <input id="prov_direccion" type="text" class="swal2-input !mt-0 w-full mx-0" placeholder="Dirección">
-                        <input id="prov_rfc" type="text" class="swal2-input !mt-0 w-full mx-0" placeholder="RFC" oninput="this.value = this.value.toUpperCase()">
-                        <input id="prov_email" class="swal2-input !mt-0 w-full mx-0" placeholder="Correo Electrónico">
-                        <h4 class="mt-2 font-bold text-gray-700 text-left px-2">Datos Bancarios</h4>
-                        <input id="prov_banco" class="swal2-input !mt-0 w-full mx-0" placeholder="Banco (Ej. BBVA)" oninput="this.value = this.value.toUpperCase()">
-                        <input id="prov_titular" class="swal2-input !mt-0 w-full mx-0" placeholder="Titular de la Cuenta" oninput="this.value = this.value.toUpperCase()">
-                        <input id="prov_clabe" class="swal2-input !mt-0 w-full mx-0" placeholder="CLABE Interbancaria">
-                        <input id="prov_cuenta" class="swal2-input !mt-0 w-full mx-0" placeholder="Número de Cuenta">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Nombre completo o Empresa</label>
+                            <input id="prov_nombre" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre completo o Empresa" oninput="this.value = this.value.toUpperCase()" required>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Teléfono</label>
+                            <input id="prov_telefono" type="text" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Teléfono">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Dirección</label>
+                            <input id="prov_direccion" type="text" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Dirección">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">RFC</label>
+                            <input id="prov_rfc" type="text" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="RFC" oninput="this.value = this.value.toUpperCase()">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Correo Electrónico</label>
+                            <input id="prov_email" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Correo Electrónico">
+                        </div>
+
+                        <h4 class="mt-2 font-bold text-gray-700 text-left md:col-span-2 border-b pb-1">Datos Bancarios</h4>
+                        
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Banco (Ej. BBVA)</label>
+                            <input id="prov_banco" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Banco (Ej. BBVA)" oninput="this.value = this.value.toUpperCase()">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Titular de la Cuenta</label>
+                            <input id="prov_titular" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Titular de la Cuenta" oninput="this.value = this.value.toUpperCase()">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">CLABE Interbancaria</label>
+                            <input id="prov_clabe" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="CLABE Interbancaria">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Número de Cuenta</label>
+                            <input id="prov_cuenta" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Número de Cuenta">
+                        </div>
                     </div>
                 `,
                 focusConfirm: false,
@@ -203,17 +233,46 @@
                 title: 'Editar Proveedor',
                 html: `
                     <input id="prov_id" type="hidden" value="${id}">
-                    <div class="flex flex-col gap-3 text-left">
-                        <input id="prov_nombre" class="swal2-input !mt-0 w-full mx-0" placeholder="Nombre completo o Empresa" value="${nombre}" required oninput="this.value = this.value.toUpperCase()">
-                        <input id="prov_telefono" type="text" class="swal2-input !mt-0 w-full mx-0" placeholder="Teléfono" value="${telefono}">
-                        <input id="prov_direccion" type="text" class="swal2-input !mt-0 w-full mx-0" placeholder="Dirección" value="${direccion}">
-                        <input id="prov_rfc" type="text" class="swal2-input !mt-0 w-full mx-0" placeholder="RFC" value="${rfc}">
-                        <input id="prov_email" class="swal2-input !mt-0 w-full mx-0" placeholder="Correo Electrónico" value="${email}">
-                        <h4 class="mt-2 font-bold text-gray-700 text-left px-2">Datos Bancarios</h4>
-                        <input id="prov_banco" class="swal2-input !mt-0 w-full mx-0" placeholder="Banco (Ej. BBVA)" value="${banco}">
-                        <input id="prov_titular" class="swal2-input !mt-0 w-full mx-0" placeholder="Titular de la Cuenta" value="${titular || ''}" oninput="this.value = this.value.toUpperCase()">
-                        <input id="prov_clabe" class="swal2-input !mt-0 w-full mx-0" placeholder="CLABE Interbancaria" value="${clabe}">
-                        <input id="prov_cuenta" class="swal2-input !mt-0 w-full mx-0" placeholder="Número de Cuenta" value="${cuenta}">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-2">
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Nombre completo o Empresa</label>
+                            <input id="prov_nombre" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre completo o Empresa" value="${nombre}" required oninput="this.value = this.value.toUpperCase()">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Teléfono</label>
+                            <input id="prov_telefono" type="text" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Teléfono" value="${telefono}">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Dirección</label>
+                            <input id="prov_direccion" type="text" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Dirección" value="${direccion}">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">RFC</label>
+                            <input id="prov_rfc" type="text" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="RFC" value="${rfc}" oninput="this.value = this.value.toUpperCase()">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Correo Electrónico</label>
+                            <input id="prov_email" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Correo Electrónico" value="${email}">
+                        </div>
+
+                        <h4 class="mt-2 font-bold text-gray-700 text-left md:col-span-2 border-b pb-1">Datos Bancarios</h4>
+                        
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Banco (Ej. BBVA)</label>
+                            <input id="prov_banco" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Banco (Ej. BBVA)" value="${banco}" oninput="this.value = this.value.toUpperCase()">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Titular de la Cuenta</label>
+                            <input id="prov_titular" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Titular de la Cuenta" value="${titular || ''}" oninput="this.value = this.value.toUpperCase()">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">CLABE Interbancaria</label>
+                            <input id="prov_clabe" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="CLABE Interbancaria" value="${clabe}">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Número de Cuenta</label>
+                            <input id="prov_cuenta" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Número de Cuenta" value="${cuenta}">
+                        </div>
                     </div>
                 `,
                 focusConfirm: false,

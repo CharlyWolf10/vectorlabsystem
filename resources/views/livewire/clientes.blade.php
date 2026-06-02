@@ -176,7 +176,7 @@
                 title: 'Nuevo Cliente',
                 width: '900px',
                 html: `
-                    <div class="flex flex-col gap-4 text-left mt-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-4">
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Nombre(s)</label>
                             <input id="cli_nombre" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre(s)" required>
@@ -193,11 +193,11 @@
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Correo Electrónico</label>
                             <input id="cli_email" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Correo Electrónico">
                         </div>
-                        <div>
+                        <div class="md:col-span-2">
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Límite Crédito $</label>
                             <input id="cli_limite" type="number" step="0.01" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Límite de Crédito">
                         </div>
-                        <div class="flex items-center space-x-6 pt-2 pb-2">
+                        <div class="md:col-span-2 flex items-center space-x-6 pt-2 pb-2 border-t border-b">
                             <label class="flex items-center space-x-2 cursor-pointer">
                                 <input type="checkbox" id="cli_estudiante" onchange="toggleTipos()" class="form-checkbox text-blue-600 w-5 h-5 rounded">
                                 <span class="font-bold text-gray-700">¿Estudiante?</span>
@@ -209,7 +209,7 @@
                         </div>
                         
                         <!-- Campos Estudiante -->
-                        <div id="estudiante_fields" class="flex flex-col gap-4 p-4 bg-blue-50 rounded-lg border border-blue-100" style="display:none;">
+                        <div id="estudiante_fields" class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 rounded-lg border border-blue-100" style="display:none;">
                             <div>
                                 <label class="text-sm text-blue-800 font-bold mb-1 block">Matrícula</label>
                                 <input id="cli_matricula" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Matrícula">
@@ -228,14 +228,14 @@
                                     <option value="Otra">Otra (Especificar)</option>
                                 </select>
                             </div>
-                            <div>
+                            <div class="md:col-span-2">
                                 <label class="text-sm text-blue-800 font-bold mb-1 block invisible" id="lbl_otra_escuela">Otra Escuela</label>
                                 <input id="cli_otra_escuela" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Especifique la escuela" style="display:none;">
                             </div>
                         </div>
 
                         <!-- Campos Profesionista -->
-                        <div id="profesionista_fields" class="flex flex-col gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200" style="display:none;">
+                        <div id="profesionista_fields" class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200" style="display:none;">
                             <div>
                                 <label class="text-sm text-gray-800 font-bold mb-1 block">Empresa / Trabajo</label>
                                 <input id="cli_empresa" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-gray-500 focus:border-gray-500" placeholder="Nombre de empresa o 'Independiente'">
@@ -312,7 +312,7 @@
                 width: '900px',
                 html: `
                     <input id="cli_id" type="hidden" value="${id}">
-                    <div class="flex flex-col gap-4 text-left mt-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-4">
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Nombre(s)</label>
                             <input id="cli_nombre" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre(s)" value="${nombre}" required>
@@ -329,11 +329,11 @@
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Correo Electrónico</label>
                             <input id="cli_email" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Correo Electrónico" value="${email}">
                         </div>
-                        <div>
+                        <div class="md:col-span-2">
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Límite Crédito $</label>
                             <input id="cli_limite" type="number" step="0.01" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Límite de Crédito" value="${limite}">
                         </div>
-                        <div class="flex items-center space-x-6 pt-2 pb-2">
+                        <div class="md:col-span-2 flex items-center space-x-6 pt-2 pb-2 border-t border-b">
                             <label class="flex items-center space-x-2 cursor-pointer">
                                 <input type="checkbox" id="cli_estudiante" onchange="toggleTipos()" class="form-checkbox text-blue-600 w-5 h-5 rounded" ${es_estudiante ? 'checked' : ''}>
                                 <span class="font-bold text-gray-700">¿Estudiante?</span>
@@ -345,7 +345,7 @@
                         </div>
                         
                         <!-- Campos Estudiante -->
-                        <div id="estudiante_fields" class="flex flex-col gap-4 p-4 bg-blue-50 rounded-lg border border-blue-100" style="display:${es_estudiante ? 'flex' : 'none'};">
+                        <div id="estudiante_fields" class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 rounded-lg border border-blue-100" style="display:${es_estudiante ? 'grid' : 'none'};">
                             <div>
                                 <label class="text-sm text-blue-800 font-bold mb-1 block">Matrícula</label>
                                 <input id="cli_matricula" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Matrícula" value="${matricula}">
@@ -364,14 +364,14 @@
                                     <option value="Otra" ${!['UDLAP','UVM','UAMP','Tec de Monterrey','UNARTE','BUAP','UPAEP',''].includes(escuela) ? 'selected' : ''}>Otra (Especificar)</option>
                                 </select>
                             </div>
-                            <div>
+                            <div class="md:col-span-2">
                                 <label class="text-sm text-blue-800 font-bold mb-1 block ${!['UDLAP','UVM','UAMP','Tec de Monterrey','UNARTE','BUAP','UPAEP',''].includes(escuela) ? '' : 'invisible'}" id="lbl_otra_escuela">Otra Escuela</label>
                                 <input id="cli_otra_escuela" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Especifique la escuela" value="${!['UDLAP','UVM','UAMP','Tec de Monterrey','UNARTE','BUAP','UPAEP',''].includes(escuela) ? escuela : ''}" style="display:${!['UDLAP','UVM','UAMP','Tec de Monterrey','UNARTE','BUAP','UPAEP',''].includes(escuela) ? 'block' : 'none'};">
                             </div>
                         </div>
 
                         <!-- Campos Profesionista -->
-                        <div id="profesionista_fields" class="flex flex-col gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200" style="display:${es_profesionista ? 'flex' : 'none'};">
+                        <div id="profesionista_fields" class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200" style="display:${es_profesionista ? 'grid' : 'none'};">
                             <div>
                                 <label class="text-sm text-gray-800 font-bold mb-1 block">Empresa / Trabajo</label>
                                 <input id="cli_empresa" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-gray-500 focus:border-gray-500" placeholder="Nombre de empresa o 'Independiente'" value="${empresa}">

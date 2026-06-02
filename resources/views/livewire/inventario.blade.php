@@ -117,7 +117,7 @@
                 title: 'Nuevo Producto',
                 width: '900px',
                 html: `
-                    <div class="flex flex-col gap-4 text-left mt-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-4">
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Código/SKU</label>
                             <input id="prod_codigo" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Código de Barras/SKU" required>
@@ -126,7 +126,7 @@
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Nombre</label>
                             <input id="prod_nombre" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre del Producto" oninput="this.value = this.value.toUpperCase()" required>
                         </div>
-                        <div>
+                        <div class="md:col-span-2">
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Proveedor</label>
                             ${proveedoresHtml}
                         </div>
@@ -190,7 +190,7 @@
                 width: '900px',
                 html: `
                     <input id="prod_id" type="hidden" value="${id}">
-                    <div class="flex flex-col gap-4 text-left mt-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-4">
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Código/SKU</label>
                             <input id="prod_codigo" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100" placeholder="Código de Barras/SKU" value="${codigo}" required readonly>
@@ -199,7 +199,7 @@
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Nombre</label>
                             <input id="prod_nombre" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre del Producto" oninput="this.value = this.value.toUpperCase()" value="${nombre}" required>
                         </div>
-                        <div>
+                        <div class="md:col-span-2">
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Proveedor</label>
                             ${proveedoresHtml}
                         </div>
