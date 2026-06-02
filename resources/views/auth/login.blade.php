@@ -59,6 +59,16 @@
             from { opacity: 0; transform: translateY(20px); }
         }
 
+        .buzz-active {
+            animation: buzz 0.5s ease-in-out !important;
+        }
+
+        @keyframes buzz {
+            0%, 100% { transform: translateX(0) scale(1); }
+            20%, 60% { transform: translateX(-5px) scale(1.02); }
+            40%, 80% { transform: translateX(5px) scale(1.02); }
+        }
+
         /* Login Layout */
         #login-content {
             display: flex;
@@ -266,6 +276,24 @@
             }
         }, 20000);
 
+        let buzzLoop = setInterval(() => {
+            const btn = document.querySelector('.btn-enter');
+            const splash = document.getElementById('splash-screen');
+            if (btn && splash && splash.style.display !== 'none' && !splash.classList.contains('splash-hidden')) {
+                btn.classList.add('buzz-active');
+                setTimeout(() => btn.classList.remove('buzz-active'), 500);
+            }
+        }, 5000);
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                const splash = document.getElementById('splash-screen');
+                if (splash && splash.style.display !== 'none' && !splash.classList.contains('splash-hidden')) {
+                    startLogin();
+                }
+            }
+        });
+
         function startLogin() {
             const splash = document.getElementById('splash-screen');
             // Agrega la clase que hace el barrido (deslizar hacia arriba)
@@ -276,6 +304,7 @@
                 splash.style.display = 'none';
                 if (typeof matrixInterval !== 'undefined') clearInterval(matrixInterval);
                 if (typeof animationLoop !== 'undefined') clearInterval(animationLoop);
+                if (typeof buzzLoop !== 'undefined') clearInterval(buzzLoop);
                 document.getElementById('email').focus();
             }, 1000);
         }
@@ -300,6 +329,7 @@
                 document.getElementById('splash-screen').style.display = 'none';
                 if (typeof matrixInterval !== 'undefined') clearInterval(matrixInterval);
                 if (typeof animationLoop !== 'undefined') clearInterval(animationLoop);
+                if (typeof buzzLoop !== 'undefined') clearInterval(buzzLoop);
             });
         @endif
     </script>
