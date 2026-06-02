@@ -83,6 +83,28 @@
             .login-left-legend { display: flex; }
         }
 
+        .slideshow-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            z-index: 1;
+        }
+        .slideshow-bg.active {
+            opacity: 1;
+        }
+        .blue-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.75) 0%, rgba(15, 23, 42, 0.5) 100%);
+            z-index: 2;
+        }
+        .neon-text {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.8), 0 0 20px rgba(59, 130, 246, 0.8), 0 0 40px rgba(59, 130, 246, 0.6);
+        }
+
         /* Right Side (Form) */
         .login-right-form {
             width: 100%;
@@ -129,22 +151,29 @@
     <div id="login-content">
         
         <!-- IZQUIERDA: LEYENDA -->
-        <div class="login-left-legend">
-            <!-- Efecto de fondo sutil -->
-            <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at center, #3b82f6 1.5px, transparent 1.5px); background-size: 30px 30px;"></div>
+        <div class="login-left-legend overflow-hidden">
+            <!-- Slideshow Backgrounds -->
+            <div class="slideshow-bg active" style="background-image: url('{{ asset('assets/img/inventory_bg_1.png') }}');"></div>
+            <div class="slideshow-bg" style="background-image: url('{{ asset('assets/img/inventory_bg_2.png') }}');"></div>
+            <div class="slideshow-bg" style="background-image: url('{{ asset('assets/img/inventory_bg_3.png') }}');"></div>
             
-            <div class="z-10 flex flex-col items-center">
-                <img src="https://charlywolf10.github.io/VectorLab/assets/img/VectorLab.png" alt="Vector Lab" class="w-48 mb-8 opacity-80 filter drop-shadow(0 0 10px rgba(59,130,246,0.3))">
-                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Bienvenido a<br><span class="text-blue-500">Vector Lab</span></h2>
-                <p class="text-gray-400 text-xl max-w-md leading-relaxed">El sistema de control y administración definitiva para optimizar tu negocio.</p>
+            <!-- Capa degradado azul transparente -->
+            <div class="blue-overlay"></div>
+            
+            <div class="z-10 flex flex-col items-center relative p-8">
+                <h2 class="text-5xl md:text-7xl font-extrabold text-white mb-6 neon-text tracking-wider">Bienvenido a<br><span class="text-blue-400">Vector Lab</span></h2>
+                <p class="text-blue-50 text-2xl max-w-lg leading-relaxed font-medium drop-shadow-lg bg-black/30 p-4 rounded-xl backdrop-blur-sm border border-white/10">El sistema de control y administración definitiva para optimizar tu negocio.</p>
             </div>
         </div>
 
         <!-- DERECHA: FORMULARIO -->
         <div class="login-right-form">
             <div class="w-full max-w-md p-8 bg-[#0a0a0c] rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-gray-800">
-                <h2 class="text-3xl font-bold text-white mb-2">Acceso Seguro</h2>
-                <p class="text-gray-400 mb-8">Ingresa tus credenciales para continuar.</p>
+                <div class="flex justify-center mb-6">
+                    <img src="https://charlywolf10.github.io/VectorLab/assets/img/VectorLab.png" alt="Vector Lab Logo" class="w-48 object-contain filter drop-shadow-lg">
+                </div>
+                <h2 class="text-3xl font-bold text-white mb-2 text-center">Acceso Seguro</h2>
+                <p class="text-gray-400 mb-8 text-center">Ingresa tus credenciales para continuar.</p>
 
                 <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -284,6 +313,19 @@
                 if (typeof matrixInterval !== 'undefined') clearInterval(matrixInterval);
             });
         @endif
+
+        // Lógica del Slideshow del fondo
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentSlide = 0;
+            const slides = document.querySelectorAll('.slideshow-bg');
+            if (slides.length > 0) {
+                setInterval(() => {
+                    slides[currentSlide].classList.remove('active');
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    slides[currentSlide].classList.add('active');
+                }, 4000);
+            }
+        });
     </script>
 </body>
 </html>
