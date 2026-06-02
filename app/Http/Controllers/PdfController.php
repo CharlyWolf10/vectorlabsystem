@@ -24,9 +24,14 @@ class PdfController extends Controller
         return $pdf->download('reporte_inventario_' . date('Y_m_d') . '.pdf');
     }
 
-    public function exportCompras()
+    public function exportCompras(Request $request)
     {
-        $proveedores = Proveedor::all();
+        if ($request->has('ids')) {
+            $ids = explode(',', $request->ids);
+            $proveedores = Proveedor::whereIn('id', $ids)->get();
+        } else {
+            $proveedores = Proveedor::all();
+        }
         
         $data = [
             'title' => 'Directorio de Proveedores - Vector Lab',
