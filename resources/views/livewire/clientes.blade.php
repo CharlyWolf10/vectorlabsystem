@@ -16,10 +16,10 @@
                     <button wire:click="exportSelected" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
                     </button>
-                    <button onclick="abrirCampanaEmail()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded shadow">
+                    <button wire:click="abrirModalEmail" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-envelope mr-2"></i> Campaña de Email
                     </button>
-                    <button onclick="abrirCampanaWhatsapp()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded shadow">
+                    <button wire:click="abrirModalWhatsapp" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fab fa-whatsapp mr-2"></i> Promoción WhatsApp
                     </button>
                 </div>
@@ -33,18 +33,27 @@
                             <input type="text" wire:model.live="search" placeholder="Buscar por nombre, correo, etc..." class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200">
                         </div>
                         <div class="w-full md:w-2/3 flex flex-wrap gap-2 items-center">
-                            <select wire:model.live="filterEstudiante" class="border border-gray-300 rounded-md shadow-sm px-3 py-2">
+                            <select wire:model.live="filterEstudiante" class="border border-gray-300 rounded-md shadow-sm px-3 py-2 text-sm">
                                 <option value="">¿Es estudiante? (Todos)</option>
                                 <option value="1">Sí (Estudiantes)</option>
                                 <option value="0">No (Profesionistas/Otros)</option>
                             </select>
-                            <input type="text" wire:model.live="filterEscuela" placeholder="Filtrar por Universidad" class="border border-gray-300 rounded-md shadow-sm px-3 py-2">
-                            <select wire:model.live="filterProfesionista" class="border border-gray-300 rounded-md shadow-sm px-3 py-2">
+                            <select wire:model.live="filterEscuela" class="border border-gray-300 rounded-md shadow-sm px-3 py-2 text-sm">
+                                <option value="">Filtrar por Universidad (Todas)</option>
+                                <option value="UDLAP">UDLAP</option>
+                                <option value="UVM">UVM</option>
+                                <option value="UAMP">UAMP</option>
+                                <option value="Tec de Monterrey">Tec de Monterrey</option>
+                                <option value="UNARTE">UNARTE</option>
+                                <option value="BUAP">BUAP</option>
+                                <option value="UPAEP">UPAEP</option>
+                            </select>
+                            <select wire:model.live="filterProfesionista" class="border border-gray-300 rounded-md shadow-sm px-3 py-2 text-sm">
                                 <option value="">¿Es profesionista? (Todos)</option>
                                 <option value="1">Sí (Profesionistas)</option>
                                 <option value="0">No (Estudiantes/Otros)</option>
                             </select>
-                            <input type="text" wire:model.live="filterEmpresa" placeholder="Filtrar por Empresa" class="border border-gray-300 rounded-md shadow-sm px-3 py-2">
+                            <input type="text" wire:model.live="filterEmpresa" placeholder="Filtrar por Empresa" class="border border-gray-300 rounded-md shadow-sm px-3 py-2 text-sm">
                         </div>
                     </div>
                     @if(count($selectedClientes) > 0)
@@ -540,6 +549,85 @@
                 otra.value = '';
                 lblOtra.classList.add('invisible');
             }
+        }
+
+        window.addEventListener('abrir-modal-email', event => {
+            const count = event.detail[0].count;
+            Swal.fire({
+                title: 'Campaña de Email',
+                html: `
+                    <p class="mb-4 text-gray-600 text-sm">Se enviará un correo a <strong>${count}</strong> cliente(s).</p>
+                    <input id="email_asunto" class="swal2-input w-full mt-2" placeholder="Asunto del correo" required>
+                    <textarea id="email_mensaje" class="swal2-textarea w-full mt-2" placeholder="Escribe el mensaje aquí..." rows="5" required></textarea>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Enviar Correos',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    const asunto = document.getElementById('email_asunto').value;
+                    const mensaje = document.getElementById('email_mensaje').value;
+                    if(!asunto || !mensaje) {
+                        Swal.showValidationMessage('El asunto y mensaje son obligatorios');
+                        return false;
+                    }
+                    return { asunto, mensaje };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Enviando...',
+                        text: 'Por favor espera',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    Livewire.dispatch('enviarCampanaEmail', [result.value]);
+                }
+            });
+        });
+
+        window.addEventListener('abrir-modal-whatsapp', event => {
+            const clientes = event.detail[0].clientes;
+            let listaHtml = '<div class="max-h-60 overflow-y-auto text-left mt-4 border rounded p-2 bg-gray-50">';
+            clientes.forEach((c, index) => {
+                listaHtml += `
+                    <div class="flex justify-between items-center border-b py-2 last:border-b-0">
+                        <span class="text-sm font-semibold text-gray-700">${c.nombre} ${c.apellidos} <br><small class="text-gray-500">${c.telefono}</small></span>
+                        <button onclick="enviarWhatsApp('${c.telefono}', document.getElementById('wa_mensaje').value)" class="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded">
+                            Enviar <i class="fab fa-whatsapp"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            listaHtml += '</div>';
+
+            Swal.fire({
+                title: 'Promoción WhatsApp',
+                width: '600px',
+                html: `
+                    <p class="text-sm text-gray-600 mb-2 text-left">Redacta tu mensaje y haz clic en "Enviar" uno por uno. WhatsApp Web abrirá una nueva pestaña para cada cliente con el mensaje pre-llenado.</p>
+                    <textarea id="wa_mensaje" class="swal2-textarea w-full mt-2" placeholder="Escribe tu mensaje aquí..." rows="3"></textarea>
+                    ${listaHtml}
+                `,
+                showConfirmButton: false,
+                showCancelButton: true,
+                cancelButtonText: 'Cerrar'
+            });
+        });
+
+        function enviarWhatsApp(telefono, mensaje) {
+            if(!mensaje) {
+                Swal.showValidationMessage('Escribe un mensaje antes de enviar.');
+                alert('Por favor, escribe un mensaje primero.');
+                return;
+            }
+            let telLimpio = telefono.replace(/\D/g,'');
+            if(telLimpio.length === 10) {
+                telLimpio = '52' + telLimpio; 
+            }
+            const url = `https://wa.me/${telLimpio}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
         }
     </script>
 </div>

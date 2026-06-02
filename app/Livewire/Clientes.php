@@ -130,6 +130,70 @@ class Clientes extends Component
         return redirect()->route('clientes.export', ['ids' => $ids]);
     }
 
+    public function abrirModalEmail()
+    {
+        if (empty($this->selectedClientes)) {
+            $this->dispatch('swal:error', ['title' => 'Atención', 'text' => 'Debes seleccionar al menos un cliente para la campaña.']);
+            return;
+        }
+        
+        $clientesConEmail = Cliente::whereIn('id', $this->selectedClientes)->whereNotNull('email')->where('email', '!=', '')->count();
+        
+        if ($clientesConEmail == 0) {
+            $this->dispatch('swal:error', ['title' => 'Atención', 'text' => 'Ninguno de los clientes seleccionados tiene un correo electrónico registrado.']);
+            return;
+        }
+
+        $this->dispatch('abrir-modal-email', ['count' => $clientesConEmail]);
+    }
+
+    #[On('enviarCampanaEmail')]
+    public function enviarCampanaEmail($data)
+    {
+        $asunto = $data['asunto'] ?? 'Promoción';
+        $mensaje = $data['mensaje'] ?? '';
+        
+        $clientes = Cliente::whereIn('id', $this->selectedClientes)->whereNotNull('email')->where('email', '!=', '')->get();
+        
+        $enviados = 0;
+        foreach ($clientes as $cliente) {
+            try {
+                \Illuminate\Support\Facades\Mail::raw($mensaje, function ($m) use ($cliente, $asunto) {
+                    $m->to($cliente->email)
+                      ->subject($asunto);
+                });
+                $enviados++;
+            } catch (\Exception $e) {
+                // Ignore failure for individual emails to not stop the loop
+                \Illuminate\Support\Facades\Log::error("Error enviando email a {$cliente->email}: " . $e->getMessage());
+            }
+        }
+        
+        $this->dispatch('swal:success', ['title' => 'Campaña Finalizada', 'text' => "Se enviaron {$enviados} correos exitosamente."]);
+        // Limpiar selección si lo deseas:
+        // $this->selectedClientes = [];
+    }
+
+    public function abrirModalWhatsapp()
+    {
+        if (empty($this->selectedClientes)) {
+            $this->dispatch('swal:error', ['title' => 'Atención', 'text' => 'Debes seleccionar al menos un cliente para la campaña.']);
+            return;
+        }
+        
+        $clientes = Cliente::whereIn('id', $this->selectedClientes)
+                    ->whereNotNull('telefono')
+                    ->where('telefono', '!=', '')
+                    ->get(['id', 'nombre', 'apellidos', 'telefono']);
+        
+        if ($clientes->isEmpty()) {
+            $this->dispatch('swal:error', ['title' => 'Atención', 'text' => 'Ninguno de los clientes seleccionados tiene un teléfono registrado.']);
+            return;
+        }
+
+        $this->dispatch('abrir-modal-whatsapp', ['clientes' => $clientes->toArray()]);
+    }
+
     #[On('crearCuentaPorCobrar')]
     public function crearCuentaPorCobrar($clienteId, $monto)
     {
