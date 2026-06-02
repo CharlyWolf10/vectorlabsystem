@@ -57,9 +57,11 @@
                             CLABE: {{ $proveedor->clabe }}
                         </td>
                         <td class="py-2 px-4 text-center">
-                            <button onclick="nuevoGasto({{ $proveedor->id }})" class="bg-blue-500 hover:bg-blue-600 text-white text-xs py-1 px-3 rounded">
+                            <button onclick="nuevoGasto({{ $proveedor->id }})" class="bg-blue-500 hover:bg-blue-600 text-white text-xs py-1 px-3 rounded block w-full mb-1">
                                 Registrar Gasto
                             </button>
+                            <button onclick="editarProveedor({{ $proveedor->id }}, '{{ $proveedor->nombre }}', '{{ $proveedor->telefono }}', '{{ $proveedor->email }}', '{{ $proveedor->direccion }}', '{{ $proveedor->rfc }}', '{{ $proveedor->banco }}', '{{ $proveedor->clabe }}', '{{ $proveedor->num_cuenta }}')" class="text-blue-500 hover:text-blue-700 mr-2"><i class="fas fa-edit"></i></button>
+                            <button onclick="eliminarProveedor({{ $proveedor->id }})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                     @empty
@@ -83,8 +85,13 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             @forelse($cuentasPorPagar as $cuenta)
             <div class="border rounded p-4 shadow-sm relative">
-                <div class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded">
-                    {{ strtoupper($cuenta->estado) }}
+                <div class="absolute top-2 right-2 flex space-x-2">
+                    <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded">
+                        {{ strtoupper($cuenta->estado) }}
+                    </span>
+                    <button onclick="eliminarCuenta({{ $cuenta->id }})" class="text-red-500 hover:text-red-700 bg-white rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
+                        <i class="fas fa-trash text-xs"></i>
+                    </button>
                 </div>
                 <h4 class="font-bold text-gray-800">{{ $cuenta->proveedor->nombre }}</h4>
                 <p class="text-sm text-gray-600 mt-1">Deuda Original: ${{ number_format($cuenta->monto_total, 2) }}</p>
@@ -126,7 +133,9 @@
                 title: 'Nuevo Proveedor',
                 html: `
                     <input id="prov_nombre" class="swal2-input" placeholder="Nombre completo o Empresa" required>
-                    <input id="prov_telefono" class="swal2-input" placeholder="Teléfono">
+                    <input id="prov_telefono" type="text" class="swal2-input" placeholder="Teléfono">
+                    <input id="prov_direccion" type="text" class="swal2-input" placeholder="Dirección">
+                    <input id="prov_rfc" type="text" class="swal2-input" placeholder="RFC">
                     <input id="prov_email" class="swal2-input" placeholder="Correo Electrónico">
                     <h4 class="mt-4 font-bold text-gray-700 text-left px-2">Datos Bancarios</h4>
                     <input id="prov_banco" class="swal2-input" placeholder="Banco (Ej. BBVA)">
@@ -149,6 +158,8 @@
                         nombre: nombre,
                         telefono: document.getElementById('prov_telefono').value,
                         email: document.getElementById('prov_email').value,
+                        direccion: document.getElementById('prov_direccion').value,
+                        rfc: document.getElementById('prov_rfc').value,
                         banco: document.getElementById('prov_banco').value,
                         clabe: document.getElementById('prov_clabe').value,
                         num_cuenta: document.getElementById('prov_cuenta').value,
@@ -170,6 +181,69 @@
                             Livewire.dispatch('guardarProveedor', [result.value]);
                         }
                     });
+                }
+            });
+        }
+
+        function editarProveedor(id, nombre, telefono, email, direccion, rfc, banco, clabe, cuenta) {
+            Swal.fire({
+                title: 'Editar Proveedor',
+                html: `
+                    <input id="prov_id" type="hidden" value="${id}">
+                    <input id="prov_nombre" class="swal2-input" placeholder="Nombre completo o Empresa" value="${nombre}" required>
+                    <input id="prov_telefono" type="text" class="swal2-input" placeholder="Teléfono" value="${telefono}">
+                    <input id="prov_direccion" type="text" class="swal2-input" placeholder="Dirección" value="${direccion}">
+                    <input id="prov_rfc" type="text" class="swal2-input" placeholder="RFC" value="${rfc}">
+                    <input id="prov_email" class="swal2-input" placeholder="Correo Electrónico" value="${email}">
+                    <h4 class="mt-4 font-bold text-gray-700 text-left px-2">Datos Bancarios</h4>
+                    <input id="prov_banco" class="swal2-input" placeholder="Banco (Ej. BBVA)" value="${banco}">
+                    <input id="prov_clabe" class="swal2-input" placeholder="CLABE Interbancaria" value="${clabe}">
+                    <input id="prov_cuenta" class="swal2-input" placeholder="Número de Cuenta" value="${cuenta}">
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Guardar Cambios',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    const nombre = document.getElementById('prov_nombre').value;
+                    if(!nombre) {
+                        Swal.showValidationMessage('El nombre es obligatorio');
+                        return false;
+                    }
+                    return {
+                        id: document.getElementById('prov_id').value,
+                        nombre: nombre,
+                        telefono: document.getElementById('prov_telefono').value,
+                        email: document.getElementById('prov_email').value,
+                        direccion: document.getElementById('prov_direccion').value,
+                        rfc: document.getElementById('prov_rfc').value,
+                        banco: document.getElementById('prov_banco').value,
+                        clabe: document.getElementById('prov_clabe').value,
+                        num_cuenta: document.getElementById('prov_cuenta').value,
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('guardarProveedor', [result.value]);
+                }
+            });
+        }
+
+        function eliminarProveedor(id) {
+            Swal.fire({
+                title: '¿Eliminar proveedor?',
+                text: "Se eliminará el proveedor de la base de datos.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('eliminarProveedor', [id]);
                 }
             });
         }
@@ -246,6 +320,23 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     Livewire.dispatch('aplicarAbono', [cuentaId, parseFloat(result.value)]);
+                }
+            });
+        }
+
+        function eliminarCuenta(id) {
+            Swal.fire({
+                title: '¿Eliminar deuda?',
+                text: "Se eliminará esta cuenta por pagar.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('eliminarCuenta', [id]);
                 }
             });
         }

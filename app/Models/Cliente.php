@@ -13,6 +13,7 @@ class Cliente extends Model
         'nombre',
         'apellidos',
         'es_estudiante',
+        'escuela',
         'matricula',
         'email',
         'telefono',

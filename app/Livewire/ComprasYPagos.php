@@ -49,16 +49,31 @@ class ComprasYPagos extends Component
     #[On('guardarProveedor')]
     public function guardarProveedor($data)
     {
-        Proveedor::create([
-            'nombre' => $data['nombre'],
-            'telefono' => $data['telefono'],
-            'email' => $data['email'],
-            'banco' => $data['banco'],
-            'clabe' => $data['clabe'],
-            'num_cuenta' => $data['num_cuenta'],
-        ]);
-        $this->loadData();
-        $this->dispatch('swal:success', ['title' => '¡Proveedor registrado!', 'text' => 'El proveedor se ha guardado correctamente.']);
+        $id = $data['id'] ?? null;
+        Proveedor::updateOrCreate(
+            ['id' => $id],
+            [
+                'nombre' => $data['nombre'],
+                'telefono' => $data['telefono'],
+                'email' => $data['email'],
+                'direccion' => $data['direccion'] ?? null,
+                'rfc' => $data['rfc'] ?? null,
+                'banco' => $data['banco'],
+                'clabe' => $data['clabe'],
+                'num_cuenta' => $data['num_cuenta'],
+            ]
+        );
+        $this->dispatch('swal:success', ['title' => '¡Éxito!', 'text' => 'Proveedor guardado correctamente.']);
+    }
+
+    #[On('eliminarProveedor')]
+    public function eliminarProveedor($id)
+    {
+        $proveedor = Proveedor::find($id);
+        if ($proveedor) {
+            $proveedor->delete();
+            $this->dispatch('swal:success', ['title' => '¡Eliminado!', 'text' => 'Proveedor eliminado de la base de datos.']);
+        }
     }
 
     #[On('registrarGasto')]
@@ -103,20 +118,31 @@ class ComprasYPagos extends Component
     }
 
     #[On('aplicarAbono')]
-    public function aplicarAbono($cuentaId, $monto)
+    public function aplicarAbono($cuentaId, $montoAbono)
     {
         $cuenta = CuentaPorPagar::find($cuentaId);
-        if ($cuenta) {
-            $nuevoSaldo = $cuenta->saldo_pendiente - $monto;
-            $cuenta->saldo_pendiente = $nuevoSaldo;
-            $cuenta->estado = $nuevoSaldo <= 0 ? 'pagado' : 'parcial';
-            $cuenta->save();
+        if ($cuenta && $montoAbono > 0 && $montoAbono <= $cuenta->saldo_pendiente) {
+            $cuenta->saldo_pendiente -= $montoAbono;
             
-            // Aquí se podría registrar el pago en una tabla 'pagos' si existiera
+            if ($cuenta->saldo_pendiente <= 0) {
+                $cuenta->estado = 'pagada';
+            }
+            
+            $cuenta->save();
+            $this->dispatch('swal:success', ['title' => '¡Abono registrado!', 'text' => 'El saldo de la deuda se ha actualizado correctamente.']);
         }
         
         $this->loadData();
-        $this->dispatch('swal:success', ['title' => '¡Abono aplicado!', 'text' => 'Se ha descontado del saldo pendiente.']);
+    }
+
+    #[On('eliminarCuenta')]
+    public function eliminarCuenta($id)
+    {
+        $cuenta = CuentaPorPagar::find($id);
+        if ($cuenta) {
+            $cuenta->delete();
+            $this->dispatch('swal:success', ['title' => '¡Eliminada!', 'text' => 'La cuenta por pagar ha sido eliminada.']);
+        }
     }
 
     // Render handled above

@@ -32,17 +32,33 @@ class Clientes extends Component
     #[On('guardarCliente')]
     public function guardarCliente($data)
     {
-        Cliente::create([
-            'nombre' => $data['nombre'],
-            'apellidos' => $data['apellidos'],
-            'es_estudiante' => $data['es_estudiante'],
-            'matricula' => $data['matricula'] ?? null,
-            'telefono' => $data['telefono'] ?? null,
-            'email' => $data['email'] ?? null,
-            'limite_credito' => $data['limite_credito'] ?? 0,
-            'saldo_pendiente' => 0
-        ]);
+        $id = $data['id'] ?? null;
+        Cliente::updateOrCreate(
+            ['id' => $id],
+            [
+                'nombre' => $data['nombre'],
+                'apellidos' => $data['apellidos'],
+                'es_estudiante' => $data['es_estudiante'],
+                'matricula' => $data['es_estudiante'] ? $data['matricula'] : null,
+                'escuela' => $data['es_estudiante'] ? ($data['escuela'] ?? null) : null,
+                'telefono' => $data['telefono'],
+                'email' => $data['email'],
+                'limite_credito' => $data['limite_credito'] ?? 0,
+                // Only set saldo_pendiente to 0 if it's a new record
+                'saldo_pendiente' => $id ? Cliente::find($id)->saldo_pendiente : 0
+            ]
+        );
         
         $this->dispatch('swal:success', ['title' => '¡Éxito!', 'text' => 'Cliente guardado correctamente.']);
+    }
+
+    #[On('eliminarCliente')]
+    public function eliminarCliente($id)
+    {
+        $cliente = Cliente::find($id);
+        if ($cliente) {
+            $cliente->delete();
+            $this->dispatch('swal:success', ['title' => '¡Eliminado!', 'text' => 'Cliente eliminado de la base de datos.']);
+        }
     }
 }

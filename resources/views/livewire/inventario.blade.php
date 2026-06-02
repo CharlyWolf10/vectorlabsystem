@@ -60,7 +60,8 @@
                                     </span>
                                 </td>
                                 <td class="py-2 px-4 text-center">
-                                    <button class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button>
+                                    <button onclick="editarProducto('{{ $producto->codigo }}', '{{ $producto->nombre }}', {{ $producto->precio_compra }}, {{ $producto->precio_venta }}, {{ $producto->stock }}, {{ $producto->stock_minimo }})" class="text-blue-500 hover:text-blue-700 mr-2"><i class="fas fa-edit"></i></button>
+                                    <button onclick="eliminarProducto({{ $producto->id }})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
                             @empty
@@ -128,9 +129,63 @@
                         cancelButtonText: 'Cancelar'
                     }).then((confirmResult) => {
                         if (confirmResult.isConfirmed) {
-                            Livewire.dispatch('guardarProducto', { data: result.value });
+                            Livewire.dispatch('guardarProducto', [result.value]);
                         }
                     });
+                }
+            });
+        }
+
+        function editarProducto(codigo, nombre, costo, venta, stock, minimo) {
+            Swal.fire({
+                title: 'Editar Producto',
+                html: `
+                    <input id="prod_codigo" class="swal2-input" placeholder="Código de Barras/SKU" value="${codigo}" readonly>
+                    <input id="prod_nombre" class="swal2-input" placeholder="Nombre del Producto" value="${nombre}" required>
+                    <input id="prod_costo" type="number" step="0.01" class="swal2-input" placeholder="Precio Costo $" value="${costo}">
+                    <input id="prod_venta" type="number" step="0.01" class="swal2-input" placeholder="Precio Venta $" value="${venta}">
+                    <input id="prod_stock" type="number" class="swal2-input" placeholder="Stock Inicial" value="${stock}">
+                    <input id="prod_minimo" type="number" class="swal2-input" placeholder="Stock Mínimo (Alerta)" value="${minimo}">
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Guardar Cambios',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    const nombre = document.getElementById('prod_nombre').value;
+                    if(!nombre) {
+                        Swal.showValidationMessage('Nombre es obligatorio');
+                        return false;
+                    }
+                    return {
+                        codigo: document.getElementById('prod_codigo').value,
+                        nombre: nombre,
+                        precio_compra: parseFloat(document.getElementById('prod_costo').value) || 0,
+                        precio_venta: parseFloat(document.getElementById('prod_venta').value) || 0,
+                        stock: parseInt(document.getElementById('prod_stock').value) || 0,
+                        stock_minimo: parseInt(document.getElementById('prod_minimo').value) || 5,
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('guardarProducto', [result.value]);
+                }
+            });
+        }
+
+        function eliminarProducto(id) {
+            Swal.fire({
+                title: '¿Eliminar producto?',
+                text: "Esta acción no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('eliminarProducto', [id]);
                 }
             });
         }

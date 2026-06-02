@@ -43,5 +43,15 @@ class Inventario extends Component
         $this->dispatch('swal:success', ['title' => '¡Éxito!', 'text' => 'Producto guardado correctamente.']);
     }
 
+    #[On('eliminarProducto')]
+    public function eliminarProducto($id)
+    {
+        $producto = Producto::find($id);
+        if ($producto) {
+            $producto->delete();
+            $this->dispatch('swal:success', ['title' => '¡Eliminado!', 'text' => 'Producto eliminado del inventario.']);
+        }
+    }
+
     // Render handled above
 }
