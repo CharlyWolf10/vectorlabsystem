@@ -160,9 +160,9 @@
             <!-- Capa degradado azul transparente -->
             <div class="blue-overlay"></div>
             
-            <div class="z-10 flex flex-col items-center relative p-8">
-                <h2 class="text-5xl md:text-7xl font-extrabold text-white mb-6 neon-text tracking-wider">Bienvenido a<br><span class="text-blue-400">Vector Lab</span></h2>
-                <p class="text-blue-50 text-2xl max-w-lg leading-relaxed font-medium drop-shadow-lg bg-black/30 p-4 rounded-xl backdrop-blur-sm border border-white/10">El sistema de control y administración definitiva para optimizar tu negocio.</p>
+            <div class="z-10 flex flex-col items-center relative p-8 w-full">
+                <h2 class="text-6xl md:text-8xl font-extrabold text-white mb-8 neon-text tracking-wider text-center">Bienvenido a<br><span class="text-blue-400">Vector Lab</span></h2>
+                <p class="text-blue-50 text-3xl md:text-4xl max-w-2xl leading-relaxed font-medium drop-shadow-lg bg-black/40 p-6 rounded-2xl backdrop-blur-sm border border-white/10 text-center">El sistema de control y administración definitiva para optimizar tu negocio.</p>
             </div>
         </div>
 
