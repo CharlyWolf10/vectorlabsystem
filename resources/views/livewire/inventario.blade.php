@@ -13,17 +13,28 @@
                     <button onclick="nuevoProducto()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow mr-2">
                         <i class="fas fa-plus mr-2"></i> Nuevo Producto
                     </button>
-                    <a href="{{ route('inventario.export') }}" target="_blank" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
+                    <button wire:click="exportSelected" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
-                    </a>
+                    </button>
                 </div>
             </div>
 
             <!-- Panel de Inventario -->
             <div class="bg-white rounded-lg shadow-md p-6">
                 <div class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div class="w-full md:w-1/3">
-                        <input type="text" wire:model.live="search" placeholder="Buscar por código o nombre..." class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+                    <div class="w-full md:w-3/4 flex flex-col md:flex-row gap-4">
+                        <input type="text" wire:model.live="search" placeholder="Buscar por código o nombre..." class="w-full md:w-1/2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+                        
+                        <select wire:model.live="filterProveedor" class="w-full md:w-1/4 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+                            <option value="">Todos los Proveedores</option>
+                            @foreach($proveedores as $prov)
+                                <option value="{{ $prov->id }}">{{ $prov->nombre }}</option>
+                            @endforeach
+                        </select>
+
+                        <button wire:click="$toggle('filterFaltantes')" class="w-full md:w-1/4 {{ $filterFaltantes ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-700' }} font-bold py-2 px-4 rounded shadow transition-colors border border-gray-300 md:border-none">
+                            <i class="fas fa-exclamation-triangle mr-1"></i> {{ $filterFaltantes ? 'Solo Faltantes' : 'Ver Faltantes' }}
+                        </button>
                     </div>
                     @if(count($selectedProductos) > 0)
                         <div class="text-sm font-semibold text-blue-600">
@@ -82,6 +93,14 @@
         window.addEventListener('swal:success', event => {
             Swal.fire({
                 icon: 'success',
+                title: event.detail[0].title,
+                text: event.detail[0].text,
+            });
+        });
+
+        window.addEventListener('swal:error', event => {
+            Swal.fire({
+                icon: 'error',
                 title: event.detail[0].title,
                 text: event.detail[0].text,
             });
