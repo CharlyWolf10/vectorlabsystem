@@ -20,13 +20,13 @@
         <div class="flex h-screen overflow-hidden">
             
             <!-- Main Sidebar Container -->
-            <aside class="bg-gray-900 text-white flex flex-col transition-all duration-300 z-20" 
+            <aside class="bg-vl-dark text-white flex flex-col transition-all duration-300 z-20" 
                    :class="{'w-64': sidebarOpen, 'w-0 -translate-x-full': !sidebarOpen}">
                 
                 <!-- Brand Logo -->
-                <div class="h-16 flex items-center justify-center bg-gray-950 border-b border-gray-800 px-4 shrink-0">
-                    <a href="{{ route('dashboard') }}" class="flex items-center text-xl font-bold text-white hover:text-gray-300">
-                        <i class="fas fa-layer-group text-blue-500 mr-2"></i>
+                <div class="h-16 flex items-center justify-center bg-[#0a0a0c] border-b border-gray-800 px-4 shrink-0">
+                    <a href="{{ route('dashboard') }}" class="flex items-center text-xl font-bold text-white hover:text-vl-blue transition-colors">
+                        <img src="https://charlywolf10.github.io/VectorLab/assets/img/lobo.png" alt="Logo" class="w-8 h-8 mr-2" x-show="sidebarOpen">
                         <span x-show="sidebarOpen">VECTORLAB</span>
                     </a>
                 </div>
@@ -47,32 +47,32 @@
 
                     <!-- Sidebar Menu -->
                     <nav class="space-y-1">
-                        <a href="{{ route('dashboard') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('dashboard') ? 'bg-blue-600 hover:bg-blue-600' : '' }}">
-                            <i class="fas fa-tachometer-alt w-6 text-center text-gray-300 group-hover:text-white {{ request()->routeIs('dashboard') ? 'text-white' : '' }}"></i>
+                        <a href="{{ route('dashboard') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('dashboard') ? 'bg-vl-blue hover:bg-vl-blue' : '' }}">
+                            <i class="fas fa-tachometer-alt w-6 text-center text-vl-text-muted group-hover:text-white {{ request()->routeIs('dashboard') ? 'text-white' : '' }}"></i>
                             <span class="ml-3 text-sm font-medium">Dashboard</span>
                         </a>
 
                         <div class="pt-4 pb-2">
-                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Módulos</p>
+                            <p class="text-xs font-semibold text-vl-text-muted uppercase tracking-wider">Módulos</p>
                         </div>
 
-                        <a href="{{ route('compras') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('compras') ? 'bg-blue-600 hover:bg-blue-600' : '' }}">
-                            <i class="fas fa-shopping-cart w-6 text-center text-gray-300 group-hover:text-white {{ request()->routeIs('compras') ? 'text-white' : '' }}"></i>
+                        <a href="{{ route('compras') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('compras') ? 'bg-vl-blue hover:bg-vl-blue' : '' }}">
+                            <i class="fas fa-shopping-cart w-6 text-center text-vl-text-muted group-hover:text-white {{ request()->routeIs('compras') ? 'text-white' : '' }}"></i>
                             <span class="ml-3 text-sm font-medium">Compras y Pagos</span>
                         </a>
                         
-                        <a href="{{ route('inventario') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('inventario') ? 'bg-blue-600 hover:bg-blue-600' : 'text-gray-400' }}">
-                            <i class="fas fa-boxes w-6 text-center group-hover:text-white {{ request()->routeIs('inventario') ? 'text-white' : 'text-gray-400' }}"></i>
+                        <a href="{{ route('inventario') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('inventario') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
+                            <i class="fas fa-boxes w-6 text-center group-hover:text-white {{ request()->routeIs('inventario') ? 'text-white' : 'text-vl-text-muted' }}"></i>
                             <span class="ml-3 text-sm font-medium">Inventario</span>
                         </a>
                         
-                        <a href="{{ route('clientes') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('clientes') ? 'bg-blue-600 hover:bg-blue-600' : 'text-gray-400' }}">
-                            <i class="fas fa-users w-6 text-center group-hover:text-white {{ request()->routeIs('clientes') ? 'text-white' : 'text-gray-400' }}"></i>
+                        <a href="{{ route('clientes') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('clientes') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
+                            <i class="fas fa-users w-6 text-center group-hover:text-white {{ request()->routeIs('clientes') ? 'text-white' : 'text-vl-text-muted' }}"></i>
                             <span class="ml-3 text-sm font-medium">Clientes (CRM)</span>
                         </a>
                         
-                        <a href="{{ route('pos') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('pos') ? 'bg-blue-600 hover:bg-blue-600' : 'text-gray-400' }}">
-                            <i class="fas fa-cash-register w-6 text-center group-hover:text-white {{ request()->routeIs('pos') ? 'text-white' : 'text-gray-400' }}"></i>
+                        <a href="{{ route('pos') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('pos') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
+                            <i class="fas fa-cash-register w-6 text-center group-hover:text-white {{ request()->routeIs('pos') ? 'text-white' : 'text-vl-text-muted' }}"></i>
                             <span class="ml-3 text-sm font-medium">Punto de Venta</span>
                         </a>
                     </nav>

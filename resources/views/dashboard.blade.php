@@ -11,11 +11,11 @@
             <!-- Logo Section -->
             <div class="flex flex-col items-center justify-center mb-10">
                 <!-- Espacio para el Logo de la Página Web de Vector Lab -->
-                <div class="w-48 h-48 bg-gray-200 rounded-full flex items-center justify-center mb-4 overflow-hidden border-4 border-blue-500 shadow-lg">
-                    <img src="https://ui-avatars.com/api/?name=Vector+Lab&background=0D8ABC&color=fff&size=512" alt="Vector Lab Logo" id="vector-lab-logo" class="object-cover w-full h-full">
+                <div class="w-48 h-48 bg-vl-dark rounded-full flex items-center justify-center mb-4 overflow-hidden border-4 border-vl-blue shadow-lg">
+                    <img src="https://charlywolf10.github.io/VectorLab/assets/img/lobo.png" alt="Vector Lab Logo" id="vector-lab-logo" class="object-cover w-3/4 h-3/4">
                 </div>
                 <h1 class="text-3xl font-bold text-gray-800 tracking-wider uppercase">Bienvenido a Vector Lab ERP</h1>
-                <p class="text-gray-500 mt-2">Sistema Integral de Administración y Punto de Venta</p>
+                <p class="text-gray-500 mt-2">Sistema Integral de Manufactura, Administración y POS</p>
             </div>
 
             <!-- Widgets -->
