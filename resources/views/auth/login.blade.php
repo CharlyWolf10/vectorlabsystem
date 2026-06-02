@@ -19,6 +19,7 @@
             position: fixed;
             inset: 0;
             background-color: #000000;
+            background-image: radial-gradient(circle at center, rgba(29, 78, 216, 0.25) 0%, rgba(15, 23, 42, 0.1) 45%, #000000 80%);
             z-index: 50;
             display: flex;
             flex-direction: column;
@@ -65,21 +66,8 @@
             width: 100vw;
         }
 
-        /* Left Side (Form) */
-        .login-left {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            background-color: #050505;
-        }
-        @media (min-width: 768px) {
-            .login-left { width: 50%; }
-        }
-
-        /* Right Side (Welcome Text) */
-        .login-right {
+        /* Left Side (Welcome Text) */
+        .login-left-legend {
             display: none;
             width: 50%;
             background-color: #0a0a0c;
@@ -88,11 +76,24 @@
             justify-content: center;
             padding: 3rem;
             text-align: center;
-            border-left: 1px solid #1f2937;
+            border-right: 1px solid #1f2937;
             position: relative;
         }
         @media (min-width: 768px) {
-            .login-right { display: flex; }
+            .login-left-legend { display: flex; }
+        }
+
+        /* Right Side (Form) */
+        .login-right-form {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background-color: #050505;
+        }
+        @media (min-width: 768px) {
+            .login-right-form { width: 50%; }
         }
 
         /* Dark Form styling */
@@ -116,6 +117,7 @@
     
     <!-- SPLASH SCREEN (ENTRADA) -->
     <div id="splash-screen">
+        <canvas id="matrix-canvas" class="absolute inset-0 w-full h-full z-0 opacity-25 pointer-events-none"></canvas>
         <img src="https://charlywolf10.github.io/VectorLab/assets/img/VectorLab.png" alt="Vector Lab Logo" class="logo-enter w-[20rem] md:w-[35rem] object-contain mb-16">
         
         <button type="button" onclick="startLogin()" class="btn-enter px-12 py-4 text-xl font-bold text-white bg-blue-600 rounded-full shadow-[0_0_30px_rgba(37,99,235,0.6)] hover:bg-blue-500 hover:scale-105 transition-all transform flex items-center group">
@@ -125,8 +127,21 @@
 
     <!-- MAIN CONTENT (SISTEMA) -->
     <div id="login-content">
-        <!-- IZQUIERDA: FORMULARIO -->
-        <div class="login-left">
+        
+        <!-- IZQUIERDA: LEYENDA -->
+        <div class="login-left-legend">
+            <!-- Efecto de fondo sutil -->
+            <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at center, #3b82f6 1.5px, transparent 1.5px); background-size: 30px 30px;"></div>
+            
+            <div class="z-10 flex flex-col items-center">
+                <img src="https://charlywolf10.github.io/VectorLab/assets/img/VectorLab.png" alt="Vector Lab" class="w-48 mb-8 opacity-80 filter drop-shadow(0 0 10px rgba(59,130,246,0.3))">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Bienvenido a<br><span class="text-blue-500">Vector Lab</span></h2>
+                <p class="text-gray-400 text-xl max-w-md leading-relaxed">El sistema de control y administración definitiva para optimizar tu negocio.</p>
+            </div>
+        </div>
+
+        <!-- DERECHA: FORMULARIO -->
+        <div class="login-right-form">
             <div class="w-full max-w-md p-8 bg-[#0a0a0c] rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-gray-800">
                 <h2 class="text-3xl font-bold text-white mb-2">Acceso Seguro</h2>
                 <p class="text-gray-400 mb-8">Ingresa tus credenciales para continuar.</p>
@@ -192,20 +207,49 @@
             </div>
         </div>
 
-        <!-- DERECHA: LEYENDA -->
-        <div class="login-right">
-            <!-- Efecto de fondo sutil -->
-            <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at center, #3b82f6 1.5px, transparent 1.5px); background-size: 30px 30px;"></div>
-            
-            <div class="z-10 flex flex-col items-center">
-                <img src="https://charlywolf10.github.io/VectorLab/assets/img/VectorLab.png" alt="Vector Lab" class="w-48 mb-8 opacity-80 filter drop-shadow(0 0 10px rgba(59,130,246,0.3))">
-                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Bienvenido a<br><span class="text-blue-500">Vector Lab</span></h2>
-                <p class="text-gray-400 text-xl max-w-md leading-relaxed">El sistema de control y administración definitiva para optimizar tu negocio.</p>
-            </div>
-        </div>
     </div>
 
     <script>
+        let matrixInterval;
+        const canvas = document.getElementById('matrix-canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const letters = '01';
+            const fontSize = 16;
+            const columns = canvas.width / fontSize;
+            
+            const drops = [];
+            for (let x = 0; x < columns; x++) {
+                drops[x] = 1;
+            }
+            
+            matrixInterval = setInterval(() => {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#3b82f6';
+                ctx.font = fontSize + 'px monospace';
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }, 50);
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+
         function startLogin() {
             const splash = document.getElementById('splash-screen');
             // Agrega la clase que hace el barrido (deslizar hacia arriba)
@@ -214,6 +258,7 @@
             // Oculta completamente el splash después de la animación para no estorbar
             setTimeout(() => {
                 splash.style.display = 'none';
+                if (typeof matrixInterval !== 'undefined') clearInterval(matrixInterval);
                 document.getElementById('email').focus();
             }, 1000);
         }
@@ -236,6 +281,7 @@
         @if($errors->any() || session('status'))
             document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('splash-screen').style.display = 'none';
+                if (typeof matrixInterval !== 'undefined') clearInterval(matrixInterval);
             });
         @endif
     </script>
