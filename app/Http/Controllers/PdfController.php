@@ -9,9 +9,14 @@ use App\Models\Proveedor;
 
 class PdfController extends Controller
 {
-    public function exportInventario()
+    public function exportInventario(Request $request)
     {
-        $productos = Producto::all();
+        if ($request->has('ids')) {
+            $ids = explode(',', $request->ids);
+            $productos = Producto::whereIn('id', $ids)->get();
+        } else {
+            $productos = Producto::all();
+        }
         
         $data = [
             'title' => 'Reporte de Inventario - Vector Lab',
