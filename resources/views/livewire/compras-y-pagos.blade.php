@@ -12,9 +12,9 @@
             <button onclick="nuevoProveedor()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow mr-2">
                 <i class="fas fa-plus mr-2"></i> Nuevo Proveedor
             </button>
-            <a href="{{ route('compras.export') }}" target="_blank" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
+            <button wire:click="exportSelected" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
                 <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
-            </a>
+            </button>
         </div>
     </div>
 
@@ -53,6 +53,7 @@
                         </td>
                         <td class="py-2 px-4 text-sm">
                             <span class="font-semibold">{{ $proveedor->banco }}</span><br>
+                            @if($proveedor->titular_cuenta) Titular: {{ $proveedor->titular_cuenta }}<br> @endif
                             Cuenta: {{ $proveedor->num_cuenta }}<br>
                             CLABE: {{ $proveedor->clabe }}
                         </td>
@@ -60,7 +61,7 @@
                             <button onclick="nuevoGasto({{ $proveedor->id }})" class="bg-blue-500 hover:bg-blue-600 text-white text-xs py-1 px-3 rounded block w-full mb-1">
                                 Registrar Gasto
                             </button>
-                            <button onclick="editarProveedor({{ $proveedor->id }}, '{{ $proveedor->nombre }}', '{{ $proveedor->telefono }}', '{{ $proveedor->email }}', '{{ $proveedor->direccion }}', '{{ $proveedor->rfc }}', '{{ $proveedor->banco }}', '{{ $proveedor->clabe }}', '{{ $proveedor->num_cuenta }}')" class="text-blue-500 hover:text-blue-700 mr-2"><i class="fas fa-edit"></i></button>
+                            <button onclick="editarProveedor({{ $proveedor->id }}, '{{ addslashes($proveedor->nombre) }}', '{{ $proveedor->telefono }}', '{{ $proveedor->email }}', '{{ $proveedor->direccion }}', '{{ $proveedor->rfc }}', '{{ $proveedor->banco }}', '{{ $proveedor->clabe }}', '{{ $proveedor->num_cuenta }}', '{{ addslashes($proveedor->titular_cuenta) }}')" class="text-blue-500 hover:text-blue-700 mr-2"><i class="fas fa-edit"></i></button>
                             <button onclick="eliminarProveedor({{ $proveedor->id }})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
@@ -128,17 +129,26 @@
             });
         });
 
+        window.addEventListener('swal:error', event => {
+            Swal.fire({
+                icon: 'error',
+                title: event.detail[0].title,
+                text: event.detail[0].text,
+            });
+        });
+
         function nuevoProveedor() {
             Swal.fire({
                 title: 'Nuevo Proveedor',
                 html: `
-                    <input id="prov_nombre" class="swal2-input" placeholder="Nombre completo o Empresa" required>
+                    <input id="prov_nombre" class="swal2-input" placeholder="Nombre completo o Empresa" required oninput="this.value = this.value.toUpperCase()">
                     <input id="prov_telefono" type="text" class="swal2-input" placeholder="Teléfono">
                     <input id="prov_direccion" type="text" class="swal2-input" placeholder="Dirección">
                     <input id="prov_rfc" type="text" class="swal2-input" placeholder="RFC">
                     <input id="prov_email" class="swal2-input" placeholder="Correo Electrónico">
                     <h4 class="mt-4 font-bold text-gray-700 text-left px-2">Datos Bancarios</h4>
                     <input id="prov_banco" class="swal2-input" placeholder="Banco (Ej. BBVA)">
+                    <input id="prov_titular" class="swal2-input" placeholder="Titular de la Cuenta" oninput="this.value = this.value.toUpperCase()">
                     <input id="prov_clabe" class="swal2-input" placeholder="CLABE Interbancaria">
                     <input id="prov_cuenta" class="swal2-input" placeholder="Número de Cuenta">
                 `,
@@ -161,6 +171,7 @@
                         direccion: document.getElementById('prov_direccion').value,
                         rfc: document.getElementById('prov_rfc').value,
                         banco: document.getElementById('prov_banco').value,
+                        titular_cuenta: document.getElementById('prov_titular').value,
                         clabe: document.getElementById('prov_clabe').value,
                         num_cuenta: document.getElementById('prov_cuenta').value,
                     }
@@ -185,18 +196,19 @@
             });
         }
 
-        function editarProveedor(id, nombre, telefono, email, direccion, rfc, banco, clabe, cuenta) {
+        function editarProveedor(id, nombre, telefono, email, direccion, rfc, banco, clabe, cuenta, titular) {
             Swal.fire({
                 title: 'Editar Proveedor',
                 html: `
                     <input id="prov_id" type="hidden" value="${id}">
-                    <input id="prov_nombre" class="swal2-input" placeholder="Nombre completo o Empresa" value="${nombre}" required>
+                    <input id="prov_nombre" class="swal2-input" placeholder="Nombre completo o Empresa" value="${nombre}" required oninput="this.value = this.value.toUpperCase()">
                     <input id="prov_telefono" type="text" class="swal2-input" placeholder="Teléfono" value="${telefono}">
                     <input id="prov_direccion" type="text" class="swal2-input" placeholder="Dirección" value="${direccion}">
                     <input id="prov_rfc" type="text" class="swal2-input" placeholder="RFC" value="${rfc}">
                     <input id="prov_email" class="swal2-input" placeholder="Correo Electrónico" value="${email}">
                     <h4 class="mt-4 font-bold text-gray-700 text-left px-2">Datos Bancarios</h4>
                     <input id="prov_banco" class="swal2-input" placeholder="Banco (Ej. BBVA)" value="${banco}">
+                    <input id="prov_titular" class="swal2-input" placeholder="Titular de la Cuenta" value="${titular || ''}" oninput="this.value = this.value.toUpperCase()">
                     <input id="prov_clabe" class="swal2-input" placeholder="CLABE Interbancaria" value="${clabe}">
                     <input id="prov_cuenta" class="swal2-input" placeholder="Número de Cuenta" value="${cuenta}">
                 `,
@@ -220,6 +232,7 @@
                         direccion: document.getElementById('prov_direccion').value,
                         rfc: document.getElementById('prov_rfc').value,
                         banco: document.getElementById('prov_banco').value,
+                        titular_cuenta: document.getElementById('prov_titular').value,
                         clabe: document.getElementById('prov_clabe').value,
                         num_cuenta: document.getElementById('prov_cuenta').value,
                     }

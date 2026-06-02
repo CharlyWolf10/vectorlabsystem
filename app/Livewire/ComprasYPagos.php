@@ -78,8 +78,10 @@ class ComprasYPagos extends Component
                 'banco' => $data['banco'],
                 'clabe' => $data['clabe'],
                 'num_cuenta' => $data['num_cuenta'],
+                'titular_cuenta' => $data['titular_cuenta'] ?? null,
             ]
         );
+        $this->loadData();
         $this->dispatch('swal:success', ['title' => '¡Éxito!', 'text' => 'Proveedor guardado correctamente.']);
     }
 
@@ -89,6 +91,7 @@ class ComprasYPagos extends Component
         $proveedor = Proveedor::find($id);
         if ($proveedor) {
             $proveedor->delete();
+            $this->loadData();
             $this->dispatch('swal:success', ['title' => '¡Eliminado!', 'text' => 'Proveedor eliminado de la base de datos.']);
         }
     }
@@ -162,5 +165,14 @@ class ComprasYPagos extends Component
         }
     }
 
-    // Render handled above
+    public function exportSelected()
+    {
+        if (empty($this->selectedProveedores)) {
+            $this->dispatch('swal:error', ['title' => 'Atención', 'text' => 'Debes seleccionar al menos un proveedor para exportar.']);
+            return;
+        }
+
+        $ids = implode(',', $this->selectedProveedores);
+        return redirect()->route('compras.export', ['ids' => $ids]);
+    }
 }
