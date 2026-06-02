@@ -422,12 +422,39 @@
             }
         });
     </script>
+    <script>
+        document.addEventListener('keydown', function(e) {
+            const modal = document.getElementById('recover-modal');
+            const splash = document.getElementById('splash-screen');
+            
+            if (e.key === 'Escape') {
+                if (modal && !modal.classList.contains('hidden')) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            }
+            
+            if (e.key === 'Enter') {
+                if (splash && splash.style.display !== 'none' && !splash.classList.contains('splash-hidden')) {
+                    e.preventDefault();
+                    startLogin();
+                } else if (modal && modal.classList.contains('hidden')) {
+                    // Enviar form de login si no estamos en inputs o ya estamos
+                    if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'BUTTON') {
+                        e.preventDefault();
+                        document.querySelector('form[action="{{ route('login') }}"]').submit();
+                    }
+                }
+            }
+        });
+    </script>
+
     <!-- MODAL DE RECUPERACIÓN DE CONTRASEÑA -->
-    <div id="recover-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/60 backdrop-blur-sm transition-all duration-300">
-        <div class="relative bg-slate-900/90 border border-blue-500/30 rounded-2xl p-8 max-w-md w-full shadow-[0_0_50px_rgba(30,58,138,0.4)] m-4">
+    <div id="recover-modal" class="fixed inset-0 hidden items-center justify-center bg-black/80 backdrop-blur-md transition-all duration-300" style="z-index: 99999;">
+        <div class="relative bg-slate-900/95 border border-blue-500/50 rounded-2xl p-8 max-w-md w-full shadow-[0_0_80px_rgba(30,58,138,0.6)] m-4" style="z-index: 100000;">
             <!-- Botón Cerrar -->
-            <button type="button" onclick="document.getElementById('recover-modal').classList.add('hidden'); document.getElementById('recover-modal').classList.remove('flex');" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
-                <i class="fas fa-times text-xl"></i>
+            <button type="button" onclick="document.getElementById('recover-modal').classList.add('hidden'); document.getElementById('recover-modal').classList.remove('flex');" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors cursor-pointer">
+                <i class="fas fa-times text-2xl"></i>
             </button>
             
             <div class="text-center mb-6">
@@ -436,7 +463,7 @@
                 <p class="text-gray-400 text-sm mt-2">Ingresa tu correo o solicita tu contraseña por WhatsApp.</p>
             </div>
 
-            <form onsubmit="event.preventDefault(); simulateEmailRecovery();" class="space-y-4">
+            <form method="POST" action="{{ route('password.direct') }}" class="space-y-4">
                 @csrf
                 <div>
                     <label for="recover_email" class="block text-sm font-medium text-gray-300">Correo de Respaldo</label>
@@ -464,38 +491,14 @@
         </div>
     </div>
 
-    <!-- Script para simular envío de correo -->
-    <script>
-        function simulateEmailRecovery() {
-            document.getElementById('recover-modal').classList.add('hidden');
-            document.getElementById('recover-modal').classList.remove('flex');
-            
-            const toastHtml = `
-                <div id="recover-toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-600/90 backdrop-blur-md text-white px-6 py-4 rounded-xl shadow-[0_0_30px_rgba(34,197,94,0.4)] z-[100] transition-all duration-500 flex items-center space-x-3 border border-green-400/30">
-                    <i class="fas fa-check-circle text-2xl"></i>
-                    <span class="font-medium text-sm md:text-base">Contraseña enviada correctamente a f0180003@gmail.com</span>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', toastHtml);
-            setTimeout(() => {
-                const toast = document.getElementById('recover-toast');
-                if (toast) {
-                    toast.style.opacity = '0';
-                    toast.style.transform = 'translate(-50%, 20px)';
-                    setTimeout(() => toast.remove(), 500);
-                }
-            }, 4000);
-        }
-    </script>
-
-    <!-- Mostrar toast si hay mensaje de éxito de recuperación -->
-    @if(session('status'))
+    <!-- Mostrar toast de éxito al enviar correo -->
+    @if(session('recoverSuccess'))
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const toastHtml = `
-                    <div id="recover-toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-600/90 backdrop-blur-md text-white px-6 py-4 rounded-xl shadow-[0_0_30px_rgba(34,197,94,0.4)] z-[100] transition-all duration-500 flex items-center space-x-3 border border-green-400/30">
+                    <div id="recover-toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-600/90 backdrop-blur-md text-white px-6 py-4 rounded-xl shadow-[0_0_30px_rgba(34,197,94,0.4)] z-[100] transition-all duration-500 flex items-center space-x-3 border border-green-400/30 text-center">
                         <i class="fas fa-check-circle text-2xl"></i>
-                        <span class="font-medium text-sm md:text-base">{{ session('status') }}</span>
+                        <span class="font-medium text-sm md:text-base">{{ session('recoverSuccess') }}</span>
                     </div>
                 `;
                 document.body.insertAdjacentHTML('beforeend', toastHtml);
@@ -506,7 +509,30 @@
                         toast.style.transform = 'translate(-50%, 20px)';
                         setTimeout(() => toast.remove(), 500);
                     }
-                }, 4000);
+                }, 5000);
+            });
+        </script>
+    @endif
+
+    <!-- Mostrar toast de error si falta configurar SMTP -->
+    @if(session('recoverError'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const toastHtml = `
+                    <div id="recover-toast-err" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-yellow-600/90 backdrop-blur-md text-white px-6 py-4 rounded-xl shadow-[0_0_30px_rgba(202,138,4,0.4)] z-[100] transition-all duration-500 flex items-center space-x-3 border border-yellow-400/30 text-center">
+                        <i class="fas fa-exclamation-triangle text-2xl"></i>
+                        <span class="font-medium text-sm md:text-base">{{ session('recoverError') }}</span>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', toastHtml);
+                setTimeout(() => {
+                    const toast = document.getElementById('recover-toast-err');
+                    if (toast) {
+                        toast.style.opacity = '0';
+                        toast.style.transform = 'translate(-50%, 20px)';
+                        setTimeout(() => toast.remove(), 500);
+                    }
+                }, 7000); // Darle más tiempo para leer porque es largo
             });
         </script>
     @endif

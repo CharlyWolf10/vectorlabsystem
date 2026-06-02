@@ -30,4 +30,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/usuarios', \App\Livewire\Usuarios::class)->name('usuarios');
 });
 
+Route::post('/login/recover-direct', [App\Http\Controllers\Auth\DirectRecoveryController::class, 'send'])->name('password.direct');
+
 require __DIR__.'/auth.php';
