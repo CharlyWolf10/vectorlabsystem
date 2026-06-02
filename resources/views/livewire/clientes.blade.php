@@ -555,10 +555,16 @@
             const count = event.detail[0].count;
             Swal.fire({
                 title: 'Campaña de Email',
+                width: '800px',
                 html: `
                     <p class="mb-4 text-gray-600 text-sm">Se enviará un correo a <strong>${count}</strong> cliente(s).</p>
-                    <input id="email_asunto" class="swal2-input w-full mt-2" placeholder="Asunto del correo" required>
-                    <textarea id="email_mensaje" class="swal2-textarea w-full mt-2" placeholder="Escribe el mensaje aquí..." rows="5" required></textarea>
+                    <input id="email_asunto" class="swal2-input w-full mt-2" placeholder="Asunto del correo" style="max-width: 100%; width: 90%;" required>
+                    <textarea id="email_mensaje" class="swal2-textarea w-full mt-4" placeholder="Escribe el mensaje aquí..." rows="8" style="max-width: 100%; width: 90%;" required></textarea>
+                    
+                    <div class="mt-4 text-left px-8">
+                        <label class="block text-sm font-medium text-gray-700">Adjuntar archivo (Opcional, JPG o PDF)</label>
+                        <input type="file" id="email_adjunto" accept=".jpg,.jpeg,.png,.pdf" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    </div>
                 `,
                 showCancelButton: true,
                 confirmButtonText: 'Enviar Correos',
@@ -566,17 +572,39 @@
                 preConfirm: () => {
                     const asunto = document.getElementById('email_asunto').value;
                     const mensaje = document.getElementById('email_mensaje').value;
+                    const fileInput = document.getElementById('email_adjunto');
+                    
                     if(!asunto || !mensaje) {
                         Swal.showValidationMessage('El asunto y mensaje son obligatorios');
                         return false;
                     }
-                    return { asunto, mensaje };
+
+                    return new Promise((resolve) => {
+                        if (fileInput.files.length > 0) {
+                            const file = fileInput.files[0];
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                resolve({
+                                    asunto,
+                                    mensaje,
+                                    adjunto: {
+                                        name: file.name,
+                                        mime: file.type,
+                                        data: e.target.result.split(',')[1] // Get base64 string
+                                    }
+                                });
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            resolve({ asunto, mensaje, adjunto: null });
+                        }
+                    });
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: 'Enviando...',
-                        text: 'Por favor espera',
+                        text: 'Por favor espera. Esto puede tardar unos segundos si hay archivos adjuntos.',
                         allowOutsideClick: false,
                         didOpen: () => {
                             Swal.showLoading();
@@ -589,12 +617,12 @@
 
         window.addEventListener('abrir-modal-whatsapp', event => {
             const clientes = event.detail[0].clientes;
-            let listaHtml = '<div class="max-h-60 overflow-y-auto text-left mt-4 border rounded p-2 bg-gray-50">';
+            let listaHtml = '<div class="max-h-60 overflow-y-auto text-left mt-4 border rounded p-4 bg-gray-50">';
             clientes.forEach((c, index) => {
                 listaHtml += `
-                    <div class="flex justify-between items-center border-b py-2 last:border-b-0">
+                    <div class="flex justify-between items-center border-b py-3 last:border-b-0">
                         <span class="text-sm font-semibold text-gray-700">${c.nombre} ${c.apellidos} <br><small class="text-gray-500">${c.telefono}</small></span>
-                        <button onclick="enviarWhatsApp('${c.telefono}', document.getElementById('wa_mensaje').value)" class="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded">
+                        <button onclick="enviarWhatsApp('${c.telefono}', document.getElementById('wa_mensaje').value)" class="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded">
                             Enviar <i class="fab fa-whatsapp"></i>
                         </button>
                     </div>
@@ -604,10 +632,15 @@
 
             Swal.fire({
                 title: 'Promoción WhatsApp',
-                width: '600px',
+                width: '800px',
                 html: `
-                    <p class="text-sm text-gray-600 mb-2 text-left">Redacta tu mensaje y haz clic en "Enviar" uno por uno. WhatsApp Web abrirá una nueva pestaña para cada cliente con el mensaje pre-llenado.</p>
-                    <textarea id="wa_mensaje" class="swal2-textarea w-full mt-2" placeholder="Escribe tu mensaje aquí..." rows="3"></textarea>
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 text-left mb-4">
+                        <p class="text-sm text-yellow-700">
+                            <strong>Nota sobre archivos:</strong> WhatsApp Web <u>no permite</u> adjuntar archivos automáticamente a través de enlaces directos. Deberás arrastrar y soltar tu imagen JPG o PDF directamente en la ventana de WhatsApp Web una vez que se abra.
+                        </p>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-2 text-left px-4">Redacta tu mensaje y haz clic en "Enviar" uno por uno.</p>
+                    <textarea id="wa_mensaje" class="swal2-textarea w-full mt-2" placeholder="Escribe tu mensaje aquí..." rows="6" style="max-width: 100%; width: 90%;"></textarea>
                     ${listaHtml}
                 `,
                 showConfirmButton: false,

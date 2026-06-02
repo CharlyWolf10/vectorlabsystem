@@ -159,26 +159,30 @@ class Clientes extends Component
     {
         $asunto = $data['asunto'] ?? 'Promoción';
         $mensaje = $data['mensaje'] ?? '';
+        $adjunto = $data['adjunto'] ?? null;
         
         $clientes = Cliente::whereIn('id', $this->selectedClientes)->whereNotNull('email')->where('email', '!=', '')->get();
         
         $enviados = 0;
         foreach ($clientes as $cliente) {
             try {
-                \Illuminate\Support\Facades\Mail::raw($mensaje, function ($m) use ($cliente, $asunto) {
+                \Illuminate\Support\Facades\Mail::raw($mensaje, function ($m) use ($cliente, $asunto, $adjunto) {
                     $m->to($cliente->email)
                       ->subject($asunto);
+                      
+                    if ($adjunto) {
+                        $m->attachData(base64_decode($adjunto['data']), $adjunto['name'], [
+                            'mime' => $adjunto['mime'],
+                        ]);
+                    }
                 });
                 $enviados++;
             } catch (\Exception $e) {
-                // Ignore failure for individual emails to not stop the loop
                 \Illuminate\Support\Facades\Log::error("Error enviando email a {$cliente->email}: " . $e->getMessage());
             }
         }
         
         $this->dispatch('swal:success', ['title' => 'Campaña Finalizada', 'text' => "Se enviaron {$enviados} correos exitosamente."]);
-        // Limpiar selección si lo deseas:
-        // $this->selectedClientes = [];
     }
 
     public function abrirModalWhatsapp()
