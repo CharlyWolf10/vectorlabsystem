@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            background-color: #000000; /* Fondo totalmente negro */
+            background-color: #000000;
             margin: 0;
             overflow: hidden;
             color: #ffffff;
         }
 
-        /* Fade-in and float exclusively for the logo area */
+        /* Fade-in Logo Initial */
         .logo-transition {
             animation: fadeInLogo 2s ease-out forwards;
             opacity: 0;
@@ -26,7 +26,6 @@
 
         .animated-logo {
             animation: float 6s ease-in-out infinite, pulse-glow 4s ease-in-out infinite alternate;
-            /* Tenue glow around the logo image */
             filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.2));
         }
 
@@ -41,7 +40,7 @@
             to { filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.5)); }
         }
 
-        /* Subtle tech background effects ONLY on the left side (logo side) */
+        /* Tech background */
         .tech-container {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -91,20 +90,110 @@
             border-color: #3b82f6 !important;
             box-shadow: 0 0 0 1px #3b82f6 !important;
         }
-
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover, 
-        input:-webkit-autofill:focus, 
-        input:-webkit-autofill:active {
+        input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
             -webkit-box-shadow: 0 0 0 30px #0a0a0c inset !important;
             -webkit-text-fill-color: white !important;
         }
+
+        /* Layout Transition Logic */
+        #right-panel {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 70%;
+            transform: translateY(100%);
+            transition: transform 1s cubic-bezier(0.86, 0, 0.07, 1);
+            z-index: 30;
+            background: #000;
+        }
+        @media (min-width: 768px) {
+            #right-panel {
+                top: 0;
+                height: 100%;
+                width: 50%;
+                transform: translateX(100%);
+            }
+        }
+
+        .state-login #right-panel {
+            transform: translateY(0%);
+        }
+        @media (min-width: 768px) {
+            .state-login #right-panel {
+                transform: translateX(0%);
+            }
+        }
+
+        #left-panel {
+            width: 100%;
+            height: 100%;
+            transition: all 1s cubic-bezier(0.86, 0, 0.07, 1);
+            position: absolute;
+            top: 0; left: 0;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .state-login #left-panel {
+            height: 30%;
+        }
+        @media (min-width: 768px) {
+            .state-login #left-panel {
+                height: 100%;
+                width: 50%;
+            }
+        }
+
+        #main-logo {
+            transition: all 1s cubic-bezier(0.86, 0, 0.07, 1);
+            max-width: 90%;
+            width: 32rem; /* Initial Large Size */
+        }
+        @media (min-width: 1024px) {
+            #main-logo {
+                width: 45rem; /* Even larger on wide screens */
+            }
+        }
+        .state-login #main-logo {
+            width: 16rem;
+            max-height: 80%;
+        }
+        @media (min-width: 768px) {
+            .state-login #main-logo {
+                width: 24rem;
+                max-height: auto;
+            }
+        }
+
+        #welcome-text {
+            transition: opacity 0.4s ease;
+        }
+        .state-login #welcome-text {
+            opacity: 0 !important;
+            pointer-events: none;
+            position: absolute; /* Take out of flow to allow logo to center properly */
+            bottom: -100px;
+        }
+
+        /* Form container */
+        .form-container {
+            width: 100%;
+            max-width: 28rem;
+            padding: 2.5rem;
+            background: #0a0a0c;
+            border-radius: 1rem;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            border: 1px solid #1f2937;
+        }
     </style>
 </head>
-<body class="font-sans antialiased h-screen flex flex-col md:flex-row bg-black">
+<body id="app-body" class="font-sans antialiased bg-black overflow-hidden state-welcome">
     
-    <!-- LEFT SIDE: LOGO & TRANSITIONS -->
-    <div class="relative w-full md:w-1/2 h-1/3 md:h-full flex items-center justify-center bg-black border-r border-gray-900 logo-transition">
+    <!-- LEFT PANEL: LOGO & PRESENTATION -->
+    <div id="left-panel" class="logo-transition">
         
         <!-- Tech effects confined to this side -->
         <div class="tech-container">
@@ -113,18 +202,34 @@
             <div class="floating-node node-2"></div>
         </div>
 
-        <div class="z-10 flex flex-col items-center">
-            <!-- Requested VectorLab.png -->
-            <img src="https://charlywolf10.github.io/VectorLab/assets/img/VectorLab.png" alt="Vector Lab Logo" class="w-80 md:w-[32rem] lg:w-[40rem] max-w-[90%] h-auto animated-logo object-contain">
+        <div class="z-10 flex flex-col items-center text-center px-6 relative w-full flex-1 justify-center">
+            <!-- Logo -->
+            <img id="main-logo" src="https://charlywolf10.github.io/VectorLab/assets/img/VectorLab.png" alt="Vector Lab Logo" class="h-auto animated-logo object-contain">
+            
+            <!-- Welcome Text & Button -->
+            <div id="welcome-text" class="mt-12 w-full" style="opacity: 0; animation: fadeInLogo 2s ease-out 1s forwards;">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-wide">Bienvenido al sistema de control</h2>
+                <h3 class="text-2xl font-light text-blue-400 mb-8 tracking-[0.2em] uppercase">Vector Lab</h3>
+                <p class="text-gray-400 mb-10 max-w-lg mx-auto text-lg leading-relaxed">
+                    Por favor inicia sesión para que comencemos a administrar el negocio.
+                </p>
+                
+                <button type="button" onclick="showLogin()" class="group relative px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all transform hover:scale-105 overflow-hidden">
+                    <span class="relative z-10 flex items-center">
+                        INICIAR SESIÓN <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+                    </span>
+                    <div class="absolute inset-0 h-full w-full bg-gradient-to-r from-blue-600 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity z-0"></div>
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- RIGHT SIDE: STATIC FORM -->
-    <div class="w-full md:w-1/2 h-2/3 md:h-full flex flex-col justify-center items-center p-8 bg-black z-20">
+    <!-- RIGHT PANEL: STATIC FORM -->
+    <div id="right-panel" class="flex flex-col justify-center items-center p-6 md:p-8 border-t md:border-t-0 md:border-l border-gray-900 shadow-2xl">
         
-        <div class="w-full max-w-md bg-[#0a0a0c] p-8 md:p-10 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.8)] border border-gray-800">
-            <h2 class="text-3xl font-bold text-white mb-2">Bienvenido de nuevo</h2>
-            <p class="text-gray-400 mb-8">Ingresa tus credenciales para acceder al sistema.</p>
+        <div class="form-container">
+            <h2 class="text-3xl font-bold text-white mb-2">Acceso Seguro</h2>
+            <p class="text-gray-400 mb-8">Ingresa tus credenciales para continuar.</p>
 
             <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -180,18 +285,30 @@
 
                 <div class="pt-4">
                     <button type="submit" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-gray-900 transition-all transform hover:scale-[1.02]">
-                        INICIAR SESIÓN <i class="fas fa-sign-in-alt ml-2"></i>
+                        ENTRAR AL SISTEMA <i class="fas fa-sign-in-alt ml-2"></i>
                     </button>
                 </div>
             </form>
+            
+            <div class="text-center mt-8">
+                <p class="text-xs text-gray-600">&copy; {{ date('Y') }} Vector Lab.</p>
+            </div>
         </div>
         
-        <div class="text-center mt-6">
-            <p class="text-xs text-gray-600">&copy; {{ date('Y') }} Vector Lab. Todos los derechos reservados.</p>
-        </div>
     </div>
 
     <script>
+        function showLogin() {
+            const body = document.getElementById('app-body');
+            body.classList.remove('state-welcome');
+            body.classList.add('state-login');
+            
+            // Focus on email input after transition
+            setTimeout(() => {
+                document.getElementById('email').focus();
+            }, 1000);
+        }
+
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const icon = document.getElementById('togglePasswordIcon');
@@ -206,6 +323,13 @@
                 icon.classList.add('fa-eye');
             }
         }
+        
+        // Auto show form if there are validation errors
+        @if($errors->any() || session('status'))
+            document.addEventListener('DOMContentLoaded', function() {
+                showLogin();
+            });
+        @endif
     </script>
 </body>
 </html>
