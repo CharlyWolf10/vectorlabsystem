@@ -37,6 +37,13 @@ class Clientes extends Component
         }
     }
 
+    #[On('clearSelection')]
+    public function clearSelection()
+    {
+        $this->selectedClientes = [];
+        $this->selectAll = false;
+    }
+
     public function render()
     {
         $query = Cliente::where(function($q) {

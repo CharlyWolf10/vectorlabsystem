@@ -157,5 +157,15 @@
 
         @livewireScripts
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    // Prevenir deselección si hay un modal de SweetAlert abierto
+                    if (!Swal.isVisible()) {
+                        Livewire.dispatch('clearSelection');
+                    }
+                }
+            });
+        </script>
     </body>
 </html>

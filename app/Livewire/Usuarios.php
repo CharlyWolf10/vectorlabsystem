@@ -11,6 +11,23 @@ class Usuarios extends Component
 {
     public $search = '';
     public $selectedUsuarios = [];
+    public $selectAll = false;
+
+    public function updatedSelectAll($value)
+    {
+        if ($value) {
+            $this->selectedUsuarios = User::pluck('id')->map(fn($id) => (string)$id)->toArray();
+        } else {
+            $this->selectedUsuarios = [];
+        }
+    }
+
+    #[On('clearSelection')]
+    public function clearSelection()
+    {
+        $this->selectedUsuarios = [];
+        $this->selectAll = false;
+    }
 
     public function mount()
     {

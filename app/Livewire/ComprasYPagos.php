@@ -34,6 +34,13 @@ class ComprasYPagos extends Component
         }
     }
 
+    #[On('clearSelection')]
+    public function clearSelection()
+    {
+        $this->selectedProveedores = [];
+        $this->selectAll = false;
+    }
+
     public function loadData()
     {
         $this->proveedores = Proveedor::all();

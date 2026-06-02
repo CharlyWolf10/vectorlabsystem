@@ -28,6 +28,13 @@ class Inventario extends Component
         }
     }
 
+    #[On('clearSelection')]
+    public function clearSelection()
+    {
+        $this->selectedProductos = [];
+        $this->selectAll = false;
+    }
+
     public function render()
     {
         $productos = Producto::with('proveedor')
