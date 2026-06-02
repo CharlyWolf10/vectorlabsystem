@@ -163,10 +163,12 @@
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Correo Electrónico</label>
                             <input id="prov_email" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Correo Electrónico">
                         </div>
+                        <div class="hidden md:block"></div>
 
-                        <div class="md:col-span-2 mt-4 mb-2 flex justify-center">
-                            <h4 class="font-bold text-gray-800 uppercase tracking-wide text-center border-b-2 border-gray-300 pb-1 w-full md:w-1/2">Datos Bancarios</h4>
+                        <div class="mt-4 mb-2 flex justify-center">
+                            <h4 class="font-bold text-gray-800 uppercase tracking-wide text-center border-b-2 border-gray-300 pb-1 w-full">Datos Bancarios</h4>
                         </div>
+                        <div class="hidden md:block"></div>
                         
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Banco (Ej. BBVA)</label>
@@ -256,10 +258,12 @@
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Correo Electrónico</label>
                             <input id="prov_email" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Correo Electrónico" value="${email}">
                         </div>
+                        <div class="hidden md:block"></div>
 
-                        <div class="md:col-span-2 mt-4 mb-2 flex justify-center">
-                            <h4 class="font-bold text-gray-800 uppercase tracking-wide text-center border-b-2 border-gray-300 pb-1 w-full md:w-1/2">Datos Bancarios</h4>
+                        <div class="mt-4 mb-2 flex justify-center">
+                            <h4 class="font-bold text-gray-800 uppercase tracking-wide text-center border-b-2 border-gray-300 pb-1 w-full">Datos Bancarios</h4>
                         </div>
+                        <div class="hidden md:block"></div>
                         
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Banco (Ej. BBVA)</label>
