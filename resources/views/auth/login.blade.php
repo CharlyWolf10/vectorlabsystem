@@ -114,8 +114,8 @@
         </div>
 
         <div class="z-10 flex flex-col items-center">
-            <!-- Requested VectorLab_logo.png -->
-            <img src="https://charlywolf10.github.io/VectorLab/assets/img/VectorLab_logo.png" alt="Vector Lab Logo" class="w-64 md:w-[24rem] h-auto animated-logo object-contain" onerror="this.src='https://charlywolf10.github.io/VectorLab/assets/img/logo.png';">
+            <!-- Requested VectorLab.png -->
+            <img src="https://charlywolf10.github.io/VectorLab/assets/img/VectorLab.png" alt="Vector Lab Logo" class="w-64 md:w-[24rem] h-auto animated-logo object-contain">
         </div>
     </div>
 
