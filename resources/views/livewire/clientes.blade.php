@@ -7,18 +7,19 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="mb-6 flex justify-between items-center">
+            <div class="mb-6 flex flex-wrap gap-2 justify-between items-center">
                 <h2 class="text-2xl font-bold text-gray-800">Directorio de Clientes</h2>
-                    <button onclick="nuevoCliente()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow mr-2">
+                <div class="flex flex-wrap gap-2 mt-2 md:mt-0">
+                    <button onclick="nuevoCliente()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-user-plus mr-2"></i> Nuevo Cliente
                     </button>
-                    <a href="{{ route('clientes.export') }}" target="_blank" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow mr-2">
+                    <button wire:click="exportSelected" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
-                    </a>
-                    <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded shadow mr-2">
+                    </button>
+                    <button onclick="abrirCampanaEmail()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-envelope mr-2"></i> Campaña de Email
                     </button>
-                    <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded shadow">
+                    <button onclick="abrirCampanaWhatsapp()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fab fa-whatsapp mr-2"></i> Promoción WhatsApp
                     </button>
                 </div>
@@ -26,12 +27,28 @@
 
             <!-- Panel de Clientes -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div class="w-full md:w-1/3">
-                        <input type="text" wire:model.live="search" placeholder="Buscar por nombre, correo o matrícula..." class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+                <div class="mb-4 flex flex-col justify-between items-start gap-4 border-b pb-4">
+                    <div class="w-full flex flex-col md:flex-row gap-4 items-center">
+                        <div class="w-full md:w-1/3">
+                            <input type="text" wire:model.live="search" placeholder="Buscar por nombre, correo, etc..." class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200">
+                        </div>
+                        <div class="w-full md:w-2/3 flex flex-wrap gap-2 items-center">
+                            <select wire:model.live="filterEstudiante" class="border border-gray-300 rounded-md shadow-sm px-3 py-2">
+                                <option value="">¿Es estudiante? (Todos)</option>
+                                <option value="1">Sí (Estudiantes)</option>
+                                <option value="0">No (Profesionistas/Otros)</option>
+                            </select>
+                            <input type="text" wire:model.live="filterEscuela" placeholder="Filtrar por Universidad" class="border border-gray-300 rounded-md shadow-sm px-3 py-2">
+                            <select wire:model.live="filterProfesionista" class="border border-gray-300 rounded-md shadow-sm px-3 py-2">
+                                <option value="">¿Es profesionista? (Todos)</option>
+                                <option value="1">Sí (Profesionistas)</option>
+                                <option value="0">No (Estudiantes/Otros)</option>
+                            </select>
+                            <input type="text" wire:model.live="filterEmpresa" placeholder="Filtrar por Empresa" class="border border-gray-300 rounded-md shadow-sm px-3 py-2">
+                        </div>
                     </div>
                     @if(count($selectedClientes) > 0)
-                        <div class="text-sm font-semibold text-blue-600">
+                        <div class="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded">
                             {{ count($selectedClientes) }} cliente(s) seleccionado(s)
                         </div>
                     @endif
@@ -52,17 +69,21 @@
                             @forelse($clientes as $cliente)
                             <tr class="border-b hover:bg-gray-50">
                                 <td class="py-2 px-4 text-center">
-                                    <input type="checkbox" value="{{ $cliente->id }}" wire:model="selectedClientes" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                    <input type="checkbox" value="{{ $cliente->id }}" wire:model.live="selectedClientes" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                                 </td>
                                 <td class="py-2 px-4">
                                     <span class="font-bold">{{ $cliente->nombre }} {{ $cliente->apellidos }}</span>
                                     @if($cliente->es_estudiante)
-                                        <br><span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Estudiante: {{ $cliente->matricula }}</span>
+                                        <br><span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded mt-1 inline-block">Estudiante: {{ $cliente->matricula }}</span>
                                         @if($cliente->escuela)
                                             <br><span class="text-xs text-gray-500"><i class="fas fa-university"></i> {{ $cliente->escuela }}</span>
                                         @endif
-                                    @else
-                                        <br><span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">Profesionista</span>
+                                    @endif
+                                    @if($cliente->es_profesionista)
+                                        <br><span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded mt-1 inline-block">Profesionista</span>
+                                        @if($cliente->empresa)
+                                            <br><span class="text-xs text-gray-500"><i class="fas fa-briefcase"></i> {{ $cliente->empresa }}</span>
+                                        @endif
                                         @if($cliente->rfc)
                                             <br><span class="text-xs text-gray-500 font-mono">RFC: {{ $cliente->rfc }}</span>
                                         @endif
@@ -75,7 +96,7 @@
                                 <td class="py-2 px-4 text-right">${{ number_format($cliente->limite_credito, 2) }}</td>
                                 <td class="py-2 px-4 text-right text-red-600 font-bold">${{ number_format($cliente->saldo_pendiente, 2) }}</td>
                                 <td class="py-2 px-4 text-center">
-                                    <button onclick="editarCliente({{ $cliente->id }}, '{{ $cliente->nombre }}', '{{ $cliente->apellidos }}', {{ $cliente->es_estudiante ? 'true' : 'false' }}, '{{ $cliente->matricula }}', '{{ $cliente->escuela }}', '{{ $cliente->telefono }}', '{{ $cliente->email }}', {{ $cliente->limite_credito }})" class="text-blue-500 hover:text-blue-700 mr-2"><i class="fas fa-edit"></i></button>
+                                    <button onclick="editarCliente({{ $cliente->id }}, '{{ addslashes($cliente->nombre) }}', '{{ addslashes($cliente->apellidos) }}', {{ $cliente->es_estudiante ? 'true' : 'false' }}, '{{ $cliente->matricula }}', '{{ $cliente->escuela }}', '{{ $cliente->telefono }}', '{{ $cliente->email }}', {{ $cliente->limite_credito ?? 0 }}, {{ $cliente->es_profesionista ? 'true' : 'false' }}, '{{ addslashes($cliente->empresa) }}', '{{ $cliente->rfc }}')" class="text-blue-500 hover:text-blue-700 mr-2"><i class="fas fa-edit"></i></button>
                                     <button onclick="eliminarCliente({{ $cliente->id }})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
@@ -132,42 +153,94 @@
                 text: event.detail[0].text,
             });
         });
+        
+        window.addEventListener('swal:error', event => {
+            Swal.fire({
+                icon: 'error',
+                title: event.detail[0].title,
+                text: event.detail[0].text,
+            });
+        });
 
         function nuevoCliente() {
             Swal.fire({
                 title: 'Nuevo Cliente',
+                width: '900px',
                 html: `
-                    <input id="cli_nombre" class="swal2-input" placeholder="Nombre(s)" required>
-                    <input id="cli_apellidos" class="swal2-input" placeholder="Apellidos" required>
-                    <div class="mt-3 text-left pl-4">
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" id="cli_estudiante" onchange="toggleMatricula()" class="form-checkbox text-vl-blue">
-                            <span>¿Es estudiante?</span>
-                        </label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left mt-4">
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Nombre(s)</label>
+                            <input id="cli_nombre" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre(s)" required>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Apellidos</label>
+                            <input id="cli_apellidos" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Apellidos" required>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Teléfono</label>
+                            <input id="cli_telefono" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Teléfono">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Correo Electrónico</label>
+                            <input id="cli_email" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Correo Electrónico">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Límite Crédito $</label>
+                            <input id="cli_limite" type="number" step="0.01" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Límite de Crédito">
+                        </div>
+                        <div class="flex items-center space-x-6 pt-6">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="cli_estudiante" onchange="toggleTipos()" class="form-checkbox text-blue-600 w-5 h-5 rounded">
+                                <span class="font-bold text-gray-700">¿Estudiante?</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="cli_profesionista" onchange="toggleTipos()" class="form-checkbox text-blue-600 w-5 h-5 rounded">
+                                <span class="font-bold text-gray-700">¿Profesionista?</span>
+                            </label>
+                        </div>
+                        
+                        <!-- Campos Estudiante -->
+                        <div id="estudiante_fields" class="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-blue-50 rounded-lg border border-blue-100" style="display:none;">
+                            <div>
+                                <label class="text-sm text-blue-800 font-bold mb-1 block">Matrícula</label>
+                                <input id="cli_matricula" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Matrícula">
+                            </div>
+                            <div>
+                                <label class="text-sm text-blue-800 font-bold mb-1 block">Universidad/Escuela</label>
+                                <select id="cli_escuela" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" onchange="toggleOtraEscuela()">
+                                    <option value="">Seleccione una Escuela</option>
+                                    <option value="UDLAP">UDLAP</option>
+                                    <option value="UVM">UVM</option>
+                                    <option value="UAMP">UAMP</option>
+                                    <option value="Tec de Monterrey">Tec de Monterrey</option>
+                                    <option value="UNARTE">UNARTE</option>
+                                    <option value="BUAP">BUAP</option>
+                                    <option value="UPAEP">UPAEP</option>
+                                    <option value="Otra">Otra (Especificar)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-sm text-blue-800 font-bold mb-1 block invisible" id="lbl_otra_escuela">Otra Escuela</label>
+                                <input id="cli_otra_escuela" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Especifique la escuela" style="display:none;">
+                            </div>
+                        </div>
+
+                        <!-- Campos Profesionista -->
+                        <div id="profesionista_fields" class="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200" style="display:none;">
+                            <div>
+                                <label class="text-sm text-gray-800 font-bold mb-1 block">Empresa / Trabajo</label>
+                                <input id="cli_empresa" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-gray-500 focus:border-gray-500" placeholder="Nombre de empresa o 'Independiente'">
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-800 font-bold mb-1 block">RFC</label>
+                                <input id="cli_rfc" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-gray-500 focus:border-gray-500" placeholder="RFC">
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-800 font-bold mb-1 block">Constancia Fiscal (Opcional)</label>
+                                <input type="file" id="cli_constancia" accept=".pdf,image/*" class="w-full text-sm mt-1">
+                            </div>
+                        </div>
                     </div>
-                    <div id="estudiante_fields" style="display:none;" class="mt-2 text-left pl-4">
-                        <input id="cli_matricula" class="swal2-input !mt-0 w-full" placeholder="Matrícula">
-                        <select id="cli_escuela" class="swal2-select w-full mt-2" onchange="toggleOtraEscuela()">
-                            <option value="">Seleccione una Escuela</option>
-                            <option value="UDLAP">UDLAP</option>
-                            <option value="UVM">UVM</option>
-                            <option value="UAMP">UAMP</option>
-                            <option value="Tec de Monterrey">Tec de Monterrey</option>
-                            <option value="UNARTE">UNARTE</option>
-                            <option value="BUAP">BUAP</option>
-                            <option value="UPAEP">UPAEP</option>
-                            <option value="Otra">Otra (Especificar)</option>
-                        </select>
-                        <input id="cli_otra_escuela" class="swal2-input w-full mt-2" placeholder="Especifique la escuela" style="display:none;">
-                    </div>
-                    <div id="profesionista_fields" class="mt-2 text-left pl-4">
-                        <input id="cli_rfc" class="swal2-input !mt-0 w-full" placeholder="RFC (Para profesionistas)">
-                        <label class="block mt-2 text-sm text-gray-600">Constancia de Situación Fiscal (Opcional, PDF o Imagen)</label>
-                        <input type="file" id="cli_constancia" accept=".pdf,image/*" class="w-full text-sm mt-1">
-                    </div>
-                    <input id="cli_telefono" class="swal2-input" placeholder="Teléfono">
-                    <input id="cli_email" class="swal2-input" placeholder="Correo Electrónico">
-                    <input id="cli_limite" type="number" step="0.01" class="swal2-input" placeholder="Límite de Crédito Autorizado $">
                 `,
                 focusConfirm: false,
                 showCancelButton: true,
@@ -185,6 +258,8 @@
                         escuelaVal = document.getElementById('cli_otra_escuela').value;
                     }
 
+                    const isEstudiante = document.getElementById('cli_estudiante').checked;
+                    const isProfesionista = document.getElementById('cli_profesionista').checked;
                     let constanciaFile = document.getElementById('cli_constancia').files[0];
 
                     return new Promise((resolve) => {
@@ -194,14 +269,16 @@
                             es_estudiante: isEstudiante,
                             matricula: isEstudiante ? document.getElementById('cli_matricula').value : null,
                             escuela: isEstudiante ? escuelaVal : null,
-                            rfc: !isEstudiante ? document.getElementById('cli_rfc').value : null,
+                            es_profesionista: isProfesionista,
+                            empresa: isProfesionista ? document.getElementById('cli_empresa').value : null,
+                            rfc: isProfesionista ? document.getElementById('cli_rfc').value : null,
                             telefono: document.getElementById('cli_telefono').value,
                             email: document.getElementById('cli_email').value,
                             limite_credito: document.getElementById('cli_limite').value || 0,
                             constancia_base64: null
                         };
 
-                        if (constanciaFile && !isEstudiante) {
+                        if (constanciaFile && isProfesionista) {
                             let reader = new FileReader();
                             reader.onload = function(e) {
                                 data.constancia_base64 = e.target.result;
@@ -215,59 +292,91 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({
-                        title: '¿Estás seguro?',
-                        text: "¿Deseas guardar este cliente en la base de datos?",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#0066ff',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Sí, guardar',
-                        cancelButtonText: 'Cancelar'
-                    }).then((confirmResult) => {
-                        if (confirmResult.isConfirmed) {
-                            Livewire.dispatch('guardarCliente', [result.value]);
-                        }
-                    });
+                    Livewire.dispatch('guardarCliente', [result.value]);
                 }
             });
         }
 
-        function editarCliente(id, nombre, apellidos, es_estudiante, matricula, escuela, telefono, email, limite) {
+        function editarCliente(id, nombre, apellidos, es_estudiante, matricula, escuela, telefono, email, limite, es_profesionista, empresa, rfc) {
             Swal.fire({
                 title: 'Editar Cliente',
+                width: '900px',
                 html: `
                     <input id="cli_id" type="hidden" value="${id}">
-                    <input id="cli_nombre" class="swal2-input" placeholder="Nombre(s)" value="${nombre}" required>
-                    <input id="cli_apellidos" class="swal2-input" placeholder="Apellidos" value="${apellidos}" required>
-                    <div class="mt-3 text-left pl-4">
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" id="cli_estudiante" onchange="toggleMatricula()" class="form-checkbox text-vl-blue" ${es_estudiante ? 'checked' : ''}>
-                            <span>¿Es estudiante?</span>
-                        </label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left mt-4">
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Nombre(s)</label>
+                            <input id="cli_nombre" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre(s)" value="${nombre}" required>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Apellidos</label>
+                            <input id="cli_apellidos" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Apellidos" value="${apellidos}" required>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Teléfono</label>
+                            <input id="cli_telefono" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Teléfono" value="${telefono}">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Correo Electrónico</label>
+                            <input id="cli_email" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Correo Electrónico" value="${email}">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold mb-1 block">Límite Crédito $</label>
+                            <input id="cli_limite" type="number" step="0.01" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Límite de Crédito" value="${limite}">
+                        </div>
+                        <div class="flex items-center space-x-6 pt-6">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="cli_estudiante" onchange="toggleTipos()" class="form-checkbox text-blue-600 w-5 h-5 rounded" ${es_estudiante ? 'checked' : ''}>
+                                <span class="font-bold text-gray-700">¿Estudiante?</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="cli_profesionista" onchange="toggleTipos()" class="form-checkbox text-blue-600 w-5 h-5 rounded" ${es_profesionista ? 'checked' : ''}>
+                                <span class="font-bold text-gray-700">¿Profesionista?</span>
+                            </label>
+                        </div>
+                        
+                        <!-- Campos Estudiante -->
+                        <div id="estudiante_fields" class="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-blue-50 rounded-lg border border-blue-100" style="display:${es_estudiante ? 'grid' : 'none'};">
+                            <div>
+                                <label class="text-sm text-blue-800 font-bold mb-1 block">Matrícula</label>
+                                <input id="cli_matricula" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Matrícula" value="${matricula}">
+                            </div>
+                            <div>
+                                <label class="text-sm text-blue-800 font-bold mb-1 block">Universidad/Escuela</label>
+                                <select id="cli_escuela" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" onchange="toggleOtraEscuela()">
+                                    <option value="">Seleccione una Escuela</option>
+                                    <option value="UDLAP" ${escuela == 'UDLAP' ? 'selected' : ''}>UDLAP</option>
+                                    <option value="UVM" ${escuela == 'UVM' ? 'selected' : ''}>UVM</option>
+                                    <option value="UAMP" ${escuela == 'UAMP' ? 'selected' : ''}>UAMP</option>
+                                    <option value="Tec de Monterrey" ${escuela == 'Tec de Monterrey' ? 'selected' : ''}>Tec de Monterrey</option>
+                                    <option value="UNARTE" ${escuela == 'UNARTE' ? 'selected' : ''}>UNARTE</option>
+                                    <option value="BUAP" ${escuela == 'BUAP' ? 'selected' : ''}>BUAP</option>
+                                    <option value="UPAEP" ${escuela == 'UPAEP' ? 'selected' : ''}>UPAEP</option>
+                                    <option value="Otra" ${!['UDLAP','UVM','UAMP','Tec de Monterrey','UNARTE','BUAP','UPAEP',''].includes(escuela) ? 'selected' : ''}>Otra (Especificar)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-sm text-blue-800 font-bold mb-1 block ${!['UDLAP','UVM','UAMP','Tec de Monterrey','UNARTE','BUAP','UPAEP',''].includes(escuela) ? '' : 'invisible'}" id="lbl_otra_escuela">Otra Escuela</label>
+                                <input id="cli_otra_escuela" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Especifique la escuela" value="${!['UDLAP','UVM','UAMP','Tec de Monterrey','UNARTE','BUAP','UPAEP',''].includes(escuela) ? escuela : ''}" style="display:${!['UDLAP','UVM','UAMP','Tec de Monterrey','UNARTE','BUAP','UPAEP',''].includes(escuela) ? 'block' : 'none'};">
+                            </div>
+                        </div>
+
+                        <!-- Campos Profesionista -->
+                        <div id="profesionista_fields" class="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200" style="display:${es_profesionista ? 'grid' : 'none'};">
+                            <div>
+                                <label class="text-sm text-gray-800 font-bold mb-1 block">Empresa / Trabajo</label>
+                                <input id="cli_empresa" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-gray-500 focus:border-gray-500" placeholder="Nombre de empresa o 'Independiente'" value="${empresa}">
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-800 font-bold mb-1 block">RFC</label>
+                                <input id="cli_rfc" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-gray-500 focus:border-gray-500" placeholder="RFC" value="${rfc}">
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-800 font-bold mb-1 block">Reemplazar Constancia (Opcional)</label>
+                                <input type="file" id="cli_constancia" accept=".pdf,image/*" class="w-full text-sm mt-1">
+                            </div>
+                        </div>
                     </div>
-                    <div id="estudiante_fields" style="display:${es_estudiante ? 'block' : 'none'};" class="mt-2 text-left pl-4">
-                        <input id="cli_matricula" class="swal2-input !mt-0 w-full" placeholder="Matrícula" value="${matricula}">
-                        <select id="cli_escuela" class="swal2-select w-full mt-2" onchange="toggleOtraEscuela()">
-                            <option value="">Seleccione una Escuela</option>
-                            <option value="UDLAP" ${escuela == 'UDLAP' ? 'selected' : ''}>UDLAP</option>
-                            <option value="UVM" ${escuela == 'UVM' ? 'selected' : ''}>UVM</option>
-                            <option value="UAMP" ${escuela == 'UAMP' ? 'selected' : ''}>UAMP</option>
-                            <option value="Tec de Monterrey" ${escuela == 'Tec de Monterrey' ? 'selected' : ''}>Tec de Monterrey</option>
-                            <option value="UNARTE" ${escuela == 'UNARTE' ? 'selected' : ''}>UNARTE</option>
-                            <option value="BUAP" ${escuela == 'BUAP' ? 'selected' : ''}>BUAP</option>
-                            <option value="UPAEP" ${escuela == 'UPAEP' ? 'selected' : ''}>UPAEP</option>
-                            <option value="Otra" ${!['UDLAP','UVM','UAMP','Tec de Monterrey','UNARTE','BUAP','UPAEP',''].includes(escuela) ? 'selected' : ''}>Otra (Especificar)</option>
-                        </select>
-                        <input id="cli_otra_escuela" class="swal2-input w-full mt-2" placeholder="Especifique la escuela" value="${!['UDLAP','UVM','UAMP','Tec de Monterrey','UNARTE','BUAP','UPAEP',''].includes(escuela) ? escuela : ''}" style="display:${!['UDLAP','UVM','UAMP','Tec de Monterrey','UNARTE','BUAP','UPAEP',''].includes(escuela) ? 'block' : 'none'};">
-                    <div id="profesionista_fields" style="display:${es_estudiante ? 'none' : 'block'};" class="mt-2 text-left pl-4">
-                        <input id="cli_rfc" class="swal2-input !mt-0 w-full" placeholder="RFC (Para profesionistas)" value="">
-                        <label class="block mt-2 text-sm text-gray-600">Reemplazar Constancia de Situación Fiscal</label>
-                        <input type="file" id="cli_constancia" accept=".pdf,image/*" class="w-full text-sm mt-1">
-                    </div>
-                    <input id="cli_telefono" class="swal2-input" placeholder="Teléfono" value="${telefono}">
-                    <input id="cli_email" class="swal2-input" placeholder="Correo Electrónico" value="${email}">
-                    <input id="cli_limite" type="number" step="0.01" class="swal2-input" placeholder="Límite de Crédito Autorizado $" value="${limite}">
                 `,
                 focusConfirm: false,
                 showCancelButton: true,
@@ -286,6 +395,7 @@
                     }
 
                     const isEstudiante = document.getElementById('cli_estudiante').checked;
+                    const isProfesionista = document.getElementById('cli_profesionista').checked;
                     let constanciaFile = document.getElementById('cli_constancia').files[0];
 
                     return new Promise((resolve) => {
@@ -296,14 +406,16 @@
                             es_estudiante: isEstudiante,
                             matricula: isEstudiante ? document.getElementById('cli_matricula').value : null,
                             escuela: isEstudiante ? escuelaVal : null,
-                            rfc: !isEstudiante ? document.getElementById('cli_rfc').value : null,
+                            es_profesionista: isProfesionista,
+                            empresa: isProfesionista ? document.getElementById('cli_empresa').value : null,
+                            rfc: isProfesionista ? document.getElementById('cli_rfc').value : null,
                             telefono: document.getElementById('cli_telefono').value,
                             email: document.getElementById('cli_email').value,
                             limite_credito: document.getElementById('cli_limite').value || 0,
                             constancia_base64: null
                         };
 
-                        if (constanciaFile && !isEstudiante) {
+                        if (constanciaFile && isProfesionista) {
                             let reader = new FileReader();
                             reader.onload = function(e) {
                                 data.constancia_base64 = e.target.result;
@@ -388,31 +500,45 @@
             });
         }
 
-        function toggleMatricula() {
+        function toggleTipos() {
             const isEstudiante = document.getElementById('cli_estudiante').checked;
-            const fields = document.getElementById('estudiante_fields');
+            const isProfesionista = document.getElementById('cli_profesionista').checked;
+            
+            const estFields = document.getElementById('estudiante_fields');
             const profFields = document.getElementById('profesionista_fields');
+            
             if(isEstudiante) {
-                fields.style.display = 'block';
-                if(profFields) profFields.style.display = 'none';
+                estFields.style.display = 'grid';
             } else {
-                fields.style.display = 'none';
-                if(profFields) profFields.style.display = 'block';
+                estFields.style.display = 'none';
                 document.getElementById('cli_matricula').value = '';
                 document.getElementById('cli_escuela').value = '';
                 document.getElementById('cli_otra_escuela').value = '';
                 document.getElementById('cli_otra_escuela').style.display = 'none';
+                document.getElementById('lbl_otra_escuela').classList.add('invisible');
+            }
+
+            if(isProfesionista) {
+                profFields.style.display = 'grid';
+            } else {
+                profFields.style.display = 'none';
+                document.getElementById('cli_empresa').value = '';
+                document.getElementById('cli_rfc').value = '';
+                document.getElementById('cli_constancia').value = '';
             }
         }
 
         function toggleOtraEscuela() {
             const val = document.getElementById('cli_escuela').value;
             const otra = document.getElementById('cli_otra_escuela');
+            const lblOtra = document.getElementById('lbl_otra_escuela');
             if(val === 'Otra') {
                 otra.style.display = 'block';
+                lblOtra.classList.remove('invisible');
             } else {
                 otra.style.display = 'none';
                 otra.value = '';
+                lblOtra.classList.add('invisible');
             }
         }
     </script>

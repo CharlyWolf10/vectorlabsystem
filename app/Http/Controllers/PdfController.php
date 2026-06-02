@@ -39,9 +39,14 @@ class PdfController extends Controller
         return $pdf->download('directorio_proveedores_' . date('Y_m_d') . '.pdf');
     }
 
-    public function exportClientes()
+    public function exportClientes(Request $request)
     {
-        $clientes = \App\Models\Cliente::all();
+        if ($request->has('ids')) {
+            $ids = explode(',', $request->ids);
+            $clientes = \App\Models\Cliente::whereIn('id', $ids)->get();
+        } else {
+            $clientes = \App\Models\Cliente::all();
+        }
         
         $data = [
             'title' => 'Directorio de Clientes - Vector Lab',

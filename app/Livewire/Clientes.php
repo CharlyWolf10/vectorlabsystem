@@ -15,6 +15,11 @@ class Clientes extends Component
     public $search = '';
     public $selectedClientes = [];
     public $selectAll = false;
+    
+    public $filterEstudiante = '';
+    public $filterEscuela = '';
+    public $filterProfesionista = '';
+    public $filterEmpresa = '';
 
     public function mount()
     {
@@ -34,11 +39,27 @@ class Clientes extends Component
 
     public function render()
     {
-        $clientes = Cliente::where('nombre', 'like', '%' . $this->search . '%')
-                           ->orWhere('apellidos', 'like', '%' . $this->search . '%')
-                           ->orWhere('email', 'like', '%' . $this->search . '%')
-                           ->orWhere('matricula', 'like', '%' . $this->search . '%')
-                           ->get();
+        $query = Cliente::where(function($q) {
+                           $q->where('nombre', 'like', '%' . $this->search . '%')
+                             ->orWhere('apellidos', 'like', '%' . $this->search . '%')
+                             ->orWhere('email', 'like', '%' . $this->search . '%')
+                             ->orWhere('matricula', 'like', '%' . $this->search . '%');
+                       });
+
+        if ($this->filterEstudiante !== '') {
+            $query->where('es_estudiante', $this->filterEstudiante);
+        }
+        if ($this->filterEscuela !== '') {
+            $query->where('escuela', 'like', '%' . $this->filterEscuela . '%');
+        }
+        if ($this->filterProfesionista !== '') {
+            $query->where('es_profesionista', $this->filterProfesionista);
+        }
+        if ($this->filterEmpresa !== '') {
+            $query->where('empresa', 'like', '%' . $this->filterEmpresa . '%');
+        }
+
+        $clientes = $query->get();
 
         $cuentasPorCobrar = CuentaPorCobrar::with('cliente')->where('saldo_pendiente', '>', 0)->get();
 
@@ -69,6 +90,8 @@ class Clientes extends Component
             'es_estudiante' => $data['es_estudiante'],
             'matricula' => $data['es_estudiante'] ? $data['matricula'] : null,
             'escuela' => $data['es_estudiante'] ? ($data['escuela'] ?? null) : null,
+            'es_profesionista' => $data['es_profesionista'] ?? false,
+            'empresa' => ($data['es_profesionista'] ?? false) ? ($data['empresa'] ?? null) : null,
             'telefono' => $data['telefono'],
             'email' => $data['email'],
             'rfc' => !$data['es_estudiante'] ? ($data['rfc'] ?? null) : null,
@@ -94,6 +117,17 @@ class Clientes extends Component
             $cliente->delete();
             $this->dispatch('swal:success', ['title' => '¡Eliminado!', 'text' => 'Cliente eliminado de la base de datos.']);
         }
+    }
+
+    public function exportSelected()
+    {
+        if (empty($this->selectedClientes)) {
+            $this->dispatch('swal:error', ['title' => 'Atención', 'text' => 'Debes seleccionar al menos un cliente para exportar.']);
+            return;
+        }
+
+        $ids = implode(',', $this->selectedClientes);
+        return redirect()->route('clientes.export', ['ids' => $ids]);
     }
 
     #[On('crearCuentaPorCobrar')]

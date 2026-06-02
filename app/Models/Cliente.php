@@ -14,6 +14,8 @@ class Cliente extends Model
         'apellidos',
         'es_estudiante',
         'escuela',
+        'es_profesionista',
+        'empresa',
         'matricula',
         'email',
         'telefono',
