@@ -18,8 +18,8 @@
         #splash-screen {
             position: fixed;
             inset: 0;
-            background-color: #000000;
-            background-image: radial-gradient(circle at center, rgba(29, 78, 216, 0.25) 0%, rgba(15, 23, 42, 0.1) 45%, #000000 80%);
+            background-color: #020617; /* Fondo base azul muy oscuro */
+            background-image: radial-gradient(circle at center, rgba(37, 99, 235, 0.35) 0%, rgba(30, 58, 138, 0.5) 40%, #000000 90%);
             z-index: 50;
             display: flex;
             flex-direction: column;
@@ -250,6 +250,22 @@
             });
         }
 
+        let animationLoop = setInterval(() => {
+            const logo = document.querySelector('.logo-enter');
+            const btn = document.querySelector('.btn-enter');
+            
+            if (logo && btn && document.getElementById('splash-screen').style.display !== 'none') {
+                logo.style.animation = 'none';
+                btn.style.animation = 'none';
+                
+                // Trigger reflow
+                void logo.offsetWidth;
+                
+                logo.style.animation = 'logoFadeIn 1.5s ease-out forwards, flash 3s infinite 1.5s';
+                btn.style.animation = 'btnFadeIn 1s ease-out 1.5s forwards';
+            }
+        }, 20000);
+
         function startLogin() {
             const splash = document.getElementById('splash-screen');
             // Agrega la clase que hace el barrido (deslizar hacia arriba)
@@ -259,6 +275,7 @@
             setTimeout(() => {
                 splash.style.display = 'none';
                 if (typeof matrixInterval !== 'undefined') clearInterval(matrixInterval);
+                if (typeof animationLoop !== 'undefined') clearInterval(animationLoop);
                 document.getElementById('email').focus();
             }, 1000);
         }
@@ -282,6 +299,7 @@
             document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('splash-screen').style.display = 'none';
                 if (typeof matrixInterval !== 'undefined') clearInterval(matrixInterval);
+                if (typeof animationLoop !== 'undefined') clearInterval(animationLoop);
             });
         @endif
     </script>
