@@ -11,7 +11,18 @@ class Arqueos extends Component
 {
     public $arqueos;
     public $arqueoActivo;
+    
+    // Ventas
+    public $ventasEfectivo = 0;
+    public $ventasTarjeta = 0;
+    public $ventasTransferencia = 0;
     public $totalVentasHoy = 0;
+
+    // Compras / Gastos
+    public $comprasEfectivo = 0;
+    public $comprasTarjeta = 0;
+    public $comprasTransferencia = 0;
+    public $totalComprasHoy = 0;
 
     public function mount()
     {
@@ -21,28 +32,39 @@ class Arqueos extends Component
     public function loadData()
     {
         $this->arqueos = ArqueoCaja::with('user')->orderBy('created_at', 'desc')->get();
-        // Verificar si hay un arqueo abierto hoy (sin fecha de cierre o similar, simplificado aquí)
-        // Para simplificar, asumiremos que el último arqueo si no está marcado, es el de hoy.
-        // Simularemos las ventas del día
-        $this->totalVentasHoy = Venta::whereDate('created_at', today())->sum('total');
+        $this->arqueoActivo = ArqueoCaja::where('user_id', auth()->id())->whereNull('total_registrado_sistema')->latest()->first();
+
+        // Ventas del día por método de pago
+        $ventasHoy = Venta::whereDate('created_at', today())->get();
+        $this->ventasEfectivo = $ventasHoy->where('metodo_pago', 'efectivo')->sum('total');
+        $this->ventasTarjeta = $ventasHoy->whereIn('metodo_pago', ['tarjeta', 'tarjeta_credito', 'tarjeta_debito'])->sum('total');
+        $this->ventasTransferencia = $ventasHoy->where('metodo_pago', 'transferencia')->sum('total');
+        $this->totalVentasHoy = $ventasHoy->sum('total');
+
+        // Compras/Gastos del día por método de pago
+        $comprasHoy = \App\Models\Compra::whereDate('fecha', today())->get();
+        $this->comprasEfectivo = $comprasHoy->where('metodo_pago', 'efectivo')->sum('monto');
+        $this->comprasTarjeta = $comprasHoy->whereIn('metodo_pago', ['tarjeta', 'tarjeta_credito', 'tarjeta_debito'])->sum('monto');
+        $this->comprasTransferencia = $comprasHoy->where('metodo_pago', 'transferencia')->sum('monto');
+        $this->totalComprasHoy = $comprasHoy->sum('monto');
     }
 
     #[On('abrirCaja')]
     public function abrirCaja($fondo_inicial)
     {
+        // En este caso, fondo_inicial siempre será 500 según la regla de negocio solicitada
         ArqueoCaja::create([
             'user_id' => auth()->id(),
             'fondo_inicial' => $fondo_inicial,
         ]);
         $this->loadData();
-        $this->dispatch('swal:success', ['title' => 'Caja Abierta', 'text' => 'Se ha registrado la apertura de caja.']);
+        $this->dispatch('swal:success', ['title' => 'Caja Abierta', 'text' => 'Se ha registrado la apertura de caja con el conteo físico correcto.']);
     }
 
     #[On('cerrarCaja')]
     public function cerrarCaja($data)
     {
-        // Obtener el último arqueo del usuario que podría considerarse "abierto"
-        $arqueo = ArqueoCaja::where('user_id', auth()->id())->latest()->first();
+        $arqueo = $this->arqueoActivo;
         if ($arqueo) {
             $arqueo->monedas_50c = $data['m_50c'];
             $arqueo->monedas_1 = $data['m_1'];
@@ -57,10 +79,11 @@ class Arqueos extends Component
             
             $arqueo->total_calculado = $data['total'];
             
-            // Simulación: total registrado en sistema = fondo inicial + ventas en efectivo (asumiendo todas las ventas)
-            $totalSistema = $arqueo->fondo_inicial + $this->totalVentasHoy;
-            $arqueo->total_registrado_sistema = $totalSistema;
-            $arqueo->diferencia = $data['total'] - $totalSistema;
+            // Total Sistema Efectivo = Fondo Inicial + Ventas Efectivo - Compras Efectivo
+            $totalSistemaEfectivo = $arqueo->fondo_inicial + $this->ventasEfectivo - $this->comprasEfectivo;
+            
+            $arqueo->total_registrado_sistema = $totalSistemaEfectivo;
+            $arqueo->diferencia = $data['total'] - $totalSistemaEfectivo;
             
             $arqueo->save();
         }

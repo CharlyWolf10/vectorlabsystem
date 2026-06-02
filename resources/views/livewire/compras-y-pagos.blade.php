@@ -12,7 +12,7 @@
             <button onclick="nuevoProveedor()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow mr-2">
                 <i class="fas fa-plus mr-2"></i> Nuevo Proveedor
             </button>
-            <a href="/compras/export" target="_blank" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
+            <a href="{{ route('compras.export') }}" target="_blank" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
                 <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
             </a>
         </div>

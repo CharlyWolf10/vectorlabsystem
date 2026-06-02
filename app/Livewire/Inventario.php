@@ -30,11 +30,14 @@ class Inventario extends Component
 
     public function render()
     {
-        $productos = Producto::where('nombre', 'like', '%' . $this->search . '%')
+        $productos = Producto::with('proveedor')
+                             ->where('nombre', 'like', '%' . $this->search . '%')
                              ->orWhere('codigo', 'like', '%' . $this->search . '%')
                              ->get();
                              
-        return view('livewire.inventario', compact('productos'))->layout('layouts.app');
+        $proveedores = \App\Models\Proveedor::all();
+                             
+        return view('livewire.inventario', compact('productos', 'proveedores'))->layout('layouts.app');
     }
 
     #[On('guardarProducto')]
@@ -48,6 +51,7 @@ class Inventario extends Component
                 'precio_venta' => $data['precio_venta'],
                 'stock' => $data['stock'],
                 'stock_minimo' => $data['stock_minimo'],
+                'proveedor_id' => $data['proveedor_id'] ?? null,
             ]
         );
         $this->dispatch('swal:success', ['title' => '¡Éxito!', 'text' => 'Producto guardado correctamente.']);

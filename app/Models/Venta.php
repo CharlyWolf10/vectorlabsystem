@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Venta extends Model
 {
     protected $fillable = [
-        'cliente_id', 'user_id', 'total', 'metodo_pago'
+        'cliente_id', 'user_id', 'total', 'metodo_pago', 'descuento_monto', 'requiere_factura', 'pago_con', 'cambio'
     ];
 
     public function cliente()

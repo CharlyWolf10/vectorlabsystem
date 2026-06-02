@@ -29,6 +29,36 @@
 
             </div>
 
+            <!-- Resumen del Día Actual (Si hay caja abierta) -->
+            @if($arqueoActivo)
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8 border border-gray-200">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2"><i class="fas fa-chart-pie text-blue-500 mr-2"></i> Resumen del Turno Actual</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-blue-50 rounded p-4">
+                        <h4 class="font-bold text-blue-800 mb-2 border-b border-blue-200 pb-1">Ingresos (Ventas)</h4>
+                        <div class="flex justify-between text-sm"><span class="text-gray-600">Efectivo:</span> <strong>$ {{ number_format($ventasEfectivo, 2) }}</strong></div>
+                        <div class="flex justify-between text-sm"><span class="text-gray-600">Tarjeta:</span> <strong>$ {{ number_format($ventasTarjeta, 2) }}</strong></div>
+                        <div class="flex justify-between text-sm"><span class="text-gray-600">Transferencia:</span> <strong>$ {{ number_format($ventasTransferencia, 2) }}</strong></div>
+                        <div class="flex justify-between text-base font-bold mt-2 pt-2 border-t border-blue-200"><span class="text-blue-900">Total:</span> <span class="text-blue-900">$ {{ number_format($totalVentasHoy, 2) }}</span></div>
+                    </div>
+                    <div class="bg-red-50 rounded p-4">
+                        <h4 class="font-bold text-red-800 mb-2 border-b border-red-200 pb-1">Egresos (Compras/Gastos)</h4>
+                        <div class="flex justify-between text-sm"><span class="text-gray-600">Efectivo:</span> <strong>$ {{ number_format($comprasEfectivo, 2) }}</strong></div>
+                        <div class="flex justify-between text-sm"><span class="text-gray-600">Tarjeta:</span> <strong>$ {{ number_format($comprasTarjeta, 2) }}</strong></div>
+                        <div class="flex justify-between text-sm"><span class="text-gray-600">Transferencia:</span> <strong>$ {{ number_format($comprasTransferencia, 2) }}</strong></div>
+                        <div class="flex justify-between text-base font-bold mt-2 pt-2 border-t border-red-200"><span class="text-red-900">Total:</span> <span class="text-red-900">$ {{ number_format($totalComprasHoy, 2) }}</span></div>
+                    </div>
+                    <div class="bg-green-50 rounded p-4">
+                        <h4 class="font-bold text-green-800 mb-2 border-b border-green-200 pb-1">Caja (Efectivo Físico Esperado)</h4>
+                        <div class="flex justify-between text-sm"><span class="text-gray-600">Fondo Inicial:</span> <strong>$ {{ number_format($arqueoActivo->fondo_inicial, 2) }}</strong></div>
+                        <div class="flex justify-between text-sm"><span class="text-gray-600">+ Ventas Efectivo:</span> <strong class="text-green-600">$ {{ number_format($ventasEfectivo, 2) }}</strong></div>
+                        <div class="flex justify-between text-sm"><span class="text-gray-600">- Gastos Efectivo:</span> <strong class="text-red-600">$ {{ number_format($comprasEfectivo, 2) }}</strong></div>
+                        <div class="flex justify-between text-xl font-bold mt-2 pt-2 border-t border-green-200"><span class="text-green-900">Esperado:</span> <span class="text-green-900">$ {{ number_format($arqueoActivo->fondo_inicial + $ventasEfectivo - $comprasEfectivo, 2) }}</span></div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Historial de Arqueos -->
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">Historial de Turnos y Cortes</h3>
@@ -86,26 +116,61 @@
         function abrirCaja() {
             Swal.fire({
                 title: 'Apertura de Caja',
-                text: 'Ingresa el fondo inicial de cambio:',
-                input: 'number',
-                inputAttributes: {
-                    min: 0,
-                    step: 0.01
-                },
+                text: 'Ingresa el conteo físico de monedas y billetes (Debe sumar $500 exactos).',
+                width: 600,
+                html: `
+                    <div class="grid grid-cols-2 gap-4 text-left">
+                        <div>
+                            <h4 class="font-bold text-gray-700 mb-2">Billetes</h4>
+                            <div class="flex justify-between items-center mb-1"><label>$500</label> <input id="a_b_500" type="number" value="0" min="0" class="w-24 border rounded px-2" onchange="calcTotalAbrir()"></div>
+                            <div class="flex justify-between items-center mb-1"><label>$200</label> <input id="a_b_200" type="number" value="0" min="0" class="w-24 border rounded px-2" onchange="calcTotalAbrir()"></div>
+                            <div class="flex justify-between items-center mb-1"><label>$100</label> <input id="a_b_100" type="number" value="0" min="0" class="w-24 border rounded px-2" onchange="calcTotalAbrir()"></div>
+                            <div class="flex justify-between items-center mb-1"><label>$50</label> <input id="a_b_50" type="number" value="0" min="0" class="w-24 border rounded px-2" onchange="calcTotalAbrir()"></div>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-700 mb-2">Monedas</h4>
+                            <div class="flex justify-between items-center mb-1"><label>$20</label> <input id="a_m_20" type="number" value="0" min="0" class="w-24 border rounded px-2" onchange="calcTotalAbrir()"></div>
+                            <div class="flex justify-between items-center mb-1"><label>$10</label> <input id="a_m_10" type="number" value="0" min="0" class="w-24 border rounded px-2" onchange="calcTotalAbrir()"></div>
+                            <div class="flex justify-between items-center mb-1"><label>$5</label> <input id="a_m_5" type="number" value="0" min="0" class="w-24 border rounded px-2" onchange="calcTotalAbrir()"></div>
+                            <div class="flex justify-between items-center mb-1"><label>$2</label> <input id="a_m_2" type="number" value="0" min="0" class="w-24 border rounded px-2" onchange="calcTotalAbrir()"></div>
+                            <div class="flex justify-between items-center mb-1"><label>$1</label> <input id="a_m_1" type="number" value="0" min="0" class="w-24 border rounded px-2" onchange="calcTotalAbrir()"></div>
+                            <div class="flex justify-between items-center mb-1"><label>$0.50</label> <input id="a_m_50c" type="number" value="0" min="0" class="w-24 border rounded px-2" onchange="calcTotalAbrir()"></div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-300 text-right">
+                        <span class="text-xl">Total: </span>
+                        <span class="text-2xl font-bold text-blue-600" id="total_abrir">$0.00</span>
+                    </div>
+                `,
                 showCancelButton: true,
                 confirmButtonText: 'Continuar',
                 cancelButtonText: 'Cancelar',
-                preConfirm: (value) => {
-                    if(!value || value < 0) {
-                        Swal.showValidationMessage('Debes ingresar un fondo inicial válido (0 o mayor)');
+                preConfirm: () => {
+                    const b500 = parseInt(document.getElementById('a_b_500').value) || 0;
+                    const b200 = parseInt(document.getElementById('a_b_200').value) || 0;
+                    const b100 = parseInt(document.getElementById('a_b_100').value) || 0;
+                    const b50 = parseInt(document.getElementById('a_b_50').value) || 0;
+                    const m20 = parseInt(document.getElementById('a_m_20').value) || 0;
+                    const m10 = parseInt(document.getElementById('a_m_10').value) || 0;
+                    const m5 = parseInt(document.getElementById('a_m_5').value) || 0;
+                    const m2 = parseInt(document.getElementById('a_m_2').value) || 0;
+                    const m1 = parseInt(document.getElementById('a_m_1').value) || 0;
+                    const m50c = parseInt(document.getElementById('a_m_50c').value) || 0;
+                    
+                    const total = (b500 * 500) + (b200 * 200) + (b100 * 100) + (b50 * 50) +
+                                  (m20 * 20) + (m10 * 10) + (m5 * 5) + (m2 * 2) + (m1 * 1) + (m50c * 0.5);
+
+                    if(total !== 500) {
+                        Swal.showValidationMessage('El conteo inicial DEBE sumar exactamente $500 pesos. Tienes: $' + total);
+                        return false;
                     }
-                    return value;
+                    return total;
                 }
             }).then((result) => {
                 if(result.isConfirmed) {
                     Swal.fire({
                         title: '¿Estás seguro?',
-                        text: "Se registrará este monto como tu fondo inicial del turno.",
+                        text: "Se registrará este monto como tu fondo inicial del turno ($500).",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#0066ff',
@@ -208,6 +273,30 @@
                           (m20 * 20) + (m10 * 10) + (m5 * 5) + (m2 * 2) + (m1 * 1) + (m50c * 0.5);
             
             document.getElementById('total_arqueo').innerText = "$" + total.toFixed(2);
+        }
+
+        window.calcTotalAbrir = function() {
+            const b500 = parseInt(document.getElementById('a_b_500').value) || 0;
+            const b200 = parseInt(document.getElementById('a_b_200').value) || 0;
+            const b100 = parseInt(document.getElementById('a_b_100').value) || 0;
+            const b50 = parseInt(document.getElementById('a_b_50').value) || 0;
+            const m20 = parseInt(document.getElementById('a_m_20').value) || 0;
+            const m10 = parseInt(document.getElementById('a_m_10').value) || 0;
+            const m5 = parseInt(document.getElementById('a_m_5').value) || 0;
+            const m2 = parseInt(document.getElementById('a_m_2').value) || 0;
+            const m1 = parseInt(document.getElementById('a_m_1').value) || 0;
+            const m50c = parseInt(document.getElementById('a_m_50c').value) || 0;
+            
+            const total = (b500 * 500) + (b200 * 200) + (b100 * 100) + (b50 * 50) +
+                          (m20 * 20) + (m10 * 10) + (m5 * 5) + (m2 * 2) + (m1 * 1) + (m50c * 0.5);
+            
+            const display = document.getElementById('total_abrir');
+            display.innerText = "$" + total.toFixed(2);
+            if(total === 500) {
+                display.className = "text-2xl font-bold text-green-600";
+            } else {
+                display.className = "text-2xl font-bold text-red-600";
+            }
         }
     </script>
 </div>

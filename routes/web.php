@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/inventario', \App\Livewire\Inventario::class)->name('inventario');
     Route::get('/inventario/export', [PdfController::class, 'exportInventario'])->name('inventario.export');
     Route::get('/clientes', \App\Livewire\Clientes::class)->name('clientes');
+    Route::get('/clientes/export', [PdfController::class, 'exportClientes'])->name('clientes.export');
     Route::get('/punto-de-venta', \App\Livewire\PuntoDeVenta::class)->name('pos');
     Route::get('/arqueos', \App\Livewire\Arqueos::class)->name('arqueos');
     Route::get('/usuarios', \App\Livewire\Usuarios::class)->name('usuarios');

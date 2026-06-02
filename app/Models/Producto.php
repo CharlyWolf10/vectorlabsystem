@@ -12,6 +12,12 @@ class Producto extends Model
         'precio_compra',
         'precio_venta',
         'stock',
-        'stock_minimo'
+        'stock_minimo',
+        'proveedor_id'
     ];
+
+    public function proveedor()
+    {
+        return $this->belongsTo(Proveedor::class);
+    }
 }

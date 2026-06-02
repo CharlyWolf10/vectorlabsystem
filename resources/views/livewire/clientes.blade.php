@@ -9,10 +9,12 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="mb-6 flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-gray-800">Directorio de Clientes</h2>
-                <div>
                     <button onclick="nuevoCliente()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow mr-2">
                         <i class="fas fa-user-plus mr-2"></i> Nuevo Cliente
                     </button>
+                    <a href="{{ route('clientes.export') }}" target="_blank" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow mr-2">
+                        <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
+                    </a>
                     <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded shadow mr-2">
                         <i class="fas fa-envelope mr-2"></i> Campaña de Email
                     </button>
@@ -367,6 +369,7 @@
                     Livewire.dispatch('eliminarCuenta', [id]);
                 }
             });
+        }
 
         function eliminarCliente(id) {
             Swal.fire({

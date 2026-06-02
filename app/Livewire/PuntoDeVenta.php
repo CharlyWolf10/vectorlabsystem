@@ -86,18 +86,30 @@ class PuntoDeVenta extends Component
     }
 
     #[On('registrarVenta')]
-    public function registrarVenta($metodo, $clienteId = null, $descuento = 0)
+    public function registrarVenta($data)
     {
         if (empty($this->carrito)) return;
 
-        $totalConDescuento = $this->total - ($this->total * ($descuento / 100));
+        $metodo = $data['metodo'] ?? 'efectivo';
+        $clienteId = $data['clienteId'] ?? null;
+        $descuentoPorcentaje = $data['descuento'] ?? 0;
+        $requiereFactura = $data['requiere_factura'] ?? false;
+        $pagoCon = $data['pago_con'] ?? 0;
+        $cambio = $data['cambio'] ?? 0;
+
+        $descuentoMonto = $this->total * ($descuentoPorcentaje / 100);
+        $totalConDescuento = $this->total - $descuentoMonto;
 
         // Registrar la venta
-        Venta::create([
+        $venta = Venta::create([
             'cliente_id' => $clienteId ?: null,
             'user_id' => auth()->id(),
             'total' => $totalConDescuento,
-            'metodo_pago' => $metodo
+            'metodo_pago' => $metodo,
+            'descuento_monto' => $descuentoMonto,
+            'requiere_factura' => $requiereFactura,
+            'pago_con' => $pagoCon,
+            'cambio' => $cambio,
         ]);
 
         // Descontar stock
@@ -124,7 +136,20 @@ class PuntoDeVenta extends Component
             }
         }
 
+        $ticketData = [
+            'id' => $venta->id,
+            'subtotal' => $this->total,
+            'descuento_porcentaje' => $descuentoPorcentaje,
+            'descuento_monto' => $descuentoMonto,
+            'total' => $totalConDescuento,
+            'metodo' => $metodo,
+            'pago_con' => $pagoCon,
+            'cambio' => $cambio,
+            'factura' => $requiereFactura,
+            'fecha' => now()->format('d/m/Y H:i:s'),
+        ];
+
         $this->cancelarVenta();
-        $this->dispatch('swal:success', ['title' => '¡Venta Registrada!', 'text' => 'La venta se procesó correctamente.']);
+        $this->dispatch('swal:ticket', $ticketData);
     }
 }

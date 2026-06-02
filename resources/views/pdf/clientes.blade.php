@@ -14,7 +14,6 @@
         td { padding: 8px; border-bottom: 1px solid #ddd; }
         tr:nth-child(even) { background-color: #f9f9f9; }
         .text-right { text-align: right; }
-        .text-center { text-align: center; }
         .footer { position: absolute; bottom: 30px; width: 100%; text-align: center; font-size: 10px; color: #777; border-top: 1px solid #ddd; padding-top: 10px; }
     </style>
 </head>
@@ -29,23 +28,29 @@
     <table>
         <thead>
             <tr>
-                <th>Código</th>
-                <th>Producto</th>
-                <th>Proveedor</th>
-                <th class="text-right">Costo</th>
-                <th class="text-right">Precio</th>
-                <th class="text-center">Stock</th>
+                <th>Cliente</th>
+                <th>Tipo</th>
+                <th>Contacto</th>
+                <th class="text-right">Límite Crédito</th>
+                <th class="text-right">Saldo Deudor</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($productos as $producto)
+            @foreach($clientes as $cliente)
             <tr>
-                <td>{{ $producto->codigo }}</td>
-                <td><strong>{{ $producto->nombre }}</strong></td>
-                <td>{{ $producto->proveedor ? $producto->proveedor->nombre : 'N/A' }}</td>
-                <td class="text-right text-red">${{ number_format($producto->precio_compra, 2) }}</td>
-                <td class="text-right text-green">${{ number_format($producto->precio_venta, 2) }}</td>
-                <td class="text-center">{{ $producto->stock }}</td>
+                <td><strong>{{ $cliente->nombre }} {{ $cliente->apellidos }}</strong></td>
+                <td>
+                    @if($cliente->es_estudiante)
+                        Estudiante ({{ $cliente->escuela ?: 'Sin escuela' }})<br>
+                        Matrícula: {{ $cliente->matricula }}
+                    @else
+                        Profesionista<br>
+                        RFC: {{ $cliente->rfc ?: 'N/A' }}
+                    @endif
+                </td>
+                <td>{{ $cliente->telefono }}<br>{{ $cliente->email }}</td>
+                <td class="text-right">${{ number_format($cliente->limite_credito, 2) }}</td>
+                <td class="text-right" style="color: red; font-weight: bold;">${{ number_format($cliente->saldo_pendiente, 2) }}</td>
             </tr>
             @endforeach
         </tbody>
