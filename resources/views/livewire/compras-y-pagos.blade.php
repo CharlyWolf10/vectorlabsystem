@@ -159,12 +159,14 @@
                             <label class="text-sm text-gray-600 font-bold mb-1 block">RFC</label>
                             <input id="prov_rfc" type="text" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="RFC" oninput="this.value = this.value.toUpperCase()">
                         </div>
-                        <div class="md:col-span-2 mb-2">
+                        <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Correo Electrónico</label>
                             <input id="prov_email" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Correo Electrónico">
                         </div>
 
-                        <h4 class="mt-4 mb-2 font-bold text-gray-800 text-center md:col-span-2 border-b-2 border-gray-200 pb-2 uppercase tracking-wide">Datos Bancarios</h4>
+                        <div class="flex items-end mb-2">
+                            <h4 class="w-full font-bold text-gray-800 uppercase tracking-wide text-center border-b-2 border-gray-300 pb-1">Datos Bancarios</h4>
+                        </div>
                         
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Banco (Ej. BBVA)</label>
@@ -250,12 +252,14 @@
                             <label class="text-sm text-gray-600 font-bold mb-1 block">RFC</label>
                             <input id="prov_rfc" type="text" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="RFC" value="${rfc}" oninput="this.value = this.value.toUpperCase()">
                         </div>
-                        <div class="md:col-span-2 mb-2">
+                        <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Correo Electrónico</label>
                             <input id="prov_email" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Correo Electrónico" value="${email}">
                         </div>
 
-                        <h4 class="mt-4 mb-2 font-bold text-gray-800 text-center md:col-span-2 border-b-2 border-gray-200 pb-2 uppercase tracking-wide">Datos Bancarios</h4>
+                        <div class="flex items-end mb-2">
+                            <h4 class="w-full font-bold text-gray-800 uppercase tracking-wide text-center border-b-2 border-gray-300 pb-1">Datos Bancarios</h4>
+                        </div>
                         
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Banco (Ej. BBVA)</label>
