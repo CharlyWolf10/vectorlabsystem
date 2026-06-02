@@ -126,14 +126,18 @@ class Clientes extends Component
         }
     }
 
-    #[On('exportSelected')]
-    public function exportSelected()
+    public function attemptExport()
     {
         if (empty($this->selectedClientes)) {
             $this->dispatch('swal:error', ['title' => 'Atención', 'text' => 'Debes seleccionar al menos un cliente para exportar.']);
             return;
         }
+        $this->dispatch('pedirConfirmacionPdf');
+    }
 
+    #[On('exportSelected')]
+    public function exportSelected()
+    {
         $ids = implode(',', $this->selectedClientes);
         return redirect()->route('clientes.export', ['ids' => $ids]);
     }

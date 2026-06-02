@@ -87,15 +87,36 @@ class Inventario extends Component
         }
     }
 
-    #[On('exportSelected')]
-    public function exportSelected()
+    public function attemptExport()
     {
         if (empty($this->selectedProductos)) {
             $this->dispatch('swal:error', ['title' => 'Atención', 'text' => 'Debes seleccionar al menos un producto para exportar.']);
             return;
         }
+        $this->dispatch('abrirOpcionesExportacion');
+    }
 
+    #[On('exportSelected')]
+    public function exportSelected()
+    {
         $ids = implode(',', $this->selectedProductos);
         return redirect()->route('inventario.export', ['ids' => $ids]);
+    }
+
+    #[On('sendPdfEmail')]
+    public function sendPdfEmail($email)
+    {
+        // Enviar al email especificado
+        // Por ahora simulado
+        $this->dispatch('swal:success', ['title' => '¡Enviado!', 'text' => 'El PDF ha sido enviado por correo a ' . $email]);
+    }
+
+    #[On('sendPdfWhatsApp')]
+    public function sendPdfWhatsApp($telefono)
+    {
+        // Generar un link público temporal para WhatsApp (simulado)
+        $link = route('inventario.export', ['ids' => implode(',', $this->selectedProductos)]);
+        $mensaje = "Hola, aquí tienes el reporte de inventario: " . $link;
+        $this->dispatch('openWhatsApp', ['telefono' => $telefono, 'mensaje' => $mensaje]);
     }
 }

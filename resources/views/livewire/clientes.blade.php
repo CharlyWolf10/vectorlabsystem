@@ -13,7 +13,7 @@
                     <button onclick="nuevoCliente()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-user-plus mr-2"></i> Nuevo Cliente
                     </button>
-                    <button onclick="confirmarExportacion(this, 'exportSelected')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
+                    <button wire:click="attemptExport" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
                     </button>
                     <button wire:click="abrirModalEmail" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded shadow">
@@ -176,7 +176,7 @@
                 title: 'Nuevo Cliente',
                 width: '900px',
                 html: `
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left mt-4">
+                    <div class="flex flex-col gap-4 text-left mt-4">
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Nombre(s)</label>
                             <input id="cli_nombre" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre(s)" required>
@@ -197,7 +197,7 @@
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Límite Crédito $</label>
                             <input id="cli_limite" type="number" step="0.01" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Límite de Crédito">
                         </div>
-                        <div class="flex items-center space-x-6 pt-6">
+                        <div class="flex items-center space-x-6 pt-2 pb-2">
                             <label class="flex items-center space-x-2 cursor-pointer">
                                 <input type="checkbox" id="cli_estudiante" onchange="toggleTipos()" class="form-checkbox text-blue-600 w-5 h-5 rounded">
                                 <span class="font-bold text-gray-700">¿Estudiante?</span>
@@ -209,7 +209,7 @@
                         </div>
                         
                         <!-- Campos Estudiante -->
-                        <div id="estudiante_fields" class="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-blue-50 rounded-lg border border-blue-100" style="display:none;">
+                        <div id="estudiante_fields" class="flex flex-col gap-4 p-4 bg-blue-50 rounded-lg border border-blue-100" style="display:none;">
                             <div>
                                 <label class="text-sm text-blue-800 font-bold mb-1 block">Matrícula</label>
                                 <input id="cli_matricula" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Matrícula">
@@ -235,7 +235,7 @@
                         </div>
 
                         <!-- Campos Profesionista -->
-                        <div id="profesionista_fields" class="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200" style="display:none;">
+                        <div id="profesionista_fields" class="flex flex-col gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200" style="display:none;">
                             <div>
                                 <label class="text-sm text-gray-800 font-bold mb-1 block">Empresa / Trabajo</label>
                                 <input id="cli_empresa" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-gray-500 focus:border-gray-500" placeholder="Nombre de empresa o 'Independiente'">
@@ -312,7 +312,7 @@
                 width: '900px',
                 html: `
                     <input id="cli_id" type="hidden" value="${id}">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left mt-4">
+                    <div class="flex flex-col gap-4 text-left mt-4">
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Nombre(s)</label>
                             <input id="cli_nombre" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre(s)" value="${nombre}" required>
@@ -333,7 +333,7 @@
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Límite Crédito $</label>
                             <input id="cli_limite" type="number" step="0.01" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Límite de Crédito" value="${limite}">
                         </div>
-                        <div class="flex items-center space-x-6 pt-6">
+                        <div class="flex items-center space-x-6 pt-2 pb-2">
                             <label class="flex items-center space-x-2 cursor-pointer">
                                 <input type="checkbox" id="cli_estudiante" onchange="toggleTipos()" class="form-checkbox text-blue-600 w-5 h-5 rounded" ${es_estudiante ? 'checked' : ''}>
                                 <span class="font-bold text-gray-700">¿Estudiante?</span>
@@ -345,7 +345,7 @@
                         </div>
                         
                         <!-- Campos Estudiante -->
-                        <div id="estudiante_fields" class="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-blue-50 rounded-lg border border-blue-100" style="display:${es_estudiante ? 'grid' : 'none'};">
+                        <div id="estudiante_fields" class="flex flex-col gap-4 p-4 bg-blue-50 rounded-lg border border-blue-100" style="display:${es_estudiante ? 'flex' : 'none'};">
                             <div>
                                 <label class="text-sm text-blue-800 font-bold mb-1 block">Matrícula</label>
                                 <input id="cli_matricula" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Matrícula" value="${matricula}">
@@ -371,7 +371,7 @@
                         </div>
 
                         <!-- Campos Profesionista -->
-                        <div id="profesionista_fields" class="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200" style="display:${es_profesionista ? 'grid' : 'none'};">
+                        <div id="profesionista_fields" class="flex flex-col gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200" style="display:${es_profesionista ? 'flex' : 'none'};">
                             <div>
                                 <label class="text-sm text-gray-800 font-bold mb-1 block">Empresa / Trabajo</label>
                                 <input id="cli_empresa" oninput="this.value = this.value.toUpperCase()" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-gray-500 focus:border-gray-500" placeholder="Nombre de empresa o 'Independiente'" value="${empresa}">
@@ -667,7 +667,7 @@
             const url = `https://wa.me/${telLimpio}?text=${encodeURIComponent(mensaje)}`;
             window.open(url, '_blank');
         }
-        function confirmarExportacion(btn, metodo) {
+        window.addEventListener('pedirConfirmacionPdf', event => {
             Swal.fire({
                 title: '¿Exportar a PDF?',
                 text: '¿Estás seguro que quieres exportar los registros seleccionados a PDF?',
@@ -679,9 +679,9 @@
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch(metodo);
+                    Livewire.dispatch('exportSelected');
                 }
             });
-        }
+        });
     </script>
 </div>

@@ -10,7 +10,7 @@
             <div class="mb-6 flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-gray-800">Control de Inventario</h2>
                 <div>
-                    <button onclick="confirmarExportacion(this, 'exportSelected')" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded shadow">
+                    <button wire:click="attemptExport" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
                     </button>
                     <button onclick="nuevoProducto()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow">
@@ -117,7 +117,7 @@
                 title: 'Nuevo Producto',
                 width: '900px',
                 html: `
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left mt-4">
+                    <div class="flex flex-col gap-4 text-left mt-4">
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Código/SKU</label>
                             <input id="prod_codigo" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Código de Barras/SKU" required>
@@ -190,7 +190,7 @@
                 width: '900px',
                 html: `
                     <input id="prod_id" type="hidden" value="${id}">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left mt-4">
+                    <div class="flex flex-col gap-4 text-left mt-4">
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Código/SKU</label>
                             <input id="prod_codigo" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100" placeholder="Código de Barras/SKU" value="${codigo}" required readonly>
@@ -283,5 +283,62 @@
                 }
             });
         }
+        window.addEventListener('abrirOpcionesExportacion', event => {
+            Swal.fire({
+                title: 'Exportar Inventario',
+                text: '¿Cómo deseas exportar los registros seleccionados?',
+                icon: 'question',
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonColor: '#3085d6',
+                denyButtonColor: '#25D366',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '<i class="fas fa-file-pdf"></i> Descargar PDF',
+                denyButtonText: '<i class="fab fa-whatsapp"></i> WhatsApp',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('exportSelected');
+                } else if (result.isDenied) {
+                    Swal.fire({
+                        title: 'Enviar por WhatsApp',
+                        input: 'text',
+                        inputLabel: 'Número de Teléfono (con código de país)',
+                        inputPlaceholder: '+52 222 123 4567',
+                        showCancelButton: true,
+                        confirmButtonText: 'Enviar'
+                    }).then((phoneResult) => {
+                        if (phoneResult.isConfirmed && phoneResult.value) {
+                            Livewire.dispatch('sendPdfWhatsApp', [phoneResult.value]);
+                        }
+                    });
+                }
+            });
+            
+            // Botón extra para email
+            const swalPopup = Swal.getPopup();
+            const btnEmail = document.createElement('button');
+            btnEmail.innerHTML = '<i class="fas fa-envelope"></i> Correo';
+            btnEmail.className = 'swal2-confirm swal2-styled';
+            btnEmail.style.backgroundColor = '#ea4335';
+            btnEmail.onclick = () => {
+                Swal.close();
+                Swal.fire({
+                    title: 'Enviar por Correo',
+                    input: 'email',
+                    inputLabel: 'Dirección de correo electrónico',
+                    inputPlaceholder: 'correo@ejemplo.com',
+                    showCancelButton: true,
+                    confirmButtonText: 'Enviar',
+                    confirmButtonColor: '#ea4335'
+                }).then((emailResult) => {
+                    if (emailResult.isConfirmed && emailResult.value) {
+                        Livewire.dispatch('sendPdfEmail', [emailResult.value]);
+                    }
+                });
+            };
+            const actions = swalPopup.querySelector('.swal2-actions');
+            actions.insertBefore(btnEmail, actions.children[1]);
+        });
     </script>
 </div>

@@ -165,14 +165,18 @@ class ComprasYPagos extends Component
         }
     }
 
-    #[On('exportSelected')]
-    public function exportSelected()
+    public function attemptExport()
     {
         if (empty($this->selectedProveedores)) {
             $this->dispatch('swal:error', ['title' => 'Atención', 'text' => 'Debes seleccionar al menos un proveedor para exportar.']);
             return;
         }
+        $this->dispatch('pedirConfirmacionPdf');
+    }
 
+    #[On('exportSelected')]
+    public function exportSelected()
+    {
         $ids = implode(',', $this->selectedProveedores);
         return redirect()->route('compras.export', ['ids' => $ids]);
     }
