@@ -87,6 +87,7 @@ class Inventario extends Component
         }
     }
 
+    #[On('exportSelected')]
     public function exportSelected()
     {
         if (empty($this->selectedProductos)) {

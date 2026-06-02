@@ -12,7 +12,7 @@
             <button onclick="nuevoProveedor()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow mr-2">
                 <i class="fas fa-plus mr-2"></i> Nuevo Proveedor
             </button>
-            <button wire:click="exportSelected" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
+            <button onclick="confirmarExportacion(this, 'exportSelected')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
                 <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
             </button>
         </div>
@@ -141,13 +141,13 @@
             Swal.fire({
                 title: 'Nuevo Proveedor',
                 html: `
-                    <input id="prov_nombre" class="swal2-input" placeholder="Nombre completo o Empresa" required oninput="this.value = this.value.toUpperCase()">
+                    <input id="prov_nombre" class="swal2-input" placeholder="Nombre completo o Empresa" oninput="this.value = this.value.toUpperCase()" required>
                     <input id="prov_telefono" type="text" class="swal2-input" placeholder="Teléfono">
                     <input id="prov_direccion" type="text" class="swal2-input" placeholder="Dirección">
-                    <input id="prov_rfc" type="text" class="swal2-input" placeholder="RFC">
+                    <input id="prov_rfc" type="text" class="swal2-input" placeholder="RFC" oninput="this.value = this.value.toUpperCase()">
                     <input id="prov_email" class="swal2-input" placeholder="Correo Electrónico">
                     <h4 class="mt-4 font-bold text-gray-700 text-left px-2">Datos Bancarios</h4>
-                    <input id="prov_banco" class="swal2-input" placeholder="Banco (Ej. BBVA)">
+                    <input id="prov_banco" class="swal2-input" placeholder="Banco (Ej. BBVA)" oninput="this.value = this.value.toUpperCase()">
                     <input id="prov_titular" class="swal2-input" placeholder="Titular de la Cuenta" oninput="this.value = this.value.toUpperCase()">
                     <input id="prov_clabe" class="swal2-input" placeholder="CLABE Interbancaria">
                     <input id="prov_cuenta" class="swal2-input" placeholder="Número de Cuenta">
@@ -385,6 +385,23 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     Livewire.dispatch('crearCuentaPorPagar', [result.value.proveedorId, result.value.monto]);
+                }
+            });
+        }
+
+        function confirmarExportacion(btn, metodo) {
+            Swal.fire({
+                title: '¿Exportar a PDF?',
+                text: '¿Estás seguro que quieres exportar los registros seleccionados a PDF?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, exportar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch(metodo);
                 }
             });
         }

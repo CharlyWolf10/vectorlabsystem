@@ -10,11 +10,11 @@
             <div class="mb-6 flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-gray-800">Control de Inventario</h2>
                 <div>
-                    <button onclick="nuevoProducto()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow mr-2">
-                        <i class="fas fa-plus mr-2"></i> Nuevo Producto
-                    </button>
-                    <button wire:click="exportSelected" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
+                    <button onclick="confirmarExportacion(this, 'exportSelected')" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
+                    </button>
+                    <button onclick="nuevoProducto()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow">
+                        <i class="fas fa-plus mr-2"></i> Nuevo Producto
                     </button>
                 </div>
             </div>
@@ -124,7 +124,7 @@
                         </div>
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Nombre</label>
-                            <input id="prod_nombre" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre del Producto" required>
+                            <input id="prod_nombre" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre del Producto" oninput="this.value = this.value.toUpperCase()" required>
                         </div>
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Proveedor</label>
@@ -197,7 +197,7 @@
                         </div>
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Nombre</label>
-                            <input id="prod_nombre" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre del Producto" value="${nombre}" required>
+                            <input id="prod_nombre" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre del Producto" oninput="this.value = this.value.toUpperCase()" value="${nombre}" required>
                         </div>
                         <div>
                             <label class="text-sm text-gray-600 font-bold mb-1 block">Proveedor</label>
@@ -264,6 +264,22 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     Livewire.dispatch('eliminarProducto', [id]);
+                }
+            });
+        }
+        function confirmarExportacion(btn, metodo) {
+            Swal.fire({
+                title: '¿Exportar a PDF?',
+                text: '¿Estás seguro que quieres exportar los registros seleccionados a PDF?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, exportar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch(metodo);
                 }
             });
         }

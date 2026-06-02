@@ -126,6 +126,7 @@ class Clientes extends Component
         }
     }
 
+    #[On('exportSelected')]
     public function exportSelected()
     {
         if (empty($this->selectedClientes)) {

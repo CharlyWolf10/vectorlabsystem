@@ -13,7 +13,7 @@
                     <button onclick="nuevoCliente()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-user-plus mr-2"></i> Nuevo Cliente
                     </button>
-                    <button wire:click="exportSelected" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
+                    <button onclick="confirmarExportacion(this, 'exportSelected')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
                     </button>
                     <button wire:click="abrirModalEmail" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded shadow">
@@ -666,6 +666,22 @@
             }
             const url = `https://wa.me/${telLimpio}?text=${encodeURIComponent(mensaje)}`;
             window.open(url, '_blank');
+        }
+        function confirmarExportacion(btn, metodo) {
+            Swal.fire({
+                title: '¿Exportar a PDF?',
+                text: '¿Estás seguro que quieres exportar los registros seleccionados a PDF?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, exportar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch(metodo);
+                }
+            });
         }
     </script>
 </div>

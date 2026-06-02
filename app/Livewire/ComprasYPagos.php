@@ -165,6 +165,7 @@ class ComprasYPagos extends Component
         }
     }
 
+    #[On('exportSelected')]
     public function exportSelected()
     {
         if (empty($this->selectedProveedores)) {
