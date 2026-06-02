@@ -115,7 +115,7 @@
 
         <div class="z-10 flex flex-col items-center">
             <!-- Requested VectorLab.png -->
-            <img src="https://charlywolf10.github.io/VectorLab/assets/img/VectorLab.png" alt="Vector Lab Logo" class="w-64 md:w-[24rem] h-auto animated-logo object-contain">
+            <img src="https://charlywolf10.github.io/VectorLab/assets/img/VectorLab.png" alt="Vector Lab Logo" class="w-80 md:w-[32rem] lg:w-[40rem] max-w-[90%] h-auto animated-logo object-contain">
         </div>
     </div>
 
