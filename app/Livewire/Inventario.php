@@ -11,6 +11,8 @@ class Inventario extends Component
     public $search = '';
     public $selectedProductos = [];
     public $selectAll = false;
+    public $filterProveedor = '';
+    public $filterFaltantes = false;
 
     public function mount()
     {
@@ -37,10 +39,21 @@ class Inventario extends Component
 
     public function render()
     {
-        $productos = Producto::with('proveedor')
-                             ->where('nombre', 'like', '%' . $this->search . '%')
-                             ->orWhere('codigo', 'like', '%' . $this->search . '%')
-                             ->get();
+        $query = Producto::with('proveedor')
+                         ->where(function($q) {
+                             $q->where('nombre', 'like', '%' . $this->search . '%')
+                               ->orWhere('codigo', 'like', '%' . $this->search . '%');
+                         });
+                         
+        if ($this->filterProveedor) {
+            $query->where('proveedor_id', $this->filterProveedor);
+        }
+
+        if ($this->filterFaltantes) {
+            $query->whereColumn('stock', '<=', 'stock_minimo');
+        }
+
+        $productos = $query->get();
                              
         $proveedores = \App\Models\Proveedor::all();
                              
@@ -74,5 +87,14 @@ class Inventario extends Component
         }
     }
 
-    // Render handled above
+    public function exportSelected()
+    {
+        if (empty($this->selectedProductos)) {
+            $this->dispatch('swal:error', ['title' => 'Atención', 'text' => 'Debes seleccionar al menos un producto para exportar.']);
+            return;
+        }
+
+        $ids = implode(',', $this->selectedProductos);
+        return redirect()->route('inventario.export', ['ids' => $ids]);
+    }
 }
