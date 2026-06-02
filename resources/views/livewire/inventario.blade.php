@@ -107,7 +107,7 @@
         });
 
         function nuevoProducto() {
-            let proveedoresHtml = '<select id="prod_proveedor" class="swal2-select w-full max-w-[200px] mt-2 mb-2"><option value="">Seleccione Proveedor (Opcional)</option>';
+            let proveedoresHtml = '<select id="prod_proveedor" class="swal2-select !m-0 w-full" style="width: 100%;"><option value="">Seleccione Proveedor (Opcional)</option>';
             @foreach($proveedores as $prov)
                 proveedoresHtml += `<option value="{{ $prov->id }}">{{ $prov->nombre }}</option>`;
             @endforeach
@@ -115,14 +115,38 @@
 
             Swal.fire({
                 title: 'Nuevo Producto',
+                width: '700px',
                 html: `
-                    <input id="prod_codigo" class="swal2-input" placeholder="Código de Barras/SKU" required>
-                    <input id="prod_nombre" class="swal2-input" placeholder="Nombre del Producto" required>
-                    ${proveedoresHtml}
-                    <input id="prod_compra" type="number" step="0.01" class="swal2-input" placeholder="Precio de Compra (Costo) $">
-                    <input id="prod_venta" type="number" step="0.01" class="swal2-input" placeholder="Precio de Venta (Público) $">
-                    <input id="prod_stock" type="number" class="swal2-input" placeholder="Cantidad en Stock">
-                    <input id="prod_minimo" type="number" class="swal2-input" placeholder="Stock Mínimo (Alerta)">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-4">
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold">Código/SKU</label>
+                            <input id="prod_codigo" class="swal2-input !m-0 w-full" style="width: 100%;" placeholder="Código de Barras/SKU" required>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold">Nombre</label>
+                            <input id="prod_nombre" class="swal2-input !m-0 w-full" style="width: 100%;" placeholder="Nombre del Producto" required>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="text-sm text-gray-600 font-bold">Proveedor</label>
+                            ${proveedoresHtml}
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold">Costo</label>
+                            <input id="prod_compra" type="number" step="0.01" class="swal2-input !m-0 w-full" style="width: 100%;" placeholder="Precio de Compra $">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold">Precio Público</label>
+                            <input id="prod_venta" type="number" step="0.01" class="swal2-input !m-0 w-full" style="width: 100%;" placeholder="Precio de Venta $">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold">Stock Actual</label>
+                            <input id="prod_stock" type="number" class="swal2-input !m-0 w-full" style="width: 100%;" placeholder="Cantidad en Stock">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold">Stock Mínimo</label>
+                            <input id="prod_minimo" type="number" class="swal2-input !m-0 w-full" style="width: 100%;" placeholder="Stock Mínimo (Alerta)">
+                        </div>
+                    </div>
                 `,
                 focusConfirm: false,
                 showCancelButton: true,
@@ -155,7 +179,7 @@
         }
 
         function editarProducto(id, codigo, nombre, compra, venta, stock, minimo, proveedor_id) {
-            let proveedoresHtml = '<select id="prod_proveedor" class="swal2-select w-full max-w-[200px] mt-2 mb-2"><option value="">Seleccione Proveedor (Opcional)</option>';
+            let proveedoresHtml = '<select id="prod_proveedor" class="swal2-select !m-0 w-full" style="width: 100%;"><option value="">Seleccione Proveedor (Opcional)</option>';
             @foreach($proveedores as $prov)
                 proveedoresHtml += `<option value="{{ $prov->id }}" ${proveedor_id == '{{ $prov->id }}' ? 'selected' : ''}>{{ $prov->nombre }}</option>`;
             @endforeach
@@ -163,15 +187,39 @@
 
             Swal.fire({
                 title: 'Editar Producto',
+                width: '700px',
                 html: `
                     <input id="prod_id" type="hidden" value="${id}">
-                    <input id="prod_codigo" class="swal2-input" placeholder="Código de Barras/SKU" value="${codigo}" required readonly>
-                    <input id="prod_nombre" class="swal2-input" placeholder="Nombre del Producto" value="${nombre}" required>
-                    ${proveedoresHtml}
-                    <input id="prod_compra" type="number" step="0.01" class="swal2-input" placeholder="Precio de Compra (Costo) $" value="${compra}">
-                    <input id="prod_venta" type="number" step="0.01" class="swal2-input" placeholder="Precio de Venta (Público) $" value="${venta}">
-                    <input id="prod_stock" type="number" class="swal2-input" placeholder="Cantidad en Stock" value="${stock}">
-                    <input id="prod_minimo" type="number" class="swal2-input" placeholder="Stock Mínimo (Alerta)" value="${minimo}">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-4">
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold">Código/SKU</label>
+                            <input id="prod_codigo" class="swal2-input !m-0 w-full" style="width: 100%;" placeholder="Código de Barras/SKU" value="${codigo}" required readonly>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold">Nombre</label>
+                            <input id="prod_nombre" class="swal2-input !m-0 w-full" style="width: 100%;" placeholder="Nombre del Producto" value="${nombre}" required>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="text-sm text-gray-600 font-bold">Proveedor</label>
+                            ${proveedoresHtml}
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold">Costo</label>
+                            <input id="prod_compra" type="number" step="0.01" class="swal2-input !m-0 w-full" style="width: 100%;" placeholder="Precio de Compra $" value="${compra}">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold">Precio Público</label>
+                            <input id="prod_venta" type="number" step="0.01" class="swal2-input !m-0 w-full" style="width: 100%;" placeholder="Precio de Venta $" value="${venta}">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold">Stock Actual</label>
+                            <input id="prod_stock" type="number" class="swal2-input !m-0 w-full" style="width: 100%;" placeholder="Cantidad en Stock" value="${stock}">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 font-bold">Stock Mínimo</label>
+                            <input id="prod_minimo" type="number" class="swal2-input !m-0 w-full" style="width: 100%;" placeholder="Stock Mínimo (Alerta)" value="${minimo}">
+                        </div>
+                    </div>
                 `,
                 focusConfirm: false,
                 showCancelButton: true,
