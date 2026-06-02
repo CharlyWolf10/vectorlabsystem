@@ -86,15 +86,17 @@ class PuntoDeVenta extends Component
     }
 
     #[On('registrarVenta')]
-    public function registrarVenta($metodo, $clienteId = null)
+    public function registrarVenta($metodo, $clienteId = null, $descuento = 0)
     {
         if (empty($this->carrito)) return;
+
+        $totalConDescuento = $this->total - ($this->total * ($descuento / 100));
 
         // Registrar la venta
         Venta::create([
             'cliente_id' => $clienteId ?: null,
             'user_id' => auth()->id(),
-            'total' => $this->total,
+            'total' => $totalConDescuento,
             'metodo_pago' => $metodo
         ]);
 
@@ -107,11 +109,17 @@ class PuntoDeVenta extends Component
             }
         }
 
-        // Si es crédito, actualizar el saldo del cliente
+        // Si es crédito, crear la cuenta por cobrar
         if ($metodo === 'credito' && $clienteId) {
             $cliente = Cliente::find($clienteId);
             if ($cliente) {
-                $cliente->saldo_pendiente += $this->total;
+                \App\Models\CuentaPorCobrar::create([
+                    'cliente_id' => $clienteId,
+                    'monto_total' => $totalConDescuento,
+                    'saldo_pendiente' => $totalConDescuento,
+                    'estado' => 'pendiente'
+                ]);
+                $cliente->saldo_pendiente += $totalConDescuento;
                 $cliente->save();
             }
         }

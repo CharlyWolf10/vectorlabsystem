@@ -13,6 +13,8 @@
         th { background-color: #0056b3; color: white; padding: 8px; text-align: left; }
         td { padding: 8px; border-bottom: 1px solid #ddd; }
         tr:nth-child(even) { background-color: #f9f9f9; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
         .footer { position: absolute; bottom: 30px; width: 100%; text-align: center; font-size: 10px; color: #777; border-top: 1px solid #ddd; padding-top: 10px; }
     </style>
 </head>
@@ -27,23 +29,21 @@
     <table>
         <thead>
             <tr>
-                <th>Proveedor</th>
-                <th>Teléfono</th>
-                <th>Email</th>
-                <th>Banco</th>
-                <th>Cuenta</th>
-                <th>CLABE</th>
+                <th>Código</th>
+                <th>Producto</th>
+                <th class="text-center">Stock</th>
+                <th class="text-right">Costo</th>
+                <th class="text-right">Precio de Venta</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($proveedores as $proveedor)
+            @foreach($productos as $producto)
             <tr>
-                <td><strong>{{ $proveedor->nombre }}</strong></td>
-                <td>{{ $proveedor->telefono }}</td>
-                <td>{{ $proveedor->email }}</td>
-                <td>{{ $proveedor->banco }}</td>
-                <td>{{ $proveedor->num_cuenta }}</td>
-                <td>{{ $proveedor->clabe }}</td>
+                <td>{{ $producto->codigo }}</td>
+                <td>{{ $producto->nombre }}</td>
+                <td class="text-center">{{ $producto->stock }}</td>
+                <td class="text-right">${{ number_format($producto->precio_costo, 2) }}</td>
+                <td class="text-right">${{ number_format($producto->precio_venta, 2) }}</td>
             </tr>
             @endforeach
         </tbody>

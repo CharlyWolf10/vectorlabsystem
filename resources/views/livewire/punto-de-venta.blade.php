@@ -122,8 +122,15 @@
             Swal.fire({
                 title: 'Cobrar Venta',
                 html: `
-                    <h2 class="text-3xl text-green-600 font-bold mb-4">$${total.toFixed(2)}</h2>
-                    <select id="metodo_cobro" class="swal2-input mb-4"><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta</option><option value="credito">Crédito a Cliente</option></select>
+                    <h2 id="total_display" class="text-3xl text-green-600 font-bold mb-4">$${total.toFixed(2)}</h2>
+                    <select id="metodo_cobro" class="swal2-input mb-4"><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta</option><option value="transferencia">Transferencia</option><option value="credito">Crédito a Cliente</option></select>
+                    <select id="descuento" class="swal2-input mb-4" onchange="actualizarTotalCobro(${total})">
+                        <option value="0">Sin Descuento (0%)</option>
+                        <option value="5">Descuento 5%</option>
+                        <option value="10">Descuento 10%</option>
+                        <option value="15">Descuento 15%</option>
+                        <option value="20">Descuento 20%</option>
+                    </select>
                     <input id="pago_con" type="number" step="0.01" class="swal2-input" placeholder="Pagó con (Ej: 500)">
                 `,
                 showCancelButton: true,
@@ -133,19 +140,26 @@
                 preConfirm: () => {
                     const metodo = document.getElementById('metodo_cobro').value;
                     const clienteId = document.getElementById('select_cliente_venta').value;
+                    const descuento = document.getElementById('descuento').value;
                     
                     if (metodo === 'credito' && !clienteId) {
                         Swal.showValidationMessage('Debe seleccionar un cliente para vender a crédito');
                         return false;
                     }
                     
-                    return { metodo: metodo, clienteId: clienteId };
+                    return { metodo: metodo, clienteId: clienteId, descuento: descuento };
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch('registrarVenta', [result.value.metodo, result.value.clienteId]);
+                    Livewire.dispatch('registrarVenta', [result.value.metodo, result.value.clienteId, result.value.descuento]);
                 }
             });
+        }
+
+        function actualizarTotalCobro(totalBase) {
+            const desc = document.getElementById('descuento').value;
+            const nuevoTotal = totalBase - (totalBase * (desc / 100));
+            document.getElementById('total_display').innerText = '$' + nuevoTotal.toFixed(2);
         }
     </script>
 </div>

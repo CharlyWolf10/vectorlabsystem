@@ -38,7 +38,7 @@
                     <table class="min-w-full bg-white">
                         <thead class="bg-gray-100 text-gray-600">
                             <tr>
-                                <th class="py-2 px-4 text-center w-12"><input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></th>
+                                <th class="py-2 px-4 text-center w-12"><input type="checkbox" wire:model.live="selectAll" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></th>
                                 <th class="py-2 px-4 text-left">Nombre Completo</th>
                                 <th class="py-2 px-4 text-left">Contacto</th>
                                 <th class="py-2 px-4 text-right">Límite Crédito</th>
@@ -61,6 +61,12 @@
                                         @endif
                                     @else
                                         <br><span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">Profesionista</span>
+                                        @if($cliente->rfc)
+                                            <br><span class="text-xs text-gray-500 font-mono">RFC: {{ $cliente->rfc }}</span>
+                                        @endif
+                                        @if($cliente->constancia_fiscal)
+                                            <br><a href="{{ asset('storage/' . $cliente->constancia_fiscal) }}" target="_blank" class="text-xs text-blue-500 hover:underline"><i class="fas fa-file-pdf"></i> Constancia</a>
+                                        @endif
                                     @endif
                                 </td>
                                 <td class="py-2 px-4 text-sm">{{ $cliente->telefono }} <br> <span class="text-gray-500">{{ $cliente->email }}</span></td>
@@ -78,6 +84,39 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- Panel de Cuentas por Cobrar -->
+            <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+                <div class="flex justify-between items-center border-b pb-2 mb-4">
+                    <h3 class="text-lg font-semibold text-red-600">Cuentas por Cobrar Activas (Crédito a Clientes)</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @forelse($cuentasPorCobrar as $cuenta)
+                    <div class="border rounded p-4 shadow-sm relative">
+                        <div class="absolute top-2 right-2 flex space-x-2">
+                            <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded">
+                                {{ strtoupper($cuenta->estado) }}
+                            </span>
+                            <button onclick="eliminarCuenta({{ $cuenta->id }})" class="text-red-500 hover:text-red-700 bg-white rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
+                                <i class="fas fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                        <h4 class="font-bold text-gray-800">{{ $cuenta->cliente->nombre }} {{ $cuenta->cliente->apellidos }}</h4>
+                        <p class="text-sm text-gray-600 mt-1">Crédito Original: ${{ number_format($cuenta->monto_total, 2) }}</p>
+                        <p class="text-lg font-bold text-red-500 mt-2">Saldo a Cobrar: ${{ number_format($cuenta->saldo_pendiente, 2) }}</p>
+                        <div class="mt-4">
+                            <button onclick="confirmarAbono({{ $cuenta->id }}, '{{ $cuenta->cliente->nombre }}', {{ $cuenta->saldo_pendiente }})" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded">
+                                Registrar Abono/Cobro
+                            </button>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="col-span-full py-4 text-center text-gray-500">
+                        No hay créditos pendientes registrados.
+                    </div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -119,6 +158,11 @@
                         </select>
                         <input id="cli_otra_escuela" class="swal2-input w-full mt-2" placeholder="Especifique la escuela" style="display:none;">
                     </div>
+                    <div id="profesionista_fields" class="mt-2 text-left pl-4">
+                        <input id="cli_rfc" class="swal2-input !mt-0 w-full" placeholder="RFC (Para profesionistas)">
+                        <label class="block mt-2 text-sm text-gray-600">Constancia de Situación Fiscal (Opcional, PDF o Imagen)</label>
+                        <input type="file" id="cli_constancia" accept=".pdf,image/*" class="w-full text-sm mt-1">
+                    </div>
                     <input id="cli_telefono" class="swal2-input" placeholder="Teléfono">
                     <input id="cli_email" class="swal2-input" placeholder="Correo Electrónico">
                     <input id="cli_limite" type="number" step="0.01" class="swal2-input" placeholder="Límite de Crédito Autorizado $">
@@ -139,16 +183,33 @@
                         escuelaVal = document.getElementById('cli_otra_escuela').value;
                     }
 
-                    return {
-                        nombre: nombre,
-                        apellidos: apellidos,
-                        es_estudiante: document.getElementById('cli_estudiante').checked,
-                        matricula: document.getElementById('cli_matricula').value,
-                        escuela: escuelaVal,
-                        telefono: document.getElementById('cli_telefono').value,
-                        email: document.getElementById('cli_email').value,
-                        limite_credito: document.getElementById('cli_limite').value || 0,
-                    }
+                    let constanciaFile = document.getElementById('cli_constancia').files[0];
+
+                    return new Promise((resolve) => {
+                        let data = {
+                            nombre: nombre,
+                            apellidos: apellidos,
+                            es_estudiante: isEstudiante,
+                            matricula: isEstudiante ? document.getElementById('cli_matricula').value : null,
+                            escuela: isEstudiante ? escuelaVal : null,
+                            rfc: !isEstudiante ? document.getElementById('cli_rfc').value : null,
+                            telefono: document.getElementById('cli_telefono').value,
+                            email: document.getElementById('cli_email').value,
+                            limite_credito: document.getElementById('cli_limite').value || 0,
+                            constancia_base64: null
+                        };
+
+                        if (constanciaFile && !isEstudiante) {
+                            let reader = new FileReader();
+                            reader.onload = function(e) {
+                                data.constancia_base64 = e.target.result;
+                                resolve(data);
+                            };
+                            reader.readAsDataURL(constanciaFile);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -197,6 +258,10 @@
                             <option value="Otra" ${!['UDLAP','UVM','UAMP','Tec de Monterrey','UNARTE','BUAP','UPAEP',''].includes(escuela) ? 'selected' : ''}>Otra (Especificar)</option>
                         </select>
                         <input id="cli_otra_escuela" class="swal2-input w-full mt-2" placeholder="Especifique la escuela" value="${!['UDLAP','UVM','UAMP','Tec de Monterrey','UNARTE','BUAP','UPAEP',''].includes(escuela) ? escuela : ''}" style="display:${!['UDLAP','UVM','UAMP','Tec de Monterrey','UNARTE','BUAP','UPAEP',''].includes(escuela) ? 'block' : 'none'};">
+                    <div id="profesionista_fields" style="display:${es_estudiante ? 'none' : 'block'};" class="mt-2 text-left pl-4">
+                        <input id="cli_rfc" class="swal2-input !mt-0 w-full" placeholder="RFC (Para profesionistas)" value="">
+                        <label class="block mt-2 text-sm text-gray-600">Reemplazar Constancia de Situación Fiscal</label>
+                        <input type="file" id="cli_constancia" accept=".pdf,image/*" class="w-full text-sm mt-1">
                     </div>
                     <input id="cli_telefono" class="swal2-input" placeholder="Teléfono" value="${telefono}">
                     <input id="cli_email" class="swal2-input" placeholder="Correo Electrónico" value="${email}">
@@ -218,17 +283,35 @@
                         escuelaVal = document.getElementById('cli_otra_escuela').value;
                     }
 
-                    return {
-                        id: document.getElementById('cli_id').value,
-                        nombre: nombre,
-                        apellidos: apellidos,
-                        es_estudiante: document.getElementById('cli_estudiante').checked,
-                        matricula: document.getElementById('cli_matricula').value,
-                        escuela: escuelaVal,
-                        telefono: document.getElementById('cli_telefono').value,
-                        email: document.getElementById('cli_email').value,
-                        limite_credito: document.getElementById('cli_limite').value || 0,
-                    }
+                    const isEstudiante = document.getElementById('cli_estudiante').checked;
+                    let constanciaFile = document.getElementById('cli_constancia').files[0];
+
+                    return new Promise((resolve) => {
+                        let data = {
+                            id: document.getElementById('cli_id').value,
+                            nombre: nombre,
+                            apellidos: apellidos,
+                            es_estudiante: isEstudiante,
+                            matricula: isEstudiante ? document.getElementById('cli_matricula').value : null,
+                            escuela: isEstudiante ? escuelaVal : null,
+                            rfc: !isEstudiante ? document.getElementById('cli_rfc').value : null,
+                            telefono: document.getElementById('cli_telefono').value,
+                            email: document.getElementById('cli_email').value,
+                            limite_credito: document.getElementById('cli_limite').value || 0,
+                            constancia_base64: null
+                        };
+
+                        if (constanciaFile && !isEstudiante) {
+                            let reader = new FileReader();
+                            reader.onload = function(e) {
+                                data.constancia_base64 = e.target.result;
+                                resolve(data);
+                            };
+                            reader.readAsDataURL(constanciaFile);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -236,6 +319,54 @@
                 }
             });
         }
+
+        function confirmarAbono(cuentaId, cliente, saldoPendiente) {
+            Swal.fire({
+                title: `Cobrar Abono a ${cliente}`,
+                html: `
+                    <p class="mb-2 text-sm text-gray-600">Saldo pendiente: $${parseFloat(saldoPendiente).toFixed(2)}</p>
+                    <input id="monto_abono" type="number" step="0.01" max="${saldoPendiente}" class="swal2-input" placeholder="Monto a abonar $">
+                    <select id="metodo_abono" class="swal2-input mt-2">
+                        <option value="transferencia">Transferencia</option>
+                        <option value="efectivo">Efectivo</option>
+                    </select>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#ef4444',
+                confirmButtonText: 'Sí, aplicar cobro',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    const monto = document.getElementById('monto_abono').value;
+                    if (!monto || monto <= 0 || parseFloat(monto) > parseFloat(saldoPendiente)) {
+                        Swal.showValidationMessage('Ingrese un monto válido (no mayor al saldo)');
+                        return false;
+                    }
+                    return monto;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('aplicarAbono', [cuentaId, parseFloat(result.value)]);
+                }
+            });
+        }
+
+        function eliminarCuenta(id) {
+            Swal.fire({
+                title: '¿Eliminar deuda del cliente?',
+                text: "Se borrará este registro de crédito.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('eliminarCuenta', [id]);
+                }
+            });
 
         function eliminarCliente(id) {
             Swal.fire({
@@ -257,10 +388,13 @@
         function toggleMatricula() {
             const isEstudiante = document.getElementById('cli_estudiante').checked;
             const fields = document.getElementById('estudiante_fields');
+            const profFields = document.getElementById('profesionista_fields');
             if(isEstudiante) {
                 fields.style.display = 'block';
+                if(profFields) profFields.style.display = 'none';
             } else {
                 fields.style.display = 'none';
+                if(profFields) profFields.style.display = 'block';
                 document.getElementById('cli_matricula').value = '';
                 document.getElementById('cli_escuela').value = '';
                 document.getElementById('cli_otra_escuela').value = '';

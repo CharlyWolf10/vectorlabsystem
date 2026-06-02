@@ -19,7 +19,9 @@ class Cliente extends Model
         'telefono',
         'acepta_marketing',
         'limite_credito',
-        'saldo_pendiente'
+        'saldo_pendiente',
+        'rfc',
+        'constancia_fiscal'
     ];
 
     public function ventas()

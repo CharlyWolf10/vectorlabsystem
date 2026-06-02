@@ -15,6 +15,7 @@ class ComprasYPagos extends Component
     public $cuentasPorPagar;
     public $searchProveedores = '';
     public $selectedProveedores = [];
+    public $selectAll = false;
 
     public function mount()
     {
@@ -22,6 +23,15 @@ class ComprasYPagos extends Component
             return redirect()->route('dashboard');
         }
         $this->loadData();
+    }
+
+    public function updatedSelectAll($value)
+    {
+        if ($value) {
+            $this->selectedProveedores = Proveedor::pluck('id')->map(fn($id) => (string)$id)->toArray();
+        } else {
+            $this->selectedProveedores = [];
+        }
     }
 
     public function loadData()

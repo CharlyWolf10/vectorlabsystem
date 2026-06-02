@@ -10,11 +10,21 @@ class Inventario extends Component
 {
     public $search = '';
     public $selectedProductos = [];
+    public $selectAll = false;
 
     public function mount()
     {
         if (auth()->user()->role !== 'admin') {
             return redirect()->route('dashboard');
+        }
+    }
+
+    public function updatedSelectAll($value)
+    {
+        if ($value) {
+            $this->selectedProductos = Producto::pluck('id')->map(fn($id) => (string)$id)->toArray();
+        } else {
+            $this->selectedProductos = [];
         }
     }
 
