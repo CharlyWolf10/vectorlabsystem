@@ -641,6 +641,11 @@
                     </div>
                     <p class="text-sm text-gray-600 mb-2 text-left px-4">Redacta tu mensaje y haz clic en "Enviar" uno por uno.</p>
                     <textarea id="wa_mensaje" class="swal2-textarea w-full mt-2" placeholder="Escribe tu mensaje aquí..." rows="6" style="max-width: 100%; width: 90%;"></textarea>
+                    
+                    <div class="mt-4 text-left px-8 mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Adjuntar archivo (Solo visual/referencia)</label>
+                        <input type="file" id="wa_adjunto" accept=".jpg,.jpeg,.png,.pdf" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    </div>
                     ${listaHtml}
                 `,
                 showConfirmButton: false,
