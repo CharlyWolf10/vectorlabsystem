@@ -161,8 +161,22 @@
             <div class="blue-overlay"></div>
             
             <div class="z-10 flex flex-col items-center relative p-8 w-full">
-                <h2 class="text-6xl md:text-8xl font-extrabold text-white mb-8 neon-text tracking-wider text-center">Bienvenido a<br><span class="text-blue-400">Vector Lab</span></h2>
-                <p class="text-blue-50 text-4xl md:text-5xl max-w-4xl leading-relaxed font-medium drop-shadow-lg bg-black/40 p-8 rounded-2xl backdrop-blur-sm border border-white/10 text-center">El sistema de control y administración definitiva para optimizar tu negocio.</p>
+                <h2 class="text-5xl md:text-6xl font-extrabold text-white mb-6 neon-text tracking-wider text-center">Bienvenido a<br><span class="text-blue-400">Vector Lab</span></h2>
+                
+                <div class="bg-black/40 p-6 rounded-2xl backdrop-blur-sm border border-white/10 w-full max-w-2xl shadow-2xl">
+                    <p class="text-blue-50 text-xl md:text-2xl font-medium mb-6 text-center drop-shadow-md">El sistema de control y administración definitiva para administrar tu negocio.</p>
+                    
+                    <ul class="text-blue-100 text-base md:text-lg grid grid-cols-1 sm:grid-cols-2 gap-5 font-light tracking-wide">
+                        <li class="flex items-center module-list-item transition-all duration-300 transform origin-left"><i class="fas fa-chart-line text-blue-400 w-8 text-xl drop-shadow-md transition-all duration-300"></i> Directiva de ventas</li>
+                        <li class="flex items-center module-list-item transition-all duration-300 transform origin-left"><i class="fas fa-file-invoice-dollar text-blue-400 w-8 text-xl drop-shadow-md transition-all duration-300"></i> Facturas y clientes</li>
+                        <li class="flex items-center module-list-item transition-all duration-300 transform origin-left"><i class="fas fa-tags text-blue-400 w-8 text-xl drop-shadow-md transition-all duration-300"></i> Aplica descuentos</li>
+                        <li class="flex items-center module-list-item transition-all duration-300 transform origin-left"><i class="fas fa-money-check-alt text-blue-400 w-8 text-xl drop-shadow-md transition-all duration-300"></i> Paga tus cuentas</li>
+                        <li class="flex items-center module-list-item transition-all duration-300 transform origin-left"><i class="fas fa-truck-loading text-blue-400 w-8 text-xl drop-shadow-md transition-all duration-300"></i> Administra proveedores</li>
+                        <li class="flex items-center module-list-item transition-all duration-300 transform origin-left"><i class="fas fa-file-pdf text-blue-400 w-8 text-xl drop-shadow-md transition-all duration-300"></i> Exporta resultados en PDF</li>
+                        <li class="flex items-center module-list-item transition-all duration-300 transform origin-left"><i class="fas fa-cash-register text-blue-400 w-8 text-xl drop-shadow-md transition-all duration-300"></i> Gestiona cortes de caja</li>
+                        <li class="flex items-center module-list-item transition-all duration-300 transform origin-left"><i class="fas fa-university text-blue-400 w-8 text-xl drop-shadow-md transition-all duration-300"></i> Bancos y cuentas</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -368,6 +382,26 @@
                     }
                 }
                 setInterval(drawFinanceMatrix, 50);
+            }
+
+            // Animación secuencial de los módulos
+            const moduleItems = document.querySelectorAll('.module-list-item');
+            if (moduleItems.length > 0) {
+                let currentModule = 0;
+                setInterval(() => {
+                    const activeItem = moduleItems[currentModule];
+                    // Crece y brilla
+                    activeItem.classList.add('scale-105', 'text-white', 'font-normal', 'translate-x-1');
+                    activeItem.querySelector('i').classList.add('text-blue-200', 'scale-125');
+                    
+                    // Regresa a su tamaño
+                    setTimeout(() => {
+                        activeItem.classList.remove('scale-105', 'text-white', 'font-normal', 'translate-x-1');
+                        activeItem.querySelector('i').classList.remove('text-blue-200', 'scale-125');
+                    }, 800);
+                    
+                    currentModule = (currentModule + 1) % moduleItems.length;
+                }, 1200);
             }
         });
     </script>
