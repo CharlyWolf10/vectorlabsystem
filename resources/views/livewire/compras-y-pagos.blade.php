@@ -20,11 +20,22 @@
 
     <!-- Panel de Proveedores -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h3 class="text-lg font-semibold border-b pb-2 mb-4">Directorio de Proveedores</h3>
+        <div class="flex flex-col md:flex-row justify-between items-center border-b pb-2 mb-4 gap-4">
+            <h3 class="text-lg font-semibold w-full md:w-1/3">Directorio de Proveedores</h3>
+            <div class="w-full md:w-1/3">
+                <input type="text" wire:model.live="searchProveedores" placeholder="Buscar proveedor..." class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+            </div>
+            @if(count($selectedProveedores) > 0)
+                <div class="text-sm font-semibold text-blue-600">
+                    {{ count($selectedProveedores) }} seleccionado(s)
+                </div>
+            @endif
+        </div>
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white">
                 <thead class="bg-gray-100 text-gray-600">
                     <tr>
+                        <th class="py-2 px-4 text-center w-12"><input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></th>
                         <th class="py-2 px-4 text-left">Proveedor</th>
                         <th class="py-2 px-4 text-left">Datos Bancarios</th>
                         <th class="py-2 px-4 text-center">Acciones</th>
@@ -32,7 +43,10 @@
                 </thead>
                 <tbody>
                     @forelse($proveedores as $proveedor)
-                    <tr class="border-b">
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-2 px-4 text-center">
+                            <input type="checkbox" value="{{ $proveedor->id }}" wire:model="selectedProveedores" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        </td>
                         <td class="py-2 px-4">
                             <div class="font-bold">{{ $proveedor->nombre }}</div>
                             <div class="text-sm text-gray-500">{{ $proveedor->telefono }} | {{ $proveedor->email }}</div>
@@ -50,7 +64,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="3" class="py-4 text-center text-gray-500">No hay proveedores registrados.</td>
+                        <td colspan="4" class="py-4 text-center text-gray-500">No hay proveedores registrados.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -60,7 +74,12 @@
 
     <!-- Panel de Cuentas por Pagar -->
     <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-semibold border-b pb-2 mb-4 text-red-600">Cuentas por Pagar Activas</h3>
+        <div class="flex justify-between items-center border-b pb-2 mb-4">
+            <h3 class="text-lg font-semibold text-red-600">Cuentas por Pagar Activas</h3>
+            <button onclick="nuevaCuentaPorPagar()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-1 px-3 rounded text-sm shadow">
+                <i class="fas fa-file-invoice-dollar mr-1"></i> Añadir Deuda Manual
+            </button>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             @forelse($cuentasPorPagar as $cuenta)
             <div class="border rounded p-4 shadow-sm relative">
@@ -148,7 +167,7 @@
                         cancelButtonText: 'Cancelar'
                     }).then((confirmResult) => {
                         if (confirmResult.isConfirmed) {
-                            Livewire.dispatch('guardarProveedor', { data: result.value });
+                            Livewire.dispatch('guardarProveedor', [result.value]);
                         }
                     });
                 }
@@ -192,7 +211,7 @@
                         cancelButtonText: 'Cancelar'
                     }).then((confirmResult) => {
                         if (confirmResult.isConfirmed) {
-                            Livewire.dispatch('registrarGasto', { proveedorId: proveedorId, data: result.value });
+                            Livewire.dispatch('registrarGasto', [proveedorId, result.value]);
                         }
                     });
                 }
@@ -226,7 +245,42 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch('aplicarAbono', { cuentaId: cuentaId, monto: result.value });
+                    Livewire.dispatch('aplicarAbono', [cuentaId, parseFloat(result.value)]);
+                }
+            });
+        }
+
+        function nuevaCuentaPorPagar() {
+            let proveedoresHtml = '<select id="nuevo_prov_id" class="swal2-input">';
+            @foreach($proveedores as $prov)
+                proveedoresHtml += `<option value="{{ $prov->id }}">{{ $prov->nombre }}</option>`;
+            @endforeach
+            proveedoresHtml += '</select>';
+
+            Swal.fire({
+                title: 'Nueva Cuenta por Pagar',
+                html: `
+                    <p class="mb-2 text-sm text-gray-600">Seleccione el proveedor y defina el monto de la deuda.</p>
+                    ${proveedoresHtml}
+                    <input id="nuevo_monto_deuda" type="number" step="0.01" class="swal2-input" placeholder="Monto total de la deuda $">
+                `,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#0066ff',
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Guardar Deuda',
+                preConfirm: () => {
+                    const provId = document.getElementById('nuevo_prov_id').value;
+                    const monto = document.getElementById('nuevo_monto_deuda').value;
+                    if (!provId || !monto || parseFloat(monto) <= 0) {
+                        Swal.showValidationMessage('Ingrese un proveedor y monto válido');
+                        return false;
+                    }
+                    return { proveedorId: provId, monto: parseFloat(monto) };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('crearCuentaPorPagar', [result.value.proveedorId, result.value.monto]);
                 }
             });
         }

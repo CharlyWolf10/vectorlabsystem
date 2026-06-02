@@ -8,19 +8,23 @@ use Livewire\Attributes\On;
 
 class Inventario extends Component
 {
-    public $productos;
+    public $search = '';
+    public $selectedProductos = [];
 
     public function mount()
     {
         if (auth()->user()->role !== 'admin') {
             return redirect()->route('dashboard');
         }
-        $this->loadData();
     }
 
-    public function loadData()
+    public function render()
     {
-        $this->productos = Producto::all();
+        $productos = Producto::where('nombre', 'like', '%' . $this->search . '%')
+                             ->orWhere('codigo', 'like', '%' . $this->search . '%')
+                             ->get();
+                             
+        return view('livewire.inventario', compact('productos'))->layout('layouts.app');
     }
 
     #[On('guardarProducto')]
@@ -36,12 +40,8 @@ class Inventario extends Component
                 'stock_minimo' => $data['stock_minimo'],
             ]
         );
-        $this->loadData();
         $this->dispatch('swal:success', ['title' => '¡Éxito!', 'text' => 'Producto guardado correctamente.']);
     }
 
-    public function render()
-    {
-        return view('livewire.inventario')->layout('layouts.app');
-    }
+    // Render handled above
 }

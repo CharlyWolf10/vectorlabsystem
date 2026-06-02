@@ -21,10 +21,21 @@
 
             <!-- Panel de Inventario -->
             <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="w-full md:w-1/3">
+                        <input type="text" wire:model.live="search" placeholder="Buscar por código o nombre..." class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+                    </div>
+                    @if(count($selectedProductos) > 0)
+                        <div class="text-sm font-semibold text-blue-600">
+                            {{ count($selectedProductos) }} producto(s) seleccionado(s)
+                        </div>
+                    @endif
+                </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-white">
                         <thead class="bg-gray-100 text-gray-600">
                             <tr>
+                                <th class="py-2 px-4 text-center w-12"><input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></th>
                                 <th class="py-2 px-4 text-left">Código</th>
                                 <th class="py-2 px-4 text-left">Producto</th>
                                 <th class="py-2 px-4 text-right">Costo</th>
@@ -35,7 +46,10 @@
                         </thead>
                         <tbody>
                             @forelse($productos as $producto)
-                            <tr class="border-b">
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-2 px-4 text-center">
+                                    <input type="checkbox" value="{{ $producto->id }}" wire:model="selectedProductos" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                </td>
                                 <td class="py-2 px-4">{{ $producto->codigo }}</td>
                                 <td class="py-2 px-4 font-bold">{{ $producto->nombre }}</td>
                                 <td class="py-2 px-4 text-right">${{ number_format($producto->precio_compra, 2) }}</td>
@@ -51,7 +65,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="py-4 text-center text-gray-500">No hay productos en el inventario.</td>
+                                <td colspan="7" class="py-4 text-center text-gray-500">No hay productos en el inventario.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -95,10 +109,10 @@
                     return {
                         codigo: codigo,
                         nombre: nombre,
-                        precio_compra: document.getElementById('prod_costo').value || 0,
-                        precio_venta: document.getElementById('prod_venta').value || 0,
-                        stock: document.getElementById('prod_stock').value || 0,
-                        stock_minimo: document.getElementById('prod_minimo').value || 5,
+                        precio_compra: parseFloat(document.getElementById('prod_costo').value) || 0,
+                        precio_venta: parseFloat(document.getElementById('prod_venta').value) || 0,
+                        stock: parseInt(document.getElementById('prod_stock').value) || 0,
+                        stock_minimo: parseInt(document.getElementById('prod_minimo').value) || 5,
                     }
                 }
             }).then((result) => {

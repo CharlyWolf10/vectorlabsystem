@@ -8,19 +8,25 @@ use Livewire\Attributes\On;
 
 class Clientes extends Component
 {
-    public $clientes;
+    public $search = '';
+    public $selectedClientes = [];
 
     public function mount()
     {
         if (auth()->user()->role !== 'admin') {
             return redirect()->route('dashboard');
         }
-        $this->loadData();
     }
 
-    public function loadData()
+    public function render()
     {
-        $this->clientes = Cliente::all();
+        $clientes = Cliente::where('nombre', 'like', '%' . $this->search . '%')
+                           ->orWhere('apellidos', 'like', '%' . $this->search . '%')
+                           ->orWhere('email', 'like', '%' . $this->search . '%')
+                           ->orWhere('matricula', 'like', '%' . $this->search . '%')
+                           ->get();
+
+        return view('livewire.clientes', compact('clientes'))->layout('layouts.app');
     }
 
     #[On('guardarCliente')]
@@ -36,12 +42,7 @@ class Clientes extends Component
             'limite_credito' => $data['limite_credito'] ?? 0,
             'saldo_pendiente' => 0
         ]);
-        $this->loadData();
+        
         $this->dispatch('swal:success', ['title' => '¡Éxito!', 'text' => 'Cliente guardado correctamente.']);
-    }
-
-    public function render()
-    {
-        return view('livewire.clientes')->layout('layouts.app');
     }
 }

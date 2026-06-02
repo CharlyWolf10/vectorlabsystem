@@ -9,19 +9,24 @@ use Livewire\Attributes\On;
 
 class Usuarios extends Component
 {
-    public $usuarios;
+    public $search = '';
+    public $selectedUsuarios = [];
 
     public function mount()
     {
         if (auth()->user()->role !== 'admin') {
             return redirect()->route('dashboard');
         }
-        $this->loadData();
     }
 
-    public function loadData()
+    public function render()
     {
-        $this->usuarios = User::all();
+        $users = User::where('name', 'like', '%' . $this->search . '%')
+                     ->orWhere('email', 'like', '%' . $this->search . '%')
+                     ->orWhere('role', 'like', '%' . $this->search . '%')
+                     ->get();
+
+        return view('livewire.usuarios', compact('users'))->layout('layouts.app');
     }
 
     #[On('guardarUsuario')]
@@ -34,7 +39,6 @@ class Usuarios extends Component
             'role' => $data['role'],
         ]);
         
-        $this->loadData();
         $this->dispatch('swal:success', ['title' => '¡Usuario Creado!', 'text' => 'El empleado ha sido registrado correctamente.']);
     }
 
@@ -47,12 +51,6 @@ class Usuarios extends Component
         }
 
         User::find($id)->delete();
-        $this->loadData();
         $this->dispatch('swal:success', ['title' => 'Usuario Eliminado', 'text' => 'El usuario ha sido eliminado correctamente.']);
-    }
-
-    public function render()
-    {
-        return view('livewire.usuarios')->layout('layouts.app');
     }
 }

@@ -21,11 +21,22 @@
 
             <!-- Panel de Clientes -->
             <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="w-full md:w-1/3">
+                        <input type="text" wire:model.live="search" placeholder="Buscar por nombre, correo o matrícula..." class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+                    </div>
+                    @if(count($selectedClientes) > 0)
+                        <div class="text-sm font-semibold text-blue-600">
+                            {{ count($selectedClientes) }} cliente(s) seleccionado(s)
+                        </div>
+                    @endif
+                </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-white">
                         <thead class="bg-gray-100 text-gray-600">
                             <tr>
-                                <th class="py-2 px-4 text-left">Nombre</th>
+                                <th class="py-2 px-4 text-center w-12"><input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></th>
+                                <th class="py-2 px-4 text-left">Nombre Completo</th>
                                 <th class="py-2 px-4 text-left">Contacto</th>
                                 <th class="py-2 px-4 text-right">Límite Crédito</th>
                                 <th class="py-2 px-4 text-right">Saldo Deudor</th>
@@ -35,6 +46,9 @@
                         <tbody>
                             @forelse($clientes as $cliente)
                             <tr class="border-b hover:bg-gray-50">
+                                <td class="py-2 px-4 text-center">
+                                    <input type="checkbox" value="{{ $cliente->id }}" wire:model="selectedClientes" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                </td>
                                 <td class="py-2 px-4">
                                     <span class="font-bold">{{ $cliente->nombre }} {{ $cliente->apellidos }}</span>
                                     @if($cliente->es_estudiante)
@@ -52,7 +66,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="5" class="py-4 text-center text-gray-500">No hay clientes registrados.</td>
+                                <td colspan="6" class="py-4 text-center text-gray-500">No hay clientes registrados en la base de datos.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -122,7 +136,7 @@
                         cancelButtonText: 'Cancelar'
                     }).then((confirmResult) => {
                         if (confirmResult.isConfirmed) {
-                            Livewire.dispatch('guardarCliente', { data: result.value });
+                            Livewire.dispatch('guardarCliente', [result.value]);
                         }
                     });
                 }

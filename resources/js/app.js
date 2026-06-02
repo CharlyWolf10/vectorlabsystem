@@ -1,7 +1,6 @@
 import './bootstrap';
 
-import Alpine from 'alpinejs';
+// Alpine is automatically injected by Livewire 3
+// Removed to prevent conflicts that break the UI
 
-window.Alpine = Alpine;
 
-Alpine.start();

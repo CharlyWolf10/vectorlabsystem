@@ -18,11 +18,22 @@
 
             <!-- Panel de Usuarios -->
             <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="w-full md:w-1/3">
+                        <input type="text" wire:model.live="search" placeholder="Buscar por nombre, correo o rol..." class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+                    </div>
+                    @if(count($selectedUsuarios) > 0)
+                        <div class="text-sm font-semibold text-blue-600">
+                            {{ count($selectedUsuarios) }} usuario(s) seleccionado(s)
+                        </div>
+                    @endif
+                </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-white">
                         <thead class="bg-gray-100 text-gray-600">
                             <tr>
-                                <th class="py-2 px-4 text-left">Nombre</th>
+                                <th class="py-2 px-4 text-center w-12"><input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></th>
+                                <th class="py-2 px-4 text-left">Nombre Completo</th>
                                 <th class="py-2 px-4 text-left">Correo Electrónico</th>
                                 <th class="py-2 px-4 text-center">Rol</th>
                                 <th class="py-2 px-4 text-center">Acciones</th>
@@ -31,6 +42,9 @@
                         <tbody>
                             @forelse($usuarios as $usuario)
                             <tr class="border-b hover:bg-gray-50">
+                                <td class="py-2 px-4 text-center">
+                                    <input type="checkbox" value="{{ $usuario->id }}" wire:model="selectedUsuarios" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                </td>
                                 <td class="py-2 px-4 font-bold">{{ $usuario->name }}</td>
                                 <td class="py-2 px-4 text-gray-600">{{ $usuario->email }}</td>
                                 <td class="py-2 px-4 text-center">
@@ -49,7 +63,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="py-4 text-center text-gray-500">No hay usuarios registrados.</td>
+                                <td colspan="5" class="py-4 text-center text-gray-500">No hay usuarios registrados.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -119,7 +133,7 @@
                         cancelButtonText: 'Cancelar'
                     }).then((confirmResult) => {
                         if (confirmResult.isConfirmed) {
-                            Livewire.dispatch('guardarUsuario', { data: result.value });
+                            Livewire.dispatch('guardarUsuario', [result.value]);
                         }
                     });
                 }

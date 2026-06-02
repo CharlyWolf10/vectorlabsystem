@@ -13,6 +13,8 @@ class ComprasYPagos extends Component
     public $proveedores;
     public $compras;
     public $cuentasPorPagar;
+    public $searchProveedores = '';
+    public $selectedProveedores = [];
 
     public function mount()
     {
@@ -27,6 +29,21 @@ class ComprasYPagos extends Component
         $this->proveedores = Proveedor::all();
         $this->compras = Compra::with('proveedor', 'user')->orderBy('fecha', 'desc')->get();
         $this->cuentasPorPagar = CuentaPorPagar::with('proveedor')->where('estado', '!=', 'pagado')->get();
+    }
+
+    public function render()
+    {
+        $proveedores = Proveedor::where('nombre', 'like', '%' . $this->searchProveedores . '%')
+                                ->orWhere('email', 'like', '%' . $this->searchProveedores . '%')
+                                ->get();
+                                
+        $cuentasPorPagar = CuentaPorPagar::with('proveedor', 'compra')
+                            ->where('saldo_pendiente', '>', 0)
+                            ->get();
+
+        $compras = Compra::with('proveedor', 'user')->orderBy('fecha', 'desc')->get();
+
+        return view('livewire.compras-y-pagos', compact('proveedores', 'cuentasPorPagar', 'compras'))->layout('layouts.app');
     }
 
     #[On('guardarProveedor')]
@@ -70,6 +87,21 @@ class ComprasYPagos extends Component
         $this->dispatch('swal:success', ['title' => '¡Gasto registrado!', 'text' => 'El movimiento ha sido procesado.']);
     }
 
+    #[On('crearCuentaPorPagar')]
+    public function crearCuentaPorPagar($proveedorId, $monto)
+    {
+        CuentaPorPagar::create([
+            'proveedor_id' => $proveedorId,
+            'compra_id' => null, // Deuda manual sin compra asociada directamente
+            'monto_total' => $monto,
+            'saldo_pendiente' => $monto,
+            'estado' => 'pendiente',
+        ]);
+        
+        $this->loadData();
+        $this->dispatch('swal:success', ['title' => '¡Cuenta Creada!', 'text' => 'La deuda ha sido registrada exitosamente.']);
+    }
+
     #[On('aplicarAbono')]
     public function aplicarAbono($cuentaId, $monto)
     {
@@ -87,8 +119,5 @@ class ComprasYPagos extends Component
         $this->dispatch('swal:success', ['title' => '¡Abono aplicado!', 'text' => 'Se ha descontado del saldo pendiente.']);
     }
 
-    public function render()
-    {
-        return view('livewire.compras-y-pagos')->layout('layouts.app');
-    }
+    // Render handled above
 }

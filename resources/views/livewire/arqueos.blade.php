@@ -113,7 +113,7 @@
                         confirmButtonText: 'Sí, abrir caja'
                     }).then((confirmResult) => {
                         if(confirmResult.isConfirmed){
-                            Livewire.dispatch('abrirCaja', { fondo_inicial: result.value });
+                            Livewire.dispatch('abrirCaja', [parseFloat(result.value)]);
                         }
                     });
                 }
@@ -184,7 +184,7 @@
                         confirmButtonText: 'Sí, cerrar caja'
                     }).then((confirmResult) => {
                         if(confirmResult.isConfirmed){
-                            Livewire.dispatch('cerrarCaja', { data: result.value });
+                            Livewire.dispatch('cerrarCaja', [result.value]);
                         }
                     });
                 }
