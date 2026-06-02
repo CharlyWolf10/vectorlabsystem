@@ -98,7 +98,7 @@
         .blue-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(30, 58, 138, 0.75) 0%, rgba(15, 23, 42, 0.5) 100%);
+            background: radial-gradient(circle at center, rgba(30, 58, 138, 0.85) 0%, rgba(0, 0, 0, 1) 90%);
             z-index: 2;
         }
         .neon-text {
@@ -112,7 +112,7 @@
             align-items: center;
             justify-content: center;
             padding: 2rem;
-            background-color: #050505;
+            background: radial-gradient(circle at center, rgb(30, 58, 138) 0%, rgb(0, 0, 0) 90%);
         }
         @media (min-width: 768px) {
             .login-right-form { width: 50%; }
@@ -162,77 +162,82 @@
             
             <div class="z-10 flex flex-col items-center relative p-8 w-full">
                 <h2 class="text-6xl md:text-8xl font-extrabold text-white mb-8 neon-text tracking-wider text-center">Bienvenido a<br><span class="text-blue-400">Vector Lab</span></h2>
-                <p class="text-blue-50 text-3xl md:text-4xl max-w-2xl leading-relaxed font-medium drop-shadow-lg bg-black/40 p-6 rounded-2xl backdrop-blur-sm border border-white/10 text-center">El sistema de control y administración definitiva para optimizar tu negocio.</p>
+                <p class="text-blue-50 text-4xl md:text-5xl max-w-4xl leading-relaxed font-medium drop-shadow-lg bg-black/40 p-8 rounded-2xl backdrop-blur-sm border border-white/10 text-center">El sistema de control y administración definitiva para optimizar tu negocio.</p>
             </div>
         </div>
 
         <!-- DERECHA: FORMULARIO -->
         <div class="login-right-form">
-            <div class="w-full max-w-md p-8 bg-[#0a0a0c] rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-gray-800">
-                <div class="flex justify-center mb-6">
-                    <img src="https://charlywolf10.github.io/VectorLab/assets/img/VectorLab.png" alt="Vector Lab Logo" class="w-48 object-contain filter drop-shadow-lg">
+            <div class="relative overflow-hidden w-full max-w-md p-8 bg-slate-900/85 backdrop-blur-md rounded-2xl shadow-[0_0_40px_rgba(30,58,138,0.3)] border border-blue-900/50">
+                <!-- Canvas de matrix financiero -->
+                <canvas id="finance-matrix-canvas" class="absolute inset-0 w-full h-full z-0 opacity-40 pointer-events-none"></canvas>
+                
+                <div class="relative z-10">
+                    <div class="flex justify-center mb-6">
+                        <img src="https://charlywolf10.github.io/VectorLab/assets/img/VectorLab.png" alt="Vector Lab Logo" class="w-48 object-contain filter drop-shadow-lg">
+                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-2 text-center">Acceso Seguro</h2>
+                    <p class="text-gray-400 mb-8 text-center">Ingresa tus credenciales para continuar.</p>
+
+                    <x-auth-session-status class="mb-4" :status="session('status')" />
+
+                    <form method="POST" action="{{ route('login') }}" class="space-y-6">
+                        @csrf
+
+                        <!-- Email Address -->
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-300">Correo Electrónico</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-envelope text-gray-500"></i>
+                                </div>
+                                <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" 
+                                    class="dark-input block w-full pl-10 sm:text-sm rounded-md h-12 transition-colors placeholder-gray-600 bg-[#0a0a0c]/80" placeholder="usuario@vectorlab.com">
+                            </div>
+                            <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-400 text-sm" />
+                        </div>
+
+                        <!-- Password -->
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-300">Contraseña</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-lock text-gray-500"></i>
+                                </div>
+                                <input id="password" type="password" name="password" required autocomplete="current-password" 
+                                    class="dark-input block w-full pl-10 pr-10 sm:text-sm rounded-md h-12 transition-colors placeholder-gray-600 bg-[#0a0a0c]/80" placeholder="••••••••">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer z-20" onclick="togglePassword()">
+                                    <i class="fas fa-eye text-gray-500 hover:text-blue-400 transition-colors" id="togglePasswordIcon"></i>
+                                </div>
+                            </div>
+                            <x-input-error :messages="$errors->get('password')" class="mt-2 text-red-400 text-sm" />
+                        </div>
+
+                        <!-- Remember Me & Forgot Password -->
+                        <div class="flex items-center justify-between pt-2">
+                            <div class="flex items-center">
+                                <input id="remember_me" name="remember" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 bg-gray-800 rounded">
+                                <label for="remember_me" class="ml-2 block text-sm text-gray-400">
+                                    Recordarme
+                                </label>
+                            </div>
+
+                            @if (Route::has('password.request'))
+                                <div class="text-sm">
+                                    <a href="{{ route('password.request') }}" class="font-medium text-blue-400 hover:text-blue-300 transition-colors">
+                                        ¿Olvidaste tu contraseña?
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-gray-900 transition-all transform hover:scale-[1.02]">
+                                ENTRAR AL SISTEMA <i class="fas fa-sign-in-alt ml-2"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <h2 class="text-3xl font-bold text-white mb-2 text-center">Acceso Seguro</h2>
-                <p class="text-gray-400 mb-8 text-center">Ingresa tus credenciales para continuar.</p>
-
-                <x-auth-session-status class="mb-4" :status="session('status')" />
-
-                <form method="POST" action="{{ route('login') }}" class="space-y-6">
-                    @csrf
-
-                    <!-- Email Address -->
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-300">Correo Electrónico</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-envelope text-gray-500"></i>
-                            </div>
-                            <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" 
-                                class="dark-input block w-full pl-10 sm:text-sm rounded-md h-12 transition-colors placeholder-gray-600" placeholder="usuario@vectorlab.com">
-                        </div>
-                        <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-400 text-sm" />
-                    </div>
-
-                    <!-- Password -->
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-300">Contraseña</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-500"></i>
-                            </div>
-                            <input id="password" type="password" name="password" required autocomplete="current-password" 
-                                class="dark-input block w-full pl-10 pr-10 sm:text-sm rounded-md h-12 transition-colors placeholder-gray-600" placeholder="••••••••">
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer z-20" onclick="togglePassword()">
-                                <i class="fas fa-eye text-gray-500 hover:text-blue-400 transition-colors" id="togglePasswordIcon"></i>
-                            </div>
-                        </div>
-                        <x-input-error :messages="$errors->get('password')" class="mt-2 text-red-400 text-sm" />
-                    </div>
-
-                    <!-- Remember Me & Forgot Password -->
-                    <div class="flex items-center justify-between pt-2">
-                        <div class="flex items-center">
-                            <input id="remember_me" name="remember" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 bg-gray-800 rounded">
-                            <label for="remember_me" class="ml-2 block text-sm text-gray-400">
-                                Recordarme
-                            </label>
-                        </div>
-
-                        @if (Route::has('password.request'))
-                            <div class="text-sm">
-                                <a href="{{ route('password.request') }}" class="font-medium text-blue-400 hover:text-blue-300 transition-colors">
-                                    ¿Olvidaste tu contraseña?
-                                </a>
-                            </div>
-                        @endif
-                    </div>
-
-                    <div class="pt-4">
-                        <button type="submit" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-gray-900 transition-all transform hover:scale-[1.02]">
-                            ENTRAR AL SISTEMA <i class="fas fa-sign-in-alt ml-2"></i>
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
 
@@ -324,6 +329,45 @@
                     currentSlide = (currentSlide + 1) % slides.length;
                     slides[currentSlide].classList.add('active');
                 }, 4000);
+            }
+
+            // Lógica del Matrix Financiero en el formulario
+            const financeCanvas = document.getElementById('finance-matrix-canvas');
+            if (financeCanvas) {
+                const fCtx = financeCanvas.getContext('2d');
+                
+                const resizeFCanvas = () => {
+                    financeCanvas.width = financeCanvas.offsetWidth;
+                    financeCanvas.height = financeCanvas.offsetHeight;
+                };
+                resizeFCanvas();
+                window.addEventListener('resize', resizeFCanvas);
+                
+                const fSymbols = ['$', '€', '£', '¥', '%', '#', '@', '&', '+', '-', '↑', '↓', '¢', '฿'];
+                const fFontSize = 14;
+                const fColumns = 100;
+                const fDrops = [];
+                for(let x = 0; x < fColumns; x++) fDrops[x] = Math.random() * 50; 
+
+                function drawFinanceMatrix() {
+                    fCtx.fillStyle = 'rgba(15, 23, 42, 0.15)'; // Fondo slate transparente para el barrido
+                    fCtx.fillRect(0, 0, financeCanvas.width, financeCanvas.height);
+                    fCtx.fillStyle = 'rgba(59, 130, 246, 0.8)'; // Azul brilloso
+                    fCtx.font = fFontSize + 'px monospace';
+                    
+                    const activeCols = Math.floor(financeCanvas.width / fFontSize) + 1;
+                    
+                    for(let i = 0; i < activeCols; i++) {
+                        const text = fSymbols[Math.floor(Math.random() * fSymbols.length)];
+                        fCtx.fillText(text, i * fFontSize, fDrops[i] * fFontSize);
+                        
+                        if(fDrops[i] * fFontSize > financeCanvas.height && Math.random() > 0.95) {
+                            fDrops[i] = 0;
+                        }
+                        fDrops[i] += 0.5; // velocidad de caída suave
+                    }
+                }
+                setInterval(drawFinanceMatrix, 50);
             }
         });
     </script>
