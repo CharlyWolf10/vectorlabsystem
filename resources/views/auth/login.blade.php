@@ -76,7 +76,6 @@
             justify-content: center;
             padding: 3rem;
             text-align: center;
-            border-right: 1px solid #1f2937;
             position: relative;
         }
         @media (min-width: 768px) {
@@ -205,10 +204,9 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-envelope text-gray-500"></i>
                                 </div>
-                                <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" 
-                                    class="dark-input block w-full pl-10 sm:text-sm rounded-md h-12 transition-colors placeholder-gray-600 bg-[#0a0a0c]/80" placeholder="usuario@vectorlab.com">
+                                <input id="email" type="email" name="email" value="{{ old('email', 'admin@vectorlab.com') }}" required autocomplete="username" 
+                                    class="dark-input block w-full pl-10 sm:text-sm rounded-md h-12 transition-colors placeholder-gray-600 bg-[#0a0a0c]/80" placeholder="admin@vectorlab.com">
                             </div>
-                            <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-400 text-sm" />
                         </div>
 
                         <!-- Password -->
@@ -224,7 +222,6 @@
                                     <i class="fas fa-eye text-gray-500 hover:text-blue-400 transition-colors" id="togglePasswordIcon"></i>
                                 </div>
                             </div>
-                            <x-input-error :messages="$errors->get('password')" class="mt-2 text-red-400 text-sm" />
                         </div>
 
                         <!-- Remember Me & Forgot Password -->
@@ -238,9 +235,9 @@
 
                             @if (Route::has('password.request'))
                                 <div class="text-sm">
-                                    <a href="{{ route('password.request') }}" class="font-medium text-blue-400 hover:text-blue-300 transition-colors">
+                                    <button type="button" onclick="document.getElementById('recover-modal').classList.remove('hidden'); document.getElementById('recover-modal').classList.add('flex');" class="font-medium text-blue-400 hover:text-blue-300 transition-colors bg-transparent border-none cursor-pointer">
                                         ¿Olvidaste tu contraseña?
-                                    </a>
+                                    </button>
                                 </div>
                             @endif
                         </div>
@@ -333,6 +330,26 @@
             });
         @endif
 
+        @if($errors->has('loginError'))
+            document.addEventListener('DOMContentLoaded', function() {
+                const toastHtml = `
+                    <div id="login-toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-red-600/90 backdrop-blur-md text-white px-6 py-4 rounded-xl shadow-[0_0_30px_rgba(220,38,38,0.4)] z-[100] transition-all duration-500 flex items-center space-x-3 border border-red-400/30">
+                        <i class="fas fa-exclamation-circle text-2xl"></i>
+                        <span class="font-medium text-sm md:text-base">{{ $errors->first('loginError') }}</span>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', toastHtml);
+                setTimeout(() => {
+                    const toast = document.getElementById('login-toast');
+                    if (toast) {
+                        toast.style.opacity = '0';
+                        toast.style.transform = 'translate(-50%, 20px)';
+                        setTimeout(() => toast.remove(), 500);
+                    }
+                }, 4000);
+            });
+        @endif
+
         // Lógica del Slideshow del fondo
         document.addEventListener('DOMContentLoaded', function() {
             let currentSlide = 0;
@@ -405,5 +422,94 @@
             }
         });
     </script>
+    <!-- MODAL DE RECUPERACIÓN DE CONTRASEÑA -->
+    <div id="recover-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/60 backdrop-blur-sm transition-all duration-300">
+        <div class="relative bg-slate-900/90 border border-blue-500/30 rounded-2xl p-8 max-w-md w-full shadow-[0_0_50px_rgba(30,58,138,0.4)] m-4">
+            <!-- Botón Cerrar -->
+            <button type="button" onclick="document.getElementById('recover-modal').classList.add('hidden'); document.getElementById('recover-modal').classList.remove('flex');" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <div class="text-center mb-6">
+                <i class="fas fa-unlock-alt text-4xl text-blue-400 mb-3 drop-shadow-[0_0_10px_rgba(96,165,250,0.8)]"></i>
+                <h3 class="text-2xl font-bold text-white">Recuperar Contraseña</h3>
+                <p class="text-gray-400 text-sm mt-2">Ingresa tu correo o solicita tu contraseña por WhatsApp.</p>
+            </div>
+
+            <form onsubmit="event.preventDefault(); simulateEmailRecovery();" class="space-y-4">
+                @csrf
+                <div>
+                    <label for="recover_email" class="block text-sm font-medium text-gray-300">Correo de Respaldo</label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-envelope text-gray-500"></i>
+                        </div>
+                        <input id="recover_email" type="email" name="email" value="f0180003@gmail.com" required
+                            class="dark-input block w-full pl-10 sm:text-sm rounded-md h-12 transition-colors placeholder-gray-600 bg-[#0a0a0c]/80 text-white" placeholder="tu-correo@ejemplo.com">
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full flex justify-center items-center py-3 px-4 border border-blue-500/50 rounded-md shadow-lg text-sm font-bold text-white bg-blue-600/80 hover:bg-blue-500 focus:outline-none transition-all transform hover:scale-[1.02]">
+                        <i class="fas fa-paper-plane mr-2"></i> ENVIAR AL CORREO
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 border-t border-gray-700/50 pt-6">
+                <a href="https://wa.me/522215714508?text=Hola,%20olvidé%20mi%20contraseña%20del%20sistema.%20Mi%20usuario%20es%20admin@vectorlab.com" target="_blank" class="w-full flex justify-center items-center py-3 px-4 border border-green-500/50 rounded-md shadow-lg text-sm font-bold text-white bg-[#25D366]/80 hover:bg-[#25D366] focus:outline-none transition-all transform hover:scale-[1.02]">
+                    <i class="fab fa-whatsapp text-xl mr-2"></i> RECUPERAR POR WHATSAPP
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para simular envío de correo -->
+    <script>
+        function simulateEmailRecovery() {
+            document.getElementById('recover-modal').classList.add('hidden');
+            document.getElementById('recover-modal').classList.remove('flex');
+            
+            const toastHtml = `
+                <div id="recover-toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-600/90 backdrop-blur-md text-white px-6 py-4 rounded-xl shadow-[0_0_30px_rgba(34,197,94,0.4)] z-[100] transition-all duration-500 flex items-center space-x-3 border border-green-400/30">
+                    <i class="fas fa-check-circle text-2xl"></i>
+                    <span class="font-medium text-sm md:text-base">Contraseña enviada correctamente a f0180003@gmail.com</span>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', toastHtml);
+            setTimeout(() => {
+                const toast = document.getElementById('recover-toast');
+                if (toast) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translate(-50%, 20px)';
+                    setTimeout(() => toast.remove(), 500);
+                }
+            }, 4000);
+        }
+    </script>
+
+    <!-- Mostrar toast si hay mensaje de éxito de recuperación -->
+    @if(session('status'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const toastHtml = `
+                    <div id="recover-toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-600/90 backdrop-blur-md text-white px-6 py-4 rounded-xl shadow-[0_0_30px_rgba(34,197,94,0.4)] z-[100] transition-all duration-500 flex items-center space-x-3 border border-green-400/30">
+                        <i class="fas fa-check-circle text-2xl"></i>
+                        <span class="font-medium text-sm md:text-base">{{ session('status') }}</span>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', toastHtml);
+                setTimeout(() => {
+                    const toast = document.getElementById('recover-toast');
+                    if (toast) {
+                        toast.style.opacity = '0';
+                        toast.style.transform = 'translate(-50%, 20px)';
+                        setTimeout(() => toast.remove(), 500);
+                    }
+                }, 4000);
+            });
+        </script>
+    @endif
+
 </body>
 </html>
