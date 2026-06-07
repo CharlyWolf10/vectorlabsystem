@@ -11,6 +11,8 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <!-- Intl Tel Input CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -71,6 +73,11 @@
                                 <i class="fas fa-users w-6 text-center group-hover:text-white {{ request()->routeIs('clientes') ? 'text-white' : 'text-vl-text-muted' }}"></i>
                                 <span class="ml-3 text-sm font-medium">Clientes (CRM)</span>
                             </a>
+
+                            <a href="{{ route('cotizador') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('cotizador') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
+                                <i class="fas fa-flask w-6 text-center group-hover:text-white {{ request()->routeIs('cotizador') ? 'text-white' : 'text-vl-text-muted' }}"></i>
+                                <span class="ml-3 text-sm font-medium">Fórmulas / Cotizador</span>
+                            </a>
                         @endif
                         
                         <a href="{{ route('pos') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('pos') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
@@ -87,6 +94,12 @@
                             <div class="pt-4 pb-2">
                                 <p class="text-xs font-semibold text-vl-text-muted uppercase tracking-wider">Ajustes</p>
                             </div>
+
+                            <a href="{{ route('gastos_operativos') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('gastos_operativos') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
+                                <i class="fas fa-chart-line w-6 text-center group-hover:text-white {{ request()->routeIs('gastos_operativos') ? 'text-white' : 'text-vl-text-muted' }}"></i>
+                                <span class="ml-3 text-sm font-medium">Gastos Operativos</span>
+                            </a>
+
                             <a href="{{ route('usuarios') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('usuarios') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
                                 <i class="fas fa-user-shield w-6 text-center group-hover:text-white {{ request()->routeIs('usuarios') ? 'text-white' : 'text-vl-text-muted' }}"></i>
                                 <span class="ml-3 text-sm font-medium">Control de Usuarios</span>
@@ -157,6 +170,8 @@
 
         @livewireScripts
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!-- Intl Tel Input JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
         <script>
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape') {

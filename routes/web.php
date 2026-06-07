@@ -7,7 +7,7 @@ use App\Livewire\ComprasYPagos;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -28,6 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/punto-de-venta', \App\Livewire\PuntoDeVenta::class)->name('pos');
     Route::get('/arqueos', \App\Livewire\Arqueos::class)->name('arqueos');
     Route::get('/usuarios', \App\Livewire\Usuarios::class)->name('usuarios');
+    Route::get('/gastos-operativos', \App\Livewire\GastosOperativos::class)->name('gastos_operativos');
+    Route::get('/cotizador', \App\Livewire\Cotizador::class)->name('cotizador');
 });
 
 Route::post('/login/recover-direct', [App\Http\Controllers\Auth\DirectRecoveryController::class, 'send'])->name('password.direct');
