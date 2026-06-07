@@ -1,0 +1,15 @@
+/* =========================================
+   Estilos específicos para Inventario
+========================================= */
+
+/* Asegurar que el selector de intl-tel-input ocupe todo el ancho disponible */
+.iti { 
+    width: 100%; 
+    margin-bottom: 1rem; 
+}
+
+/* Permitir que el menú desplegable de las banderas sobresalga de la ventana de SweetAlert */
+/* Esto soluciona el problema de que el teclado no funcione cuando el dropdown está fuera */
+.swal2-html-container { 
+    overflow: visible !important; 
+}

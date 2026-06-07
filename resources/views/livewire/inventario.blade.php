@@ -1,4 +1,7 @@
 <div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+    <link rel="stylesheet" href="{{ asset('css/inventario.css') }}" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Inventario') }}
@@ -10,7 +13,7 @@
             <div class="mb-6 flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-gray-800">Control de Inventario</h2>
                 <div>
-                    <button wire:click="attemptExport" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded shadow">
+                    <button wire:click="attemptExport" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
                     </button>
                     <button onclick="nuevoProducto()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow">
@@ -49,9 +52,9 @@
                                 <th class="py-2 px-4 text-center w-12"><input type="checkbox" wire:model.live="selectAll" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></th>
                                 <th class="py-2 px-4 text-left">Código</th>
                                 <th class="py-2 px-4 text-left">Producto</th>
+                                <th class="py-2 px-4 text-left">Categoría</th>
                                 <th class="py-2 px-4 text-left">Proveedor</th>
                                 <th class="py-2 px-4 text-right">Costo</th>
-                                <th class="py-2 px-4 text-right">Precio</th>
                                 <th class="py-2 px-4 text-center">Stock</th>
                                 <th class="py-2 px-4 text-center">Acciones</th>
                             </tr>
@@ -64,22 +67,22 @@
                                 </td>
                                 <td class="py-2 px-4">{{ $producto->codigo }}</td>
                                 <td class="py-2 px-4 font-bold">{{ $producto->nombre }}</td>
+                                <td class="py-2 px-4 text-sm text-gray-600">{{ $producto->categoria ?: 'General' }}</td>
                                 <td class="py-2 px-4 text-sm text-gray-500">{{ $producto->proveedor ? $producto->proveedor->nombre : 'Sin proveedor' }}</td>
                                 <td class="py-2 px-4 text-right text-red-600">${{ number_format($producto->precio_compra, 2) }}</td>
-                                <td class="py-2 px-4 text-right text-green-600 font-bold">${{ number_format($producto->precio_venta, 2) }}</td>
                                 <td class="py-2 px-4 text-center">
                                     <span class="px-2 py-1 rounded {{ $producto->stock <= $producto->stock_minimo ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }} font-bold">
                                         {{ $producto->stock }}
                                     </span>
                                 </td>
                                 <td class="py-2 px-4 text-center">
-                                    <button onclick="editarProducto('{{ $producto->id }}', '{{ $producto->codigo }}', '{{ $producto->nombre }}', '{{ $producto->precio_compra }}', '{{ $producto->precio_venta }}', '{{ $producto->stock }}', '{{ $producto->stock_minimo }}', '{{ $producto->proveedor_id }}')" class="text-blue-500 hover:text-blue-700 mr-2"><i class="fas fa-edit"></i></button>
+                                    <button onclick="editarProducto('{{ $producto->id }}', '{{ $producto->codigo }}', '{{ $producto->nombre }}', '{{ $producto->precio_compra }}', '{{ $producto->stock }}', '{{ $producto->stock_minimo }}', '{{ $producto->proveedor_id }}', '{{ $producto->categoria }}', '{{ $producto->ingreso_tipo_default ?? 'unidad' }}', {{ $producto->ingreso_paquetes_default ?? 1 }}, {{ $producto->ingreso_unidades_default ?? 1 }})" class="text-blue-500 hover:text-blue-700 mr-2"><i class="fas fa-edit"></i></button>
                                     <button onclick="eliminarProducto('{{ $producto->id }}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" class="py-4 text-center text-gray-500">No hay productos en el inventario.</td>
+                                <td colspan="9" class="py-4 text-center text-gray-500">No hay productos en el inventario.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -90,255 +93,9 @@
     </div>
 
     <script>
-        window.addEventListener('swal:success', event => {
-            Swal.fire({
-                icon: 'success',
-                title: event.detail[0].title,
-                text: event.detail[0].text,
-            });
-        });
-
-        window.addEventListener('swal:error', event => {
-            Swal.fire({
-                icon: 'error',
-                title: event.detail[0].title,
-                text: event.detail[0].text,
-            });
-        });
-
-        function nuevoProducto() {
-            let proveedoresHtml = '<select id="prod_proveedor" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500"><option value="">Seleccione Proveedor (Opcional)</option>';
-            @foreach($proveedores as $prov)
-                proveedoresHtml += `<option value="{{ $prov->id }}">{{ $prov->nombre }}</option>`;
-            @endforeach
-            proveedoresHtml += '</select>';
-
-            Swal.fire({
-                title: 'Nuevo Producto',
-                width: '900px',
-                html: `
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-4">
-                        <div>
-                            <label class="text-sm text-gray-600 font-bold mb-1 block">Código/SKU</label>
-                            <input id="prod_codigo" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Código de Barras/SKU" required>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600 font-bold mb-1 block">Nombre</label>
-                            <input id="prod_nombre" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre del Producto" oninput="this.value = this.value.toUpperCase()" required>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="text-sm text-gray-600 font-bold mb-1 block">Proveedor</label>
-                            ${proveedoresHtml}
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600 font-bold mb-1 block">Costo</label>
-                            <input id="prod_compra" type="number" step="0.01" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Precio de Compra $">
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600 font-bold mb-1 block">Precio Público</label>
-                            <input id="prod_venta" type="number" step="0.01" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Precio de Venta $">
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600 font-bold mb-1 block">Stock Actual</label>
-                            <input id="prod_stock" type="number" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Cantidad en Stock">
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600 font-bold mb-1 block">Stock Mínimo</label>
-                            <input id="prod_minimo" type="number" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Stock Mínimo (Alerta)">
-                        </div>
-                    </div>
-                `,
-                focusConfirm: false,
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Guardar',
-                cancelButtonText: 'Cancelar',
-                preConfirm: () => {
-                    const codigo = document.getElementById('prod_codigo').value;
-                    const nombre = document.getElementById('prod_nombre').value;
-                    if (!codigo || !nombre) {
-                        Swal.showValidationMessage('El código y el nombre son obligatorios');
-                        return false;
-                    }
-                    return {
-                        codigo: codigo,
-                        nombre: nombre,
-                        precio_compra: document.getElementById('prod_compra').value || 0,
-                        precio_venta: document.getElementById('prod_venta').value || 0,
-                        stock: document.getElementById('prod_stock').value || 0,
-                        stock_minimo: document.getElementById('prod_minimo').value || 0,
-                        proveedor_id: document.getElementById('prod_proveedor').value || null
-                    }
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Livewire.dispatch('guardarProducto', [result.value]);
-                }
-            });
-        }
-
-        function editarProducto(id, codigo, nombre, compra, venta, stock, minimo, proveedor_id) {
-            let proveedoresHtml = '<select id="prod_proveedor" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500"><option value="">Seleccione Proveedor (Opcional)</option>';
-            @foreach($proveedores as $prov)
-                proveedoresHtml += `<option value="{{ $prov->id }}" ${proveedor_id == '{{ $prov->id }}' ? 'selected' : ''}>{{ $prov->nombre }}</option>`;
-            @endforeach
-            proveedoresHtml += '</select>';
-
-            Swal.fire({
-                title: 'Editar Producto',
-                width: '900px',
-                html: `
-                    <input id="prod_id" type="hidden" value="${id}">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-4">
-                        <div>
-                            <label class="text-sm text-gray-600 font-bold mb-1 block">Código/SKU</label>
-                            <input id="prod_codigo" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100" placeholder="Código de Barras/SKU" value="${codigo}" required readonly>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600 font-bold mb-1 block">Nombre</label>
-                            <input id="prod_nombre" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre del Producto" oninput="this.value = this.value.toUpperCase()" value="${nombre}" required>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="text-sm text-gray-600 font-bold mb-1 block">Proveedor</label>
-                            ${proveedoresHtml}
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600 font-bold mb-1 block">Costo</label>
-                            <input id="prod_compra" type="number" step="0.01" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Precio de Compra $" value="${compra}">
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600 font-bold mb-1 block">Precio Público</label>
-                            <input id="prod_venta" type="number" step="0.01" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Precio de Venta $" value="${venta}">
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600 font-bold mb-1 block">Stock Actual</label>
-                            <input id="prod_stock" type="number" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Cantidad en Stock" value="${stock}">
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600 font-bold mb-1 block">Stock Mínimo</label>
-                            <input id="prod_minimo" type="number" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Stock Mínimo (Alerta)" value="${minimo}">
-                        </div>
-                    </div>
-                `,
-                focusConfirm: false,
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Actualizar',
-                cancelButtonText: 'Cancelar',
-                preConfirm: () => {
-                    const nombre = document.getElementById('prod_nombre').value;
-                    if (!nombre) {
-                        Swal.showValidationMessage('El nombre es obligatorio');
-                        return false;
-                    }
-                    return {
-                        id: document.getElementById('prod_id').value,
-                        codigo: document.getElementById('prod_codigo').value,
-                        nombre: nombre,
-                        precio_compra: document.getElementById('prod_compra').value || 0,
-                        precio_venta: document.getElementById('prod_venta').value || 0,
-                        stock: document.getElementById('prod_stock').value || 0,
-                        stock_minimo: document.getElementById('prod_minimo').value || 0,
-                        proveedor_id: document.getElementById('prod_proveedor').value || null
-                    }
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Livewire.dispatch('guardarProducto', [result.value]);
-                }
-            });
-        }
-
-        function eliminarProducto(id) {
-            Swal.fire({
-                title: '¿Eliminar producto?',
-                text: "Esta acción no se puede deshacer.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Livewire.dispatch('eliminarProducto', [id]);
-                }
-            });
-        }
-        function confirmarExportacion(btn, metodo) {
-            Swal.fire({
-                title: '¿Exportar a PDF?',
-                text: '¿Estás seguro que quieres exportar los registros seleccionados a PDF?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, exportar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Livewire.dispatch(metodo);
-                }
-            });
-        }
-        window.addEventListener('abrirOpcionesExportacion', event => {
-            Swal.fire({
-                title: 'Exportar Inventario',
-                text: '¿Cómo deseas exportar los registros seleccionados?',
-                icon: 'question',
-                showCancelButton: true,
-                showDenyButton: true,
-                confirmButtonColor: '#3085d6',
-                denyButtonColor: '#25D366',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '<i class="fas fa-file-pdf"></i> Descargar PDF',
-                denyButtonText: '<i class="fab fa-whatsapp"></i> WhatsApp',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Livewire.dispatch('exportSelected');
-                } else if (result.isDenied) {
-                    Swal.fire({
-                        title: 'Enviar por WhatsApp',
-                        input: 'text',
-                        inputLabel: 'Número de Teléfono (con código de país)',
-                        inputPlaceholder: '+52 222 123 4567',
-                        showCancelButton: true,
-                        confirmButtonText: 'Enviar'
-                    }).then((phoneResult) => {
-                        if (phoneResult.isConfirmed && phoneResult.value) {
-                            Livewire.dispatch('sendPdfWhatsApp', [phoneResult.value]);
-                        }
-                    });
-                }
-            });
-            
-            // Botón extra para email
-            const swalPopup = Swal.getPopup();
-            const btnEmail = document.createElement('button');
-            btnEmail.innerHTML = '<i class="fas fa-envelope"></i> Correo';
-            btnEmail.className = 'swal2-confirm swal2-styled';
-            btnEmail.style.backgroundColor = '#ea4335';
-            btnEmail.onclick = () => {
-                Swal.close();
-                Swal.fire({
-                    title: 'Enviar por Correo',
-                    input: 'email',
-                    inputLabel: 'Dirección de correo electrónico',
-                    inputPlaceholder: 'correo@ejemplo.com',
-                    showCancelButton: true,
-                    confirmButtonText: 'Enviar',
-                    confirmButtonColor: '#ea4335'
-                }).then((emailResult) => {
-                    if (emailResult.isConfirmed && emailResult.value) {
-                        Livewire.dispatch('sendPdfEmail', [emailResult.value]);
-                    }
-                });
-            };
-            const actions = swalPopup.querySelector('.swal2-actions');
-            actions.insertBefore(btnEmail, actions.children[1]);
-        });
+        // Variables dinámicas inyectadas desde Laravel para uso de JS externo
+        window.inventarioProveedores = @json($proveedores);
+        window.inventarioCategorias = @json($categorias);
     </script>
+    <script src="{{ asset('js/inventario.js') }}"></script>
 </div>
