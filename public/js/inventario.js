@@ -1181,11 +1181,11 @@ function ingresarStockModal(id, nombre, stock_actual, ingreso_tipo, ingreso_paqu
             // Generar detalles descriptivos para el registro de auditoría/historial
             let detallesAuditoria = "";
             if (tipo === 'caja') {
-                detallesAuditoria = \`Se ingresaron \${cant} cajas (\${paquetes} pqts/caja, \${unidades} uds/pqt). Total: \${sumado} piezas.\`;
+                detallesAuditoria = `Se ingresaron ${cant} cajas (${paquetes} pqts/caja, ${unidades} uds/pqt). Total: ${sumado} piezas.`;
             } else if (tipo === 'paquete') {
-                detallesAuditoria = \`Se ingresaron \${cant} paquetes (\${unidades} uds/pqt). Total: \${sumado} piezas.\`;
+                detallesAuditoria = `Se ingresaron ${cant} paquetes (${unidades} uds/pqt). Total: ${sumado} piezas.`;
             } else {
-                detallesAuditoria = \`Se ingresaron \${cant} piezas individuales.\`;
+                detallesAuditoria = `Se ingresaron ${cant} piezas individuales.`;
             }
 
             // Despacha evento a Livewire para sumar el stock y guardar el historial
