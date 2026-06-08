@@ -75,11 +75,12 @@
                                 <td class="py-2 px-4 font-bold">{{ $producto->nombre }}</td>
                                 <td class="py-2 px-4 text-sm text-gray-600">{{ $producto->categoria ?: 'General' }}</td>
                                 <td class="py-2 px-4 text-sm text-gray-500">{{ $producto->proveedor ? $producto->proveedor->nombre : 'Sin proveedor' }}</td>
-                                <td class="py-2 px-4 text-right text-red-600">
-                                    ${{ number_format($producto->precio_compra, 2) }}
-                                    {{-- Etiqueta visual para indicar si el costo incluye el 16% de IVA --}}
+                                <td class="py-2 px-4 text-right">
                                     @if($producto->aplica_iva)
-                                        <br><span class="text-xs text-gray-500 font-bold">+16% IVA</span>
+                                        <div class="text-red-600 font-bold">${{ number_format($producto->precio_compra * 1.16, 2) }}</div>
+                                        <div class="text-xs text-gray-500">(Neto: ${{ number_format($producto->precio_compra, 2) }} + IVA)</div>
+                                    @else
+                                        <div class="text-red-600 font-bold">${{ number_format($producto->precio_compra, 2) }}</div>
                                     @endif
                                 </td>
                                 <td class="py-2 px-4 text-center">

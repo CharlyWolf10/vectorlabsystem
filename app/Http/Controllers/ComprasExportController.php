@@ -14,6 +14,6 @@ class ComprasExportController extends Controller
 
         $pdf = Pdf::loadView('pdf.compras', compact('cuentas'));
         
-        return $pdf->download('reporte_cuentas_por_pagar.pdf');
+        return $pdf->stream('reporte_cuentas_por_pagar.pdf');
     }
 }

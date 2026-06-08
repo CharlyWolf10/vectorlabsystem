@@ -26,7 +26,7 @@ class PdfController extends Controller
         ];
         
         $pdf = Pdf::loadView('pdf.inventario', $data);
-        return $pdf->download('reporte_inventario_' . date('Y_m_d') . '.pdf');
+        return $pdf->stream('reporte_inventario_' . date('Y_m_d') . '.pdf');
     }
 
     public function exportCompras(Request $request)
@@ -46,7 +46,7 @@ class PdfController extends Controller
         ];
         
         $pdf = Pdf::loadView('pdf.compras', $data);
-        return $pdf->download('directorio_proveedores_' . date('Y_m_d') . '.pdf');
+        return $pdf->stream('directorio_proveedores_' . date('Y_m_d') . '.pdf');
     }
 
     public function exportClientes(Request $request)
@@ -92,6 +92,6 @@ class PdfController extends Controller
         ];
         
         $pdf = Pdf::loadView('pdf.historial', $data);
-        return $pdf->download('historial_producto_' . $producto->codigo . '_' . date('Y_m_d') . '.pdf');
+        return $pdf->stream('historial_producto_' . $producto->codigo . '_' . date('Y_m_d') . '.pdf');
     }
 }
