@@ -58,11 +58,11 @@
                                 <th class="py-2 px-4 text-center w-12"><input type="checkbox" wire:model.live="selectAll" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></th>
                                 <th class="py-2 px-2 text-left w-24">Código</th>
                                 <th class="py-2 px-4 text-left">Producto</th>
-                                <th class="py-2 px-2 text-left w-36">Categoría</th>
-                                <th class="py-2 px-2 text-left w-48">Proveedor</th>
-                                <th class="py-2 px-4 text-right">Costo</th>
-                                <th class="py-2 px-4 text-center">Stock</th>
-                                <th class="py-2 px-2 text-center w-32">Acciones</th>
+                                <th class="py-2 px-2 text-left w-28">Categoría</th>
+                                <th class="py-2 px-2 text-left w-32">Proveedor</th>
+                                <th class="py-2 px-4 text-right w-24">Costo</th>
+                                <th class="py-2 px-4 text-center w-20">Stock</th>
+                                <th class="py-2 px-2 text-center w-36">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -88,17 +88,19 @@
                                         {{ $producto->stock }}
                                     </span>
                                 </td>
-                                <td class="py-2 px-2 text-center whitespace-nowrap">
-                                    {{-- Botón exclusivo para ingresar stock adicional mediante el nuevo modal --}}
-                                    <button onclick="ingresarStockModal('{{ $producto->id }}', '{{ addslashes($producto->nombre) }}', '{{ $producto->stock }}', '{{ $producto->ingreso_tipo_default ?? 'unidad' }}', {{ $producto->ingreso_paquetes_default ?? 1 }}, {{ $producto->ingreso_unidades_default ?? 1 }})" class="text-purple-600 hover:text-purple-800 mr-2" title="Ingresar Stock Adicional"><i class="fas fa-box-open"></i></button>
-                                    
-                                    {{-- Botón para editar la información básica y precios del producto --}}
-                                    <button onclick="editarProducto('{{ $producto->id }}', '{{ $producto->codigo }}', '{{ addslashes($producto->nombre) }}', '{{ $producto->precio_compra }}', {{ $producto->aplica_iva ? 'true' : 'false' }}, '{{ $producto->stock_minimo }}', '{{ $producto->proveedor_id }}', '{{ $producto->categoria }}', {{ $producto->piezas_por_paquete ?? 1 }}, {{ $producto->paquetes_por_caja ?? 1 }})" class="text-blue-500 hover:text-blue-700 mr-2" title="Editar Producto"><i class="fas fa-edit"></i></button>
-                                    
-                                    {{-- Botón para ver la auditoría y exportar el historial a PDF --}}
-                                    <button wire:click="cargarHistorial({{ $producto->id }})" class="text-green-600 hover:text-green-800 mr-2" title="Historial y Auditoría"><i class="fas fa-history"></i></button>
-                                    
-                                    <button onclick="eliminarProducto('{{ $producto->id }}')" class="text-red-500 hover:text-red-700" title="Eliminar Producto"><i class="fas fa-trash"></i></button>
+                                <td class="py-2 px-2 text-center">
+                                    <div class="flex justify-center items-center space-x-3 whitespace-nowrap">
+                                        {{-- Botón exclusivo para ingresar stock adicional mediante el nuevo modal --}}
+                                        <button onclick="ingresarStockModal('{{ $producto->id }}', '{{ addslashes($producto->nombre) }}', '{{ $producto->stock }}', '{{ $producto->ingreso_tipo_default ?? 'unidad' }}', {{ $producto->ingreso_paquetes_default ?? 1 }}, {{ $producto->ingreso_unidades_default ?? 1 }})" class="text-purple-600 hover:text-purple-800" title="Ingresar Stock Adicional"><i class="fas fa-box-open"></i></button>
+                                        
+                                        {{-- Botón para editar la información básica y precios del producto --}}
+                                        <button onclick="editarProducto('{{ $producto->id }}', '{{ $producto->codigo }}', '{{ addslashes($producto->nombre) }}', '{{ $producto->precio_compra }}', {{ $producto->aplica_iva ? 'true' : 'false' }}, '{{ $producto->stock_minimo }}', '{{ $producto->proveedor_id }}', '{{ $producto->categoria }}', {{ $producto->piezas_por_paquete ?? 1 }}, {{ $producto->paquetes_por_caja ?? 1 }})" class="text-blue-500 hover:text-blue-700" title="Editar Producto"><i class="fas fa-edit"></i></button>
+                                        
+                                        {{-- Botón para ver la auditoría y exportar el historial a PDF --}}
+                                        <button wire:click="cargarHistorial({{ $producto->id }})" class="text-green-600 hover:text-green-800" title="Historial y Auditoría"><i class="fas fa-history"></i></button>
+                                        
+                                        <button onclick="eliminarProducto('{{ $producto->id }}')" class="text-red-500 hover:text-red-700" title="Eliminar Producto"><i class="fas fa-trash"></i></button>
+                                    </div>
                                 </td>
                             </tr>
                             @empty
