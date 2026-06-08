@@ -9,12 +9,18 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-[95%] mx-auto sm:px-6 lg:px-8">
             <div class="mb-6 flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-gray-800">Control de Inventario</h2>
                 <div>
                     <button wire:click="attemptExport" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
+                    </button>
+                    <button onclick="abrirGestorCategorias()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow mr-2">
+                        <i class="fas fa-tags mr-2"></i> Categorías
+                    </button>
+                    <button onclick="nuevoProveedor()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow mr-2">
+                        <i class="fas fa-truck mr-2"></i> Nuevo Proveedor
                     </button>
                     <button onclick="nuevoProducto()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-plus mr-2"></i> Nuevo Producto
@@ -50,13 +56,13 @@
                         <thead class="bg-gray-100 text-gray-600">
                             <tr>
                                 <th class="py-2 px-4 text-center w-12"><input type="checkbox" wire:model.live="selectAll" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></th>
-                                <th class="py-2 px-4 text-left">Código</th>
+                                <th class="py-2 px-2 text-left w-24">Código</th>
                                 <th class="py-2 px-4 text-left">Producto</th>
-                                <th class="py-2 px-4 text-left">Categoría</th>
-                                <th class="py-2 px-4 text-left">Proveedor</th>
+                                <th class="py-2 px-2 text-left w-36">Categoría</th>
+                                <th class="py-2 px-2 text-left w-48">Proveedor</th>
                                 <th class="py-2 px-4 text-right">Costo</th>
                                 <th class="py-2 px-4 text-center">Stock</th>
-                                <th class="py-2 px-4 text-center">Acciones</th>
+                                <th class="py-2 px-2 text-center w-32">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,15 +75,29 @@
                                 <td class="py-2 px-4 font-bold">{{ $producto->nombre }}</td>
                                 <td class="py-2 px-4 text-sm text-gray-600">{{ $producto->categoria ?: 'General' }}</td>
                                 <td class="py-2 px-4 text-sm text-gray-500">{{ $producto->proveedor ? $producto->proveedor->nombre : 'Sin proveedor' }}</td>
-                                <td class="py-2 px-4 text-right text-red-600">${{ number_format($producto->precio_compra, 2) }}</td>
+                                <td class="py-2 px-4 text-right text-red-600">
+                                    ${{ number_format($producto->precio_compra, 2) }}
+                                    {{-- Etiqueta visual para indicar si el costo incluye el 16% de IVA --}}
+                                    @if($producto->aplica_iva)
+                                        <br><span class="text-xs text-gray-500 font-bold">+16% IVA</span>
+                                    @endif
+                                </td>
                                 <td class="py-2 px-4 text-center">
                                     <span class="px-2 py-1 rounded {{ $producto->stock <= $producto->stock_minimo ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }} font-bold">
                                         {{ $producto->stock }}
                                     </span>
                                 </td>
-                                <td class="py-2 px-4 text-center">
-                                    <button onclick="editarProducto('{{ $producto->id }}', '{{ $producto->codigo }}', '{{ $producto->nombre }}', '{{ $producto->precio_compra }}', '{{ $producto->stock }}', '{{ $producto->stock_minimo }}', '{{ $producto->proveedor_id }}', '{{ $producto->categoria }}', '{{ $producto->ingreso_tipo_default ?? 'unidad' }}', {{ $producto->ingreso_paquetes_default ?? 1 }}, {{ $producto->ingreso_unidades_default ?? 1 }})" class="text-blue-500 hover:text-blue-700 mr-2"><i class="fas fa-edit"></i></button>
-                                    <button onclick="eliminarProducto('{{ $producto->id }}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                                <td class="py-2 px-2 text-center whitespace-nowrap">
+                                    {{-- Botón exclusivo para ingresar stock adicional mediante el nuevo modal --}}
+                                    <button onclick="ingresarStockModal('{{ $producto->id }}', '{{ addslashes($producto->nombre) }}', '{{ $producto->stock }}', '{{ $producto->ingreso_tipo_default ?? 'unidad' }}', {{ $producto->ingreso_paquetes_default ?? 1 }}, {{ $producto->ingreso_unidades_default ?? 1 }})" class="text-purple-600 hover:text-purple-800 mr-2" title="Ingresar Stock Adicional"><i class="fas fa-box-open"></i></button>
+                                    
+                                    {{-- Botón para editar la información básica y precios del producto --}}
+                                    <button onclick="editarProducto('{{ $producto->id }}', '{{ $producto->codigo }}', '{{ addslashes($producto->nombre) }}', '{{ $producto->precio_compra }}', {{ $producto->aplica_iva ? 'true' : 'false' }}, '{{ $producto->stock_minimo }}', '{{ $producto->proveedor_id }}', '{{ $producto->categoria }}')" class="text-blue-500 hover:text-blue-700 mr-2" title="Editar Producto"><i class="fas fa-edit"></i></button>
+                                    
+                                    {{-- Botón para ver la auditoría y exportar el historial a PDF --}}
+                                    <button wire:click="cargarHistorial({{ $producto->id }})" class="text-green-600 hover:text-green-800 mr-2" title="Historial y Auditoría"><i class="fas fa-history"></i></button>
+                                    
+                                    <button onclick="eliminarProducto('{{ $producto->id }}')" class="text-red-500 hover:text-red-700" title="Eliminar Producto"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
                             @empty
@@ -97,5 +117,6 @@
         window.inventarioProveedores = @json($proveedores);
         window.inventarioCategorias = @json($categorias);
     </script>
-    <script src="{{ asset('js/inventario.js') }}"></script>
+    <script src="{{ asset('js/proveedores.js') }}?v={{ time() }}"></script>
+    <script src="{{ asset('js/inventario.js') }}?v={{ time() }}"></script>
 </div>

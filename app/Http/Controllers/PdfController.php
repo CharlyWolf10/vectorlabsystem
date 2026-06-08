@@ -66,6 +66,25 @@ class PdfController extends Controller
         ];
         
         $pdf = Pdf::loadView('pdf.clientes', $data);
-        return $pdf->download('directorio_clientes_' . date('Y_m_d') . '.pdf');
+    }
+
+    public function exportHistorial(Request $request, $id)
+    {
+        $producto = Producto::findOrFail($id);
+        $historial = \App\Models\HistorialInventario::where('producto_id', $id)
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        $data = [
+            'title' => 'Historial de Producto: ' . $producto->nombre,
+            'date' => date('d/m/Y'),
+            'producto' => $producto,
+            'historial' => $historial,
+            'logo' => 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png'
+        ];
+        
+        $pdf = Pdf::loadView('pdf.historial', $data);
+        return $pdf->download('historial_producto_' . $producto->codigo . '_' . date('Y_m_d') . '.pdf');
     }
 }

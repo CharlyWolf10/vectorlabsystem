@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Producto;
+use App\Models\HistorialInventario;
 use Livewire\Attributes\On;
 
 class Inventario extends Component
@@ -72,99 +73,217 @@ class Inventario extends Component
             // Edit existing product
             $producto = Producto::find($data['id']);
             if ($producto) {
+                $cambios = [];
+                $camposTracking = [
+                    'nombre' => 'Nombre',
+                    'precio_compra' => 'Costo Neto',
+                    'precio_venta' => 'Precio Venta',
+                    'stock' => 'Stock Actual',
+                    'stock_minimo' => 'Stock Mínimo',
+                    'proveedor_id' => 'Proveedor',
+                    'categoria' => 'Categoría',
+                    'aplica_iva' => 'Aplica IVA'
+                ];
+                $detalles = [];
+                if ($producto->stock_minimo != $stock_minimo) {
+                    $detalles[] = "Stock Mínimo cambió de '{$producto->stock_minimo}' a '{$stock_minimo}'";
+                }
+                if ($producto->precio_compra != $precio_compra) {
+                    $detalles[] = "Precio de compra cambió de '\${$producto->precio_compra}' a '\${$precio_compra}'";
+                }
+                if ($producto->aplica_iva != $aplicaIva) {
+                    $estadoIva = $aplicaIva ? "Activado" : "Desactivado";
+                    $detalles[] = "Estado del IVA modificado: {$estadoIva}";
+                }
+
                 $producto->update([
-                    'nombre' => $data['nombre'],
-                    'precio_compra' => $data['precio_compra'],
-                    'precio_venta' => $data['precio_venta'] ?? 0,
-                    'stock' => $data['stock'],
-                    'stock_minimo' => $data['stock_minimo'],
-                    'proveedor_id' => $data['proveedor_id'],
-                    'categoria' => $data['categoria'] ?? null,
-                    'ingreso_tipo_default' => $data['ingreso_tipo_default'] ?? 'unidad',
-                    'ingreso_paquetes_default' => $data['ingreso_paquetes_default'] ?? 1,
-                    'ingreso_unidades_default' => $data['ingreso_unidades_default'] ?? 1,
+                    'codigo' => mb_strtoupper($data['codigo'] ?? $producto->codigo),
+                    'nombre' => mb_strtoupper($data['nombre']),
+                    'precio_compra' => $precio_compra,
+                    'precio_venta' => $precio_venta,
+                    'aplica_iva' => $aplicaIva,
+                    'stock_minimo' => $stock_minimo,
+                    'proveedor_id' => $data['proveedor_id'] ?? null,
+                    'categoria_id' => $categoriaId,
                 ]);
+
+                if (!empty($detalles)) {
+                    HistorialInventario::create([
+                        'producto_id' => $producto->id,
+                        'user_id' => auth()->id(),
+                        'accion' => 'EDITADO',
+                        'detalles' => $detalles
+                    ]);
+                }
             }
         } else {
-            // Check if we can restore a soft-deleted product by exact name
             $nombre = $data['nombre'];
-            $productoEliminado = Producto::onlyTrashed()
-                ->where('nombre', $nombre)
-                ->first();
+            $productoEliminado = Producto::onlyTrashed()->where('nombre', $nombre)->first();
 
             if ($productoEliminado) {
-                // Restore the deleted product and update its info
                 $productoEliminado->restore();
                 $productoEliminado->update([
-                    'precio_compra' => $data['precio_compra'],
-                    'precio_venta' => $data['precio_venta'] ?? 0,
-                    'stock' => $data['stock'],
-                    'stock_minimo' => $data['stock_minimo'],
-                    'proveedor_id' => $data['proveedor_id'],
-                    'categoria' => $data['categoria'] ?? null,
-                    'ingreso_tipo_default' => $data['ingreso_tipo_default'] ?? 'unidad',
-                    'ingreso_paquetes_default' => $data['ingreso_paquetes_default'] ?? 1,
-                    'ingreso_unidades_default' => $data['ingreso_unidades_default'] ?? 1,
+                    'precio_compra' => $precio_compra,
+                    'precio_venta' => $precio_venta,
+                    'stock' => $stock,
+                    'stock_minimo' => $stock_minimo,
+                    'proveedor_id' => $data['proveedor_id'] ?? null,
+                    'categoria_id' => $categoriaId,
+                    'aplica_iva' => $aplicaIva,
                 ]);
-                $this->dispatch('swal:success', ['title' => '¡Éxito!', 'text' => 'Producto guardado correctamente.']);
+                
+                HistorialInventario::create([
+                    'producto_id' => $productoEliminado->id,
+                    'user_id' => auth()->id(),
+                    'accion' => 'RESTAURADO',
+                    'detalles' => ['El producto fue restaurado y actualizado.']
+                ]);
+                $this->dispatch('swal:success', ['title' => '¡Éxito!', 'text' => 'El producto ha sido editado correctamente.']);
                 return;
             }
 
-            // Create new product
-            $codigo = $data['codigo'] ?? '';
-            
-            if (empty($codigo)) {
-                $categoria = $data['categoria'] ?? 'General';
-                $prefix = strtoupper(substr($categoria, 0, 3));
-                if (strlen($prefix) < 3) {
-                    $prefix = str_pad($prefix, 3, 'X');
-                }
-                
-                // Find highest sequence for this prefix (including soft deleted)
-                $lastProduct = Producto::withTrashed()
-                    ->where('codigo', 'like', "VL-{$prefix}-%")
-                    ->orderByRaw("CAST(SUBSTRING(codigo, 9) AS UNSIGNED) DESC")
-                    ->first();
-                
-                $nextNum = 1;
-                if ($lastProduct) {
-                    $parts = explode('-', $lastProduct->codigo);
-                    if (count($parts) >= 3 && is_numeric($parts[2])) {
-                        $nextNum = intval($parts[2]) + 1;
-                    }
-                }
-                
-                $codigo = sprintf("VL-%s-%04d", $prefix, $nextNum);
-            }
+            $nuevoProducto = Producto::create([
+                'codigo' => $data['codigo'] ?? 'N/A',
+                'nombre' => mb_strtoupper($data['nombre']),
+                'precio_compra' => $precio_compra,
+                'precio_venta' => $precio_venta,
+                'stock' => $stock,
+                'stock_minimo' => $stock_minimo,
+                'proveedor_id' => $data['proveedor_id'] ?? null,
+                'categoria_id' => $categoriaId,
+                'aplica_iva' => $aplicaIva,
+            ]);
 
-            Producto::create([
-                'codigo' => $codigo,
-                'nombre' => $data['nombre'],
-                'precio_compra' => $data['precio_compra'],
-                'precio_venta' => $data['precio_venta'] ?? 0,
-                'stock' => $data['stock'],
-                'stock_minimo' => $data['stock_minimo'],
-                'proveedor_id' => $data['proveedor_id'],
-                'categoria' => $data['categoria'] ?? null,
-                'ingreso_tipo_default' => $data['ingreso_tipo_default'] ?? 'unidad',
-                'ingreso_paquetes_default' => $data['ingreso_paquetes_default'] ?? 1,
-                'ingreso_unidades_default' => $data['ingreso_unidades_default'] ?? 1,
+            HistorialInventario::create([
+                'producto_id' => $nuevoProducto->id,
+                'user_id' => auth()->id(),
+                'accion' => 'CREADO',
+                'detalles' => ["Producto ingresado al sistema con precio base \$$precio_compra"]
             ]);
         }
         
-        $this->dispatch('swal:success', ['title' => '¡Éxito!', 'text' => 'Producto guardado correctamente.']);
+        $this->dispatch('swal:success', ['title' => $id ? '¡Editado!' : '¡Agregado!', 'text' => $id ? 'El producto ha sido editado correctamente.' : 'El producto ha sido agregado al inventario.']);
     }
 
+    /**
+     * Crea una nueva categoría en el catálogo.
+     */
+    #[On('crearCategoria')]
+    public function crearCategoria($nombre, $tipo_medida = null)
+    {
+        $nombre = strtoupper(trim($nombre));
+        if (!empty($nombre)) {
+            $cat = \App\Models\Categoria::firstOrCreate(
+                ['nombre' => $nombre],
+                ['tipo_medida' => $tipo_medida]
+            );
+            $this->emitirCategoriasActualizadas();
+            $this->dispatch('categoriaCreada', nombre: $cat->nombre, tipo_medida: $cat->tipo_medida);
+            $this->dispatch('swal:success', [
+                'title' => '¡Agregada!',
+                'text'  => 'La categoría ha sido creada correctamente.'
+            ]);
+        }
+    }
+
+    /**
+     * Marca un producto como eliminado (Soft Delete).
+     */
     #[On('eliminarProducto')]
     public function eliminarProducto($id)
     {
         $producto = Producto::find($id);
         if ($producto) {
+            HistorialInventario::create([
+                'producto_id' => $producto->id,
+                'user_id' => auth()->id(),
+                'accion' => 'ELIMINADO',
+                'detalles' => ["Producto eliminado del inventario."]
+            ]);
             $producto->delete();
             $this->dispatch('swal:success', ['title' => '¡Eliminado!', 'text' => 'Producto eliminado del inventario.']);
         }
     }
 
+    /**
+     * Edita los detalles de una categoría existente.
+     */
+    #[On('actualizarCategoria')]
+    public function actualizarCategoria($id, $nuevoNombre, $tipo_medida = null)
+    {
+        $categoria = \App\Models\Categoria::find($id);
+        if ($categoria && !empty(trim($nuevoNombre))) {
+            $viejoNombre = $categoria->nombre;
+            $categoria->nombre = trim($nuevoNombre);
+            $categoria->tipo_medida = $tipo_medida;
+            $categoria->save();
+            
+            \App\Models\Producto::where('categoria', $viejoNombre)->update(['categoria' => $categoria->nombre]);
+            
+            $this->dispatch('swal:success', ['title' => '¡Editada!', 'text' => 'La categoría ha sido editada correctamente.']);
+            $this->emitirCategoriasActualizadas();
+            $this->dispatch('categoriaActualizada');
+        }
+    }
+
+    /**
+     * Elimina una categoría y limpia la referencia en los productos asociados.
+     */
+    #[On('eliminarCategoria')]
+    public function eliminarCategoria($id)
+    {
+        $categoria = \App\Models\Categoria::find($id);
+        if ($categoria) {
+            $nombre = $categoria->nombre;
+            $categoria->delete();
+            
+            \App\Models\Producto::where('categoria', $nombre)->update(['categoria' => null]);
+            
+            $this->dispatch('swal:success', ['title' => '¡Eliminada!', 'text' => 'La categoría ha sido eliminada correctamente.']);
+            $this->emitirCategoriasActualizadas();
+        }
+    }
+
+    /**
+     * Registra un ingreso de stock independiente.
+     * Actualiza el stock del producto y guarda un registro "INGRESO_STOCK" en el historial de auditoría.
+     */
+    #[On('registrarIngresoStock')]
+    public function registrarIngresoStock($productoId, $cantidadASumar, $detallesAuditoria)
+    {
+        $producto = Producto::find($productoId);
+        if ($producto && $cantidadASumar > 0) {
+            $stockAnterior = $producto->stock;
+            $producto->stock += $cantidadASumar;
+            $producto->save();
+
+            HistorialInventario::create([
+                'producto_id' => $producto->id,
+                'user_id' => auth()->id(),
+                'accion' => 'INGRESO_STOCK',
+                'detalles' => [
+                    $detallesAuditoria,
+                    "Stock anterior: $stockAnterior",
+                    "Stock nuevo: " . $producto->stock
+                ]
+            ]);
+
+            $this->dispatch('swal:success', ['title' => '¡Stock Actualizado!', 'text' => 'El inventario se ha incrementado correctamente.']);
+        }
+    }
+
+    /**
+     * Emite un evento para actualizar la lista de categorías en la interfaz.
+     */
+    private function emitirCategoriasActualizadas()
+    {
+        $categorias = \App\Models\Categoria::orderBy('nombre')->get()->toArray();
+        $this->dispatch('categoriasActualizadas', categorias: $categorias);
+    }
+
+    /**
+     * Valida la selección de productos para exportación.
+     */
     public function attemptExport()
     {
         if (empty($this->selectedProductos)) {
@@ -194,5 +313,49 @@ class Inventario extends Component
     {
         $mensaje = "TAL PARECE QUE HAY UN FALTANTE EN VECTOR LAB PORFAVOR CONSULTA AL ADMIN PARA SABER CUAL";
         $this->dispatch('openWhatsApp', ['telefono' => $telefono, 'mensaje' => $mensaje]);
+    }
+
+    #[On('guardarProveedor')]
+    public function guardarProveedor($data)
+    {
+        $id = $data['id'] ?? null;
+        \App\Models\Proveedor::updateOrCreate(
+            ['id' => $id],
+            [
+                'nombre' => $data['nombre'],
+                'telefono' => $data['telefono'] ?? null,
+                'email' => $data['email'] ?? null,
+                'direccion' => $data['direccion'] ?? null,
+                'rfc' => $data['rfc'] ?? null,
+                'banco' => $data['banco'] ?? null,
+                'clabe' => $data['clabe'] ?? null,
+                'num_cuenta' => $data['num_cuenta'] ?? null,
+                'titular_cuenta' => $data['titular_cuenta'] ?? null,
+            ]
+        );
+        $this->dispatch('swal:success', ['title' => '¡Éxito!', 'text' => 'Proveedor guardado correctamente.']);
+    }
+
+    #[On('cargarHistorial')]
+    public function cargarHistorial($id)
+    {
+        $producto = Producto::withTrashed()->find($id);
+        if ($producto) {
+            // Retrieve history
+            $historialRaw = HistorialInventario::with('user')
+                                ->where('producto_id', $id)
+                                ->orderBy('created_at', 'desc')
+                                ->get();
+                                
+            $historial = $historialRaw->map(function($h) {
+                return [
+                    'fecha' => $h->created_at->format('d/m/Y h:i A'),
+                    'usuario' => $h->user ? $h->user->name : 'Sistema',
+                    'accion' => $h->accion,
+                    'detalles' => is_array($h->detalles) ? $h->detalles : json_decode($h->detalles, true)
+                ];
+            });
+            $this->dispatch('mostrarHistorial', historial: $historial, nombre: $producto->nombre, id: $producto->id);
+        }
     }
 }

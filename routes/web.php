@@ -19,10 +19,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
+    Route::get('/proveedores', \App\Livewire\Proveedores::class)->name('proveedores');
     Route::get('/compras-pagos', ComprasYPagos::class)->name('compras');
     Route::get('/compras/export', [PdfController::class, 'exportCompras'])->name('compras.export');
     Route::get('/inventario', \App\Livewire\Inventario::class)->name('inventario');
     Route::get('/inventario/export', [PdfController::class, 'exportInventario'])->name('inventario.export');
+    Route::get('/inventario/{id}/historial/export', [PdfController::class, 'exportHistorial'])->name('inventario.export_historial');
     Route::get('/clientes', \App\Livewire\Clientes::class)->name('clientes');
     Route::get('/clientes/export', [PdfController::class, 'exportClientes'])->name('clientes.export');
     Route::get('/punto-de-venta', \App\Livewire\PuntoDeVenta::class)->name('pos');
