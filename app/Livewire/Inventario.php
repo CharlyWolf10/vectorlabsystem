@@ -65,8 +65,16 @@ class Inventario extends Component
     #[On('guardarProducto')]
     public function guardarProducto($data)
     {
+        $precio_compra = floatval($data['precio_compra'] ?? 0);
+        $precio_venta = floatval($data['precio_venta'] ?? 0);
+        $aplicaIva = isset($data['aplica_iva']) && $data['aplica_iva'] ? 1 : 0;
+        $stock_minimo = intval($data['stock_minimo'] ?? 0);
+        $stock = intval($data['stock'] ?? 0);
+        $categoriaId = null;
+
         if (!empty($data['categoria'])) {
-            \App\Models\Categoria::firstOrCreate(['nombre' => $data['categoria']]);
+            $cat = \App\Models\Categoria::firstOrCreate(['nombre' => $data['categoria']]);
+            $categoriaId = $cat->id;
         }
 
         if (isset($data['id']) && !empty($data['id'])) {

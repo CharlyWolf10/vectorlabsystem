@@ -622,7 +622,7 @@ function nuevoProducto() {
  * ACTUALIZADO: Se eliminó la sección de ingreso de stock (ahora tiene su propio modal)
  * y se integró el checkbox para indicar si el producto aplica IVA (aplica_iva).
  */
-function editarProducto(id, codigo, nombre, compra, aplica_iva, minimo, proveedor_id, categoria) {
+function editarProducto(id, codigo, nombre, compra, aplica_iva, minimo, proveedor_id, categoria, piezas = 1, paquetes = 1) {
     let proveedoresHtml = generarHtmlProveedores(proveedor_id);
 
     // Si el producto tiene IVA, se marca el checkbox predeterminadamente
@@ -656,7 +656,7 @@ function editarProducto(id, codigo, nombre, compra, aplica_iva, minimo, proveedo
                     <label class="text-sm text-gray-600 font-bold mb-1 block">Costo Neto</label>
                     <input id="prod_compra" type="number" step="0.01" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Precio de Compra $" value="${compra}" oninput="if(document.getElementById('prod_iva').checked) calcularIvaCosto(document.getElementById('prod_iva'))">
                     <div class="mt-2 flex items-center">
-                        <input type="checkbox" id="prod_iva" class="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" onchange="calcularIvaCosto(this)">
+                        <input type="checkbox" id="prod_iva" class="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" onchange="calcularIvaCosto(this)" ${ivaCheckedHtml}>
                         <label for="prod_iva" class="text-xs text-gray-600 font-medium cursor-pointer">Sumar 16% IVA</label>
                     </div>
                 </div>
@@ -667,8 +667,12 @@ function editarProducto(id, codigo, nombre, compra, aplica_iva, minimo, proveedo
                 <div>
                     <label id="label_prod_minimo" class="text-sm text-gray-600 font-bold mb-1 block">Stock Mínimo</label>
                     <div class="flex">
-                        <input id="prod_minimo" type="number" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Cantidad (Piezas)" value="${minimo}">
-                        <input type="hidden" id="prod_minimo_tipo" value="unidad">
+                        <input id="prod_minimo" type="number" class="w-1/2 border border-gray-300 rounded-l-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Cantidad" value="${minimo}">
+                        <select id="prod_minimo_tipo" class="w-1/2 border border-l-0 border-gray-300 rounded-r-md shadow-sm px-3 py-2 bg-gray-50 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="unidad">Unidades</option>
+                            <option value="paquete">Paquetes</option>
+                            <option value="caja">Cajas</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -720,6 +724,12 @@ function editarProducto(id, codigo, nombre, compra, aplica_iva, minimo, proveedo
             let minimoIngresado = document.getElementById('prod_minimo').value || 0;
             let minimoTipo = document.getElementById('prod_minimo_tipo') ? document.getElementById('prod_minimo_tipo').value : 'unidad';
             let minimoCalculado = minimoIngresado;
+            
+            if (minimoTipo === 'caja') {
+                minimoCalculado = minimoIngresado * (paquetes * piezas);
+            } else if (minimoTipo === 'paquete') {
+                minimoCalculado = minimoIngresado * piezas;
+            }
             
             // Estructura de datos que se enviará a Livewire para guardar
             const data = {
