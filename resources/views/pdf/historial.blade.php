@@ -16,8 +16,6 @@
 @endsection
 
 @section('content')
-    <h1 class="report-title">{{ $title }}</h1>
-
     <div class="info-box">
         <table style="width: 100%; margin: 0; border: none;">
             <tr>

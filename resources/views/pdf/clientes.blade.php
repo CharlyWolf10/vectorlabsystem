@@ -3,8 +3,6 @@
 @section('title', $title)
 
 @section('content')
-    <h1 class="report-title">{{ $title }}</h1>
-
     <table class="data-table">
         <thead>
             <tr>
