@@ -35,14 +35,24 @@ class BusinessProfile extends Component
 
     public function guardar()
     {
+        // Convertir a maysculas y limpiar espacios
+        $this->nombre = strtoupper(trim($this->nombre ?? ''));
+        $this->direccion = strtoupper(trim($this->direccion ?? ''));
+        $this->rfc = strtoupper(trim($this->rfc ?? ''));
+        $this->telefono = trim($this->telefono ?? '');
+
         $this->validate([
             'nombre' => 'nullable|string|max:255',
             'direccion' => 'nullable|string|max:255',
-            'rfc' => 'nullable|string|max:255',
-            'telefono' => 'nullable|string|max:255',
+            'rfc' => 'nullable|string|min:12|max:13',
+            'telefono' => 'nullable|digits:10',
             'correo' => 'nullable|email|max:255',
             'sitio_web' => 'nullable|string|max:255',
             'logo' => 'nullable|image|max:2048', // max 2MB
+        ], [
+            'telefono.digits' => 'El telfono debe tener exactamente 10 dgitos.',
+            'rfc.min' => 'El RFC debe tener al menos 12 caracteres.',
+            'rfc.max' => 'El RFC no puede exceder 13 caracteres.'
         ]);
 
         $profile = BusinessProfileModel::first() ?? new BusinessProfileModel();

@@ -19,28 +19,28 @@
                         <!-- Nombre del Negocio -->
                         <div>
                             <label for="nombre" class="block font-medium text-sm text-gray-700">Nombre del Negocio</label>
-                            <input id="nombre" type="text" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" wire:model="nombre" />
+                            <input id="nombre" type="text" style="text-transform: uppercase;" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" wire:model="nombre" />
                             @error('nombre') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- RFC -->
                         <div>
                             <label for="rfc" class="block font-medium text-sm text-gray-700">RFC</label>
-                            <input id="rfc" type="text" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" wire:model="rfc" />
+                            <input id="rfc" type="text" maxlength="13" style="text-transform: uppercase;" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" wire:model="rfc" />
                             @error('rfc') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- Dirección -->
                         <div class="md:col-span-2">
                             <label for="direccion" class="block font-medium text-sm text-gray-700">Dirección Completa</label>
-                            <input id="direccion" type="text" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" wire:model="direccion" />
+                            <input id="direccion" type="text" style="text-transform: uppercase;" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" wire:model="direccion" />
                             @error('direccion') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- Teléfono -->
                         <div>
                             <label for="telefono" class="block font-medium text-sm text-gray-700">Teléfono</label>
-                            <input id="telefono" type="text" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" wire:model="telefono" />
+                            <input id="telefono" type="text" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" wire:model="telefono" />
                             @error('telefono') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>
 
