@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Producto;
 use App\Models\Proveedor;
+use App\Models\BusinessProfile;
 
 class PdfController extends Controller
 {
@@ -18,11 +19,17 @@ class PdfController extends Controller
             $productos = Producto::all();
         }
         
+        $isFaltantes = $request->query('faltantes', 0) == 1;
+        
+        $perfil = BusinessProfile::first();
+        
         $data = [
-            'title' => 'Reporte de Inventario - Vector Lab',
+            'title' => $isFaltantes ? 'Reporte de Faltantes - Vector Lab' : 'Reporte de Inventario - Vector Lab',
             'date' => date('d/m/Y'),
             'productos' => $productos,
-            'logo' => 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png'
+            'perfil' => $perfil,
+            'logo' => $perfil && $perfil->logo_path ? asset($perfil->logo_path) : 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png',
+            'is_faltantes' => $isFaltantes
         ];
         
         $pdf = Pdf::loadView('pdf.inventario', $data);
@@ -38,11 +45,14 @@ class PdfController extends Controller
             $proveedores = Proveedor::all();
         }
         
+        $perfil = BusinessProfile::first();
+
         $data = [
             'title' => 'Directorio de Proveedores - Vector Lab',
             'date' => date('d/m/Y'),
             'proveedores' => $proveedores,
-            'logo' => 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png'
+            'perfil' => $perfil,
+            'logo' => $perfil && $perfil->logo_path ? asset($perfil->logo_path) : 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png'
         ];
         
         $pdf = Pdf::loadView('pdf.compras', $data);
@@ -57,15 +67,19 @@ class PdfController extends Controller
         } else {
             $clientes = \App\Models\Cliente::all();
         }
-        
+
+        $perfil = BusinessProfile::first();
+
         $data = [
             'title' => 'Directorio de Clientes - Vector Lab',
             'date' => date('d/m/Y'),
             'clientes' => $clientes,
-            'logo' => 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png'
+            'perfil' => $perfil,
+            'logo' => $perfil && $perfil->logo_path ? asset($perfil->logo_path) : 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png'
         ];
         
         $pdf = Pdf::loadView('pdf.clientes', $data);
+        return $pdf->stream('directorio_clientes_' . date('Y_m_d') . '.pdf');
     }
 
     public function exportHistorial(Request $request, $id)
@@ -82,13 +96,16 @@ class PdfController extends Controller
         }
         
         $historial = $query->get();
+        
+        $perfil = BusinessProfile::first();
             
         $data = [
-            'title' => 'Historial de Producto: ' . $producto->nombre,
+            'title' => 'Historial de Inventario: ' . $producto->nombre,
             'date' => date('d/m/Y'),
             'producto' => $producto,
             'historial' => $historial,
-            'logo' => 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png'
+            'perfil' => $perfil,
+            'logo' => $perfil && $perfil->logo_path ? asset($perfil->logo_path) : 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png'
         ];
         
         $pdf = Pdf::loadView('pdf.historial', $data);

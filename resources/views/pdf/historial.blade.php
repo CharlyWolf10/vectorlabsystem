@@ -5,11 +5,12 @@
     <title>{{ $title }}</title>
     <style>
         body { font-family: sans-serif; font-size: 12px; color: #333; }
-        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #0056b3; padding-bottom: 10px; }
-        .logo { max-width: 150px; margin-bottom: 10px; }
-        .title { font-size: 20px; font-weight: bold; color: #0056b3; margin: 0; }
-        .subtitle { font-size: 14px; font-weight: bold; margin-bottom: 5px; }
-        .date { text-align: right; margin-bottom: 20px; font-weight: bold; }
+        .header { margin-bottom: 20px; border-bottom: 2px solid #0056b3; padding-bottom: 10px; }
+        .logo { max-width: 150px; max-height: 80px; }
+        .title { font-size: 20px; font-weight: bold; color: #0056b3; margin: 0; text-align: center; margin-top: 15px; }
+        .date { text-align: right; margin-bottom: 15px; font-weight: bold; }
+        .info-table { width: 100%; border: none; margin: 0; padding: 0; }
+        .info-table td { border: none; padding: 0; }
         .info-box { background-color: #f1f5f9; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th { background-color: #0056b3; color: white; padding: 8px; text-align: left; }
@@ -28,7 +29,30 @@
 </head>
 <body>
     <div class="header">
-        <img src="{{ $logo }}" class="logo" alt="Vector Lab">
+        <table class="info-table">
+            <tr>
+                <td style="width: 30%; text-align: left; vertical-align: top;">
+                    <img src="{{ $logo }}" class="logo" alt="Logo">
+                </td>
+                <td style="width: 70%; text-align: right; vertical-align: top; line-height: 1.3;">
+                    @if(isset($perfil) && $perfil)
+                        <h2 style="margin: 0; color: #0056b3; font-size: 18px;">{{ $perfil->nombre }}</h2>
+                        @if($perfil->rfc)<div style="font-size: 11px;"><strong>RFC:</strong> {{ $perfil->rfc }}</div>@endif
+                        @if($perfil->direccion)<div style="font-size: 11px;">{{ $perfil->direccion }}</div>@endif
+                        @if($perfil->telefono || $perfil->correo)
+                            <div style="font-size: 11px;">
+                                @if($perfil->telefono) Tel: {{ $perfil->telefono }} @endif
+                                @if($perfil->telefono && $perfil->correo) | @endif
+                                @if($perfil->correo) Email: {{ $perfil->correo }} @endif
+                            </div>
+                        @endif
+                        @if($perfil->sitio_web)<div style="font-size: 11px;">Web: {{ $perfil->sitio_web }}</div>@endif
+                    @else
+                        <h2 style="margin: 0; color: #0056b3; font-size: 18px;">Vector Lab</h2>
+                    @endif
+                </td>
+            </tr>
+        </table>
         <h1 class="title">{{ $title }}</h1>
     </div>
     

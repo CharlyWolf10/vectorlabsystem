@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Técnico y Operativo - VectorLab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        
+        /* Tema Corporativo VectorLab */
+        .vl-primary { color: #2563eb; }
+        .vl-bg-primary { background-color: #2563eb; }
+        .vl-border { border-color: #e2e8f0; }
+        
+        /* Estilos de Impresión Profesional */
+        @media print {
+            body { background: white; margin: 0; padding: 0; }
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
+            .container { max-width: 100% !important; box-shadow: none !important; padding: 0 !important; }
+            .mermaid-wrapper { break-inside: avoid; border: 1px solid #cbd5e1; box-shadow: none !important; }
+            h1, h2, h3 { page-break-after: avoid; }
+            p { page-break-inside: avoid; }
+            .cover-page { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        }
+
+        /* Estilos en Pantalla */
+        .container { max-width: 1000px; margin: 2rem auto; background: white; padding: 4rem; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border-radius: 12px; }
+        h1 { font-size: 2.5rem; font-weight: 700; color: #0f172a; margin-bottom: 1rem; }
+        h2 { font-size: 1.8rem; font-weight: 600; color: #1e293b; margin-top: 3rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #f1f5f9; }
+        h3 { font-size: 1.25rem; font-weight: 600; color: #2563eb; margin-top: 2rem; margin-bottom: 1rem; }
+        p { line-height: 1.7; color: #475569; margin-bottom: 1.25rem; font-size: 1.05rem; }
+        ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.5rem; color: #475569; line-height: 1.7; }
+        li { margin-bottom: 0.5rem; }
+        
+        .mermaid-wrapper { background: #ffffff; padding: 2rem; border: 1px solid #e2e8f0; border-radius: 12px; margin: 2rem 0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); display: flex; justify-content: center; }
+        
+        .cover-page { text-align: center; padding: 4rem 0; border-bottom: 4px solid #2563eb; margin-bottom: 3rem; }
+        .cover-logo { width: 120px; height: 120px; margin: 0 auto 2rem auto; }
+        
+        .info-box { background-color: #f0fdfa; border-left: 4px solid #0d9488; padding: 1.5rem; border-radius: 0 8px 8px 0; margin-bottom: 1.5rem; }
+        .info-box h4 { color: #0f766e; font-weight: 600; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+
+    <div class="no-print sticky top-0 bg-white border-b border-gray-200 z-50 p-4 shadow-sm flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <img src="https://charlywolf10.github.io/VectorLab/assets/img/lobo.png" alt="VectorLab" class="h-8">
+            <span class="font-bold text-gray-800">VectorLab Docs</span>
+        </div>
+        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            Exportar a PDF
+        </button>
+    </div>
+
+    <div class="container">
+        
+        <!-- PORTADA -->
+        <div class="cover-page page-break">
+            <img src="https://charlywolf10.github.io/VectorLab/assets/img/lobo.png" alt="Logo VectorLab" class="cover-logo">
+            <h1 class="text-4xl font-bold mb-4">Manual Técnico y Operativo</h1>
+            <h2 class="text-2xl text-blue-600 font-semibold border-none mt-0 mb-6">Módulo: Gestión de Inventario</h2>
+            <p class="text-lg text-gray-500 mb-8">Documentación oficial de procesos, arquitectura de información y experiencia de usuario.</p>
+            <div class="inline-block bg-gray-100 px-6 py-3 rounded-full text-sm font-semibold text-gray-600">
+                Versión 1.0 | Sistema VectorLab
+            </div>
+        </div>
+
+        <!-- INTRODUCCIÓN -->
+        <p class="text-lg leading-relaxed">
+            El módulo de <strong>Gestión de Inventario de VectorLab</strong> ha sido diseñado para ofrecer una experiencia operativa fluida, centralizada y de alta velocidad. Entendiendo que el control de existencias es el pilar de la rentabilidad, este módulo minimiza los clics necesarios para realizar tareas rutinarias (como actualizar stock o dar de alta mercancía) e incorpora un sistema reactivo que actualiza la información en tiempo real sin recargar la página.
+        </p>
+
+        <div class="info-box mt-6">
+            <h4>Visión del Módulo</h4>
+            <p class="m-0 text-gray-700">El objetivo principal es permitir a los administradores y operadores logísticos manejar miles de referencias de productos con precisión matemática, manteniendo siempre la trazabilidad de los proveedores, categorías y alertando proactivamente sobre el desabasto (Stock Mínimo).</p>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- SECCIÓN 1: NAVEGACIÓN Y FILTROS -->
+        <h2>1. Búsqueda y Navegación Inteligente</h2>
+        <p>
+            El corazón operativo del inventario es su capacidad de encontrar información al instante. La tabla principal no requiere botones de "Buscar". Todo el filtrado es asíncrono y en tiempo real. Esto permite al usuario tomar decisiones rápidas mientras habla con un cliente o revisa un estante físico.
+        </p>
+        
+        <h3>Flujo del Usuario (Búsquedas)</h3>
+        <ul>
+            <li><strong>Búsqueda Global:</strong> Al teclear en la barra superior, el sistema busca coincidencias instantáneas tanto en el Nombre del Producto como en su Código de barras o SKU.</li>
+            <li><strong>Filtro por Proveedor:</strong> Un menú desplegable permite aislar visualmente toda la mercancía suministrada por una marca o empresa específica, ideal para realizar pedidos de reabastecimiento.</li>
+            <li><strong>Alerta de Faltantes:</strong> Un interruptor dedicado filtra la base de datos para mostrar únicamente aquellos productos cuyo stock actual es menor o igual a su stock mínimo de seguridad.</li>
+        </ul>
+
+        <div class="mermaid-wrapper">
+            <div class="mermaid">
+            flowchart TD
+                Usuario([Usuario en la Tabla Principal]) --> Intencion{¿Qué información necesita?}
+                
+                Intencion -->|Buscar un artículo específico| InputText[Escribe Nombre o Código en la barra]
+                Intencion -->|Ver catálogo de una marca| SelectProv[Selecciona el Proveedor en el menú]
+                Intencion -->|Saber qué debe comprar| BtnFaltantes[Activa el filtro 'Ver Faltantes']
+                
+                InputText & SelectProv & BtnFaltantes --> Backend[El sistema consulta la Base de Datos en milisegundos]
+                Backend --> Tabla(La tabla se actualiza automáticamente mostrando los resultados)
+            </div>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- SECCIÓN 2: GESTIÓN DE PRODUCTOS -->
+        <h2>2. Ciclo de Vida del Producto</h2>
+        <p>
+            La creación y modificación de un producto en VectorLab está estructurada en un formulario inteligente de una sola pantalla, dividido ergonómicamente en áreas de interés. El sistema está preparado para que, si el usuario nota que le falta registrar la categoría o al proveedor de la mercancía, pueda darlos de alta desde ahí mismo sin perder los datos que ya escribió.
+        </p>
+
+        <h3>Estructura del Formulario</h3>
+        <ul>
+            <li><strong>Información Básica:</strong> Nombre comercial, Código identificador único, asignación de Categoría y asignación de Proveedor.</li>
+            <li><strong>Estructura de Precios:</strong> Costo de adquisición, Precio de Venta al público y Precio de Mayoreo. (El sistema utiliza estos datos en otros módulos para calcular el margen de utilidad).</li>
+            <li><strong>Control de Stock:</strong> Se define el stock mínimo (para activar alertas) y el método preferido de ingreso de la mercancía (Por unidades sueltas, por paquetes o por cajas), lo cual agiliza futuros surtidos.</li>
+        </ul>
+
+        <div class="mermaid-wrapper">
+            <div class="mermaid">
+            flowchart TD
+                Alta([Botón 'Nuevo Producto' / 'Editar']) --> Formulario[Apertura de Ventana Principal de Producto]
+                
+                Formulario --> DatosBase[Ingreso de Datos Generales e Identidad]
+                Formulario --> DatosFin[Ingreso de Estructura de Precios y Costos]
+                
+                DatosBase --> VerificaCatProv{¿Falta una Categoría o Proveedor?}
+                VerificaCatProv -->|Sí| CrearAlVuelo[Usa los botones integrados '+' para crearlos al instante]
+                CrearAlVuelo --> Continua[Regresa al formulario automáticamente]
+                VerificaCatProv -->|No| Continua
+                
+                Continua --> Validacion{¿Están todos los campos obligatorios?}
+                Validacion -->|Error| Alerta[Alerta Roja: El usuario debe completar la información]
+                Validacion -->|Correcto| Guarda[Se guarda el registro en el Catálogo Master]
+            </div>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- SECCIÓN 3: CONTROL Y SURTIDO DE STOCK -->
+        <h2>3. Surtido y Actualización de Stock (Logística)</h2>
+        <p>
+            Una de las funcionalidades más potentes del sistema es su calculadora logística de ingresos. Cuando llega mercancía nueva al almacén, el usuario no necesita hacer cálculos manuales. El módulo deduce la cantidad de piezas totales basándose en cómo llega empaquetada la mercancía.
+        </p>
+
+        <h3>Métodos de Ingreso Automatizados</h3>
+        <p>Al hacer clic en el botón de ingreso de un producto, el sistema presenta tres escenarios matemáticos según la configuración del producto:</p>
+        <ul>
+            <li><strong>Unidades:</strong> Para mercancía suelta. Si llegan 50 piezas, el usuario teclea 50 y el sistema suma 50.</li>
+            <li><strong>Paquetes:</strong> Para mercancía agrupada. El usuario indica cuántos paquetes llegaron y cuántas piezas tiene cada paquete. El sistema hace la multiplicación.</li>
+            <li><strong>Cajas Master:</strong> Para compras por volumen. El usuario indica número de cajas, paquetes dentro de la caja, y piezas dentro del paquete.</li>
+        </ul>
+        <p>En tiempo real, mientras el usuario escribe, el sistema le muestra exactamente cuántas piezas totales están entrando y cuál será el Nuevo Stock Final. Esto reduce los errores humanos casi a cero.</p>
+
+        <div class="mermaid-wrapper">
+            <div class="mermaid">
+            flowchart TD
+                LlegaMercancia([Botón 'Surtir Mercancía' en la tabla]) --> Calculadora[Apertura de la Calculadora Logística]
+                
+                Calculadora --> Opcion[El usuario selecciona cómo llegó el producto]
+                
+                Opcion -->|Cajas| Cajas[Ingresa: Cajas x Paquetes x Piezas]
+                Opcion -->|Paquetes| Paquetes[Ingresa: Paquetes x Piezas]
+                Opcion -->|Suelto| Suelto[Ingresa: Piezas Totales]
+                
+                Cajas & Paquetes & Suelto --> Previsualizacion[Pantalla de confirmación dinámica en tiempo real]
+                
+                Previsualizacion --> Confirmar{El usuario verifica que la suma sea correcta}
+                Confirmar -->|Aceptar| BdActualizada[El Stock del producto se actualiza con la suma exacta]
+            </div>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- SECCIÓN 4: GESTIÓN DE CATEGORÍAS UNIFICADA -->
+        <h2>4. Gestor Unificado de Categorías</h2>
+        <p>
+            Anteriormente fragmentado, el Gestor de Categorías ahora es un centro de comando unificado. Permite a los administradores del inventario mantener el catálogo de clasificaciones totalmente limpio y organizado desde una sola pantalla, con total soporte para atajos de teclado para operaciones masivas.
+        </p>
+
+        <h3>Características del Gestor</h3>
+        <ul>
+            <li><strong>Alta Inline:</strong> Un campo de texto fijado en la parte superior permite crear categorías escribiendo el nombre y presionando "Enter", sin abrir pantallas adicionales.</li>
+            <li><strong>Edición y Eliminación:</strong> Cada categoría en la lista tiene botones de acceso rápido para renombrarlas o borrarlas. Si se elimina una categoría, el sistema es lo suficientemente robusto para proteger los productos: simplemente los reasigna a la categoría general sin eliminar mercancía.</li>
+        </ul>
+
+        <div class="mermaid-wrapper">
+            <div class="mermaid">
+            flowchart TD
+                GestorCat([Abrir Gestor de Categorías]) --> Interfaz[Ventana Central de Mando]
+                
+                Interfaz --> BarraSuperior[Barra Superior de Creación Rápida]
+                BarraSuperior --> EscribirNombre[El usuario escribe y presiona Enter]
+                EscribirNombre --> CatCreada[La categoría se guarda y la ventana se cierra con Éxito]
+                
+                Interfaz --> Lista[Lista Histórica de Categorías]
+                Lista --> BotonEditar[Lápiz: Permite renombrar y actualizar productos en cascada]
+                Lista --> BotonEliminar[Basura: Borra la categoría y protege los productos huérfanos]
+            </div>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- SECCIÓN 5: REPORTES Y EXPORTACIÓN -->
+        <h2>5. Generación de Reportes y PDF</h2>
+        <p>
+            El módulo cuenta con un sistema de exportación diseñado para la comunicación empresarial directa. Ya no es necesario descargar el inventario para enviarlo como adjunto manualmente. VectorLab permite enviar el reporte oficial directamente a un teléfono celular o a una dirección de correo institucional.
+        </p>
+
+        <h3>Flujo de Exportación</h3>
+        <p>El usuario tiene el poder de decidir si desea exportar absolutamente todo el inventario de la tienda, o si desea usar las casillas de verificación (checkboxes) para armar un catálogo personalizado de 5 o 10 artículos específicos para enviárselo a un cliente como cotización o a un proveedor como orden de compra.</p>
+
+        <div class="mermaid-wrapper">
+            <div class="mermaid">
+            flowchart TD
+                Reporte([Generar Reporte]) --> Seleccion{¿Qué se va a exportar?}
+                
+                Seleccion -->|Todo el Inventario| SeleccionVacia[No marca ninguna casilla]
+                Seleccion -->|Productos Específicos| Marcado[Marca las casillas de la mercancía deseada]
+                
+                SeleccionVacia & Marcado --> ClicExportar[Clic en 'Exportar a PDF']
+                ClicExportar --> MenuExportar[Aparecen las vías de distribución corporativa]
+                
+                MenuExportar --> Via1[Descarga Directa: Se abre el visor nativo de PDF para imprimir]
+                MenuExportar --> Via2[Email: Se solicita un correo y se envía el reporte adjunto]
+                MenuExportar --> Via3[WhatsApp: Conecta con la API de WhatsApp Web enviando el documento]
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Script de Configuración para Mermaid -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#e0f2fe',
+                primaryTextColor: '#0f172a',
+                primaryBorderColor: '#38bdf8',
+                lineColor: '#94a3b8',
+                secondaryColor: '#f1f5f9',
+                tertiaryColor: '#fff',
+                fontFamily: 'Inter, sans-serif'
+            }
+        });
+    </script>
+</body>
+</html>

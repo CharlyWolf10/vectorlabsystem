@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación Oficial del Sistema - VectorLab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; margin: 0; padding: 0; }
+        
+        /* Contenedor fluido */
+        .container { max-width: 95%; margin: 2rem auto; background: white; padding: 4rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); border-radius: 1rem; border-top: 8px solid #2563eb; }
+        
+        h1 { font-size: 3.5rem; font-weight: 900; color: #0f172a; margin-bottom: 1rem; line-height: 1.1; }
+        h2 { font-size: 2.2rem; font-weight: 800; color: #1e3a8a; margin-top: 4rem; margin-bottom: 2rem; padding-bottom: 0.5rem; border-bottom: 4px solid #3b82f6; display: inline-block; }
+        h3 { font-size: 1.6rem; font-weight: 700; color: #2563eb; margin-top: 3rem; margin-bottom: 1.5rem; }
+        h4 { font-size: 1.25rem; font-weight: 700; color: #334155; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        p { line-height: 1.9; color: #334155; margin-bottom: 1.5rem; font-size: 1.15rem; }
+        ul { list-style-type: none; padding-left: 0; margin-bottom: 2rem; color: #334155; line-height: 1.9; font-size: 1.15rem; }
+        li { margin-bottom: 1rem; padding-left: 2rem; position: relative; }
+        li::before { content: '\f058'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: #3b82f6; position: absolute; left: 0; top: 2px; }
+        
+        code { background-color: #f1f5f9; padding: 0.3rem 0.6rem; border-radius: 6px; color: #db2777; font-family: monospace; font-size: 1.05rem; font-weight: bold; border: 1px solid #e2e8f0; }
+        pre code { background-color: transparent; color: inherit; border: none; font-weight: normal; }
+        pre { background-color: #0f172a; color: #f8fafc; padding: 2rem; border-radius: 12px; overflow-x: auto; font-family: monospace; font-size: 1.1rem; border-left: 6px solid #3b82f6; box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05); margin-bottom: 2rem; }
+        
+        .mermaid-wrapper { 
+            background: #ffffff; 
+            padding: 3rem; 
+            border: 3px solid #cbd5e1; 
+            border-radius: 20px; 
+            margin: 4rem 0; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); 
+            display: flex; 
+            justify-content: center;
+            width: 100%;
+            overflow-x: auto; 
+        }
+        
+        .mermaid {
+            width: 100%;
+            min-width: 1200px;
+        }
+        
+        .cover-page { text-align: center; padding: 6rem 0; margin-bottom: 5rem; background: linear-gradient(to bottom, #eff6ff, #ffffff); border-radius: 12px; }
+        .cover-logo { width: 200px; height: 200px; margin: 0 auto 3rem auto; filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)); }
+        
+        .info-box { background-color: #f0fdfa; border: 2px solid #14b8a6; border-left: 8px solid #0d9488; padding: 2.5rem; border-radius: 12px; margin-bottom: 3rem; box-shadow: 0 4px 6px -1px rgba(13, 148, 136, 0.1); }
+        .info-box h4 { color: #0f766e; font-weight: 800; font-size: 1.5rem; margin-top: 0; }
+        
+        /* Tema del Anexo Técnico */
+        .tech-box { background-color: #f8fafc; border: 2px solid #cbd5e1; border-top: 8px solid #475569; padding: 4rem; border-radius: 16px; margin-top: 6rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .tech-box h2 { border-color: #475569; color: #1e293b; }
+        .tech-box h3 { color: #334155; }
+        .tech-box li::before { color: #64748b; }
+
+        @media print {
+            body { background: white; margin: 0; padding: 0; }
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
+            .container { max-width: 100% !important; box-shadow: none !important; padding: 0 !important; border-top: none; }
+            .mermaid-wrapper { break-inside: avoid; border: 2px solid #cbd5e1; box-shadow: none !important; margin: 2rem 0; width: 100%; min-width: 100%; }
+            .mermaid { min-width: 100% !important; width: 100% !important; }
+            h1, h2, h3 { page-break-after: avoid; }
+            p { page-break-inside: avoid; }
+            .cover-page { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: none; }
+            @page { size: landscape; margin: 1cm; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAV SUPERIOR -->
+    <div class="no-print sticky top-0 bg-white border-b border-gray-200 z-50 p-4 shadow-md flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <img src="https://charlywolf10.github.io/VectorLab/assets/img/lobo.png" alt="VectorLab" class="h-12">
+            <span class="font-extrabold text-slate-800 text-2xl tracking-tight">Centro de Documentación del Sistema</span>
+        </div>
+        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all hover:scale-105 flex items-center gap-3 text-lg">
+            <i class="fas fa-print"></i> Exportar / Imprimir PDF
+        </button>
+    </div>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="container">
+        
+        <!-- PORTADA -->
+        <div class="cover-page page-break">
+            <img src="https://charlywolf10.github.io/VectorLab/assets/img/lobo.png" alt="Logo VectorLab" class="cover-logo">
+            <h1 class="text-blue-900">Manual Operativo y Arquitectura de Software</h1>
+            <h2 class="text-4xl text-blue-600 font-bold border-none mt-4 mb-8">Módulo Core: Gestión de Inventario y Vista General</h2>
+            <p class="text-2xl text-slate-500 mb-10 max-w-4xl mx-auto font-light">
+                Documentación comercial y técnica exhaustiva para adaptación corporativa, mantenimiento y despliegue del ecosistema VectorLab.
+            </p>
+            <div class="inline-block bg-slate-900 px-10 py-5 rounded-2xl text-xl font-bold text-white shadow-2xl uppercase tracking-widest mt-8">
+                Versión 1.0 | VectorLab Enterprise
+            </div>
+        </div>
+
+        <!-- INTRODUCCIÓN GENERAL DEL SISTEMA -->
+        <h2 class="text-slate-800 border-slate-400 mt-0"><i class="fas fa-project-diagram mr-3"></i>Visión General del Ecosistema VectorLab</h2>
+        <p class="text-2xl leading-relaxed font-light text-slate-700 mb-8 border-l-4 border-slate-500 pl-6">
+            VectorLab no es solo un punto de venta, es un sistema de <strong>Planificación de Recursos Empresariales (ERP)</strong> interconectado. El flujo de la información está diseñado para que cada acción de un usuario en un módulo alimente automáticamente las estadísticas, inventarios y finanzas del resto del sistema en tiempo real.
+        </p>
+        <p>
+            En un nivel macro, el sistema cuenta con varios submódulos altamente especializados. El Módulo de <strong>Inventario</strong> actúa como el núcleo de operaciones y de datos físicos, proveyendo al <strong>Cotizador (Fórmulas)</strong> con los costos reales de los materiales, y a su vez, entregando mercancía lista para ser vendida en el <strong>Punto de Venta (POS)</strong>. Finalmente, todas las salidas de inventario y entradas de dinero se concilian en el módulo de <strong>Arqueos / Gastos Operativos</strong> para ofrecer reportes de rentabilidad.
+        </p>
+
+        <div class="mermaid-wrapper bg-slate-50 border-slate-300">
+            <div class="mermaid">
+            flowchart TD
+                subgraph "Core de Administración y Datos"
+                    Inventario["Gestión de Inventario (Almacén Central)"]
+                    Usuarios["Control de Usuarios / Permisos"]
+                    Clientes["CRM / Base de Datos de Clientes"]
+                end
+                
+                subgraph "Operaciones y Ventas"
+                    Cotizador["Fórmulas y Cotizador Automático"]
+                    POS["Punto de Venta (Terminal)"]
+                end
+                
+                subgraph "Finanzas y Contabilidad"
+                    Gastos["Gestión de Gastos Operativos"]
+                    Caja["Corte de Caja / Arqueos"]
+                end
+
+                Inventario -->|"Provee Costos de Insumos"| Cotizador
+                Inventario -->|"Provee Productos Terminados"| POS
+                Clientes -->|"Vincula Ventas y Descuentos"| POS
+                Usuarios -->|"Audita y Restringe Acciones en"| POS
+                
+                Cotizador -->|"Genera Órdenes de Producción"| POS
+                POS -->|"Descuenta Stock Real"| Inventario
+                
+                POS -->|"Reporta Ingresos y Ventas Netas"| Caja
+                Gastos -->|"Reporta Salidas y Costos Fijos"| Caja
+                Caja -->|"Genera Balance General Financiero"| Usuarios
+            </div>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- SECCIÓN 1: NAVEGACIÓN Y FILTROS -->
+        <h2><i class="fas fa-search mr-3"></i>1. Búsqueda y Navegación Inteligente del Inventario</h2>
+        <p>
+            La eficiencia operativa de un almacén comienza por encontrar el producto correcto en cuestión de segundos, incluso cuando la base de datos almacena miles de SKU. Hemos eliminado por completo el proceso arcaico de "escribir un nombre, presionar un botón de buscar y esperar a que la página recargue". Nuestro motor asíncrono se activa desde el primer carácter que el usuario teclea, optimizando el tiempo de respuesta y eliminando la frustración del empleado y del cliente que espera en mostrador.
+        </p>
+        
+        <h3>Mecánicas de Experiencia del Usuario (UX)</h3>
+        <ul>
+            <li><strong>Búsqueda Global Multidimensional:</strong> Al teclear, el algoritmo no solo revisa el nombre comercial, sino que examina simultáneamente los Códigos de Barras y los Códigos Internos (SKU). Esto permite al usuario buscar un artículo utilizando un lector láser o escribiendo a mano.</li>
+            <li><strong>Filtrado Especializado por Marca/Proveedor:</strong> El filtro de "Proveedores" permite aislar visualmente toda la mercancía suministrada por una marca específica. Esto es esencial para los gerentes que necesitan hacer inventarios físicos rápidos de una sola marca antes de recibir a un representante de ventas o distribuidor.</li>
+            <li><strong>Radar Crítico de Desabasto:</strong> Con el encendido de un interruptor "Ver Faltantes", el sistema despliega una lista de emergencia de mercancía que ha tocado su "Stock Mínimo". Este interruptor elimina la necesidad de revisar hoja por hoja qué comprar, entregando un reporte instantáneo para generar órdenes de compra al momento.</li>
+        </ul>
+
+        <div class="mermaid-wrapper bg-blue-50">
+            <div class="mermaid">
+            flowchart TD
+                Usuario(["Usuario inicia sesión en VectorLab"]) --> Intencion{"¿Qué operación logística necesita?"}
+                
+                Intencion -->|"Localizar un ítem específico"| InputText["Teclea Nombre o escanea Código de Barras"]
+                Intencion -->|"Revisar mercancía de un Distribuidor"| SelectProv["Selecciona Marca/Proveedor en menú desplegable"]
+                Intencion -->|"Generar lista de compras urgente"| BtnFaltantes["Enciende el interruptor 'Ver Faltantes'"]
+                
+                InputText & SelectProv & BtnFaltantes --> Backend["Livewire intercepta y ejecuta Query SQL Dinámico (LIKE %...)"]
+                Backend --> Tabla("La vista renderiza únicamente la tabla, sin destellos ni recargas de página completas")
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: GESTIÓN DE PRODUCTOS -->
+        <div class="page-break"></div>
+        <h2><i class="fas fa-box-open mr-3"></i>2. Ciclo de Vida del Producto (Alta y Edición)</h2>
+        <p>
+            Hemos eliminado la necesidad de tener múltiples pestañas abiertas. La captura de un nuevo producto, que tradicionalmente requiere navegar entre menús para crear marcas y clasificaciones, ahora se realiza en un único mega-formulario ergonómico. Si el capturista advierte que olvidó registrar un Proveedor de antemano, el sistema cuenta con "Botones de Creación Inline" que pausan el formulario, permiten crear al proveedor en una ventana secundaria, y devuelven al usuario a su trabajo sin perder una sola letra de lo que ya había escrito.
+        </p>
+
+        <h3>Anatomía de la Creación Comercial</h3>
+        <ul>
+            <li><strong>Identidad y Trazabilidad:</strong> Nombre comercial exacto, Código Único de registro, y las relaciones vitales (Categoría y Proveedor). Esta información es la que el cliente verá en su ticket de compra.</li>
+            <li><strong>Motor Financiero y de Rentabilidad:</strong> Se capturan los Costos base (sin IVA o con IVA según configuración) y los Precios de Venta (Público general y Mayoreo). El módulo financiero utilizará esta brecha entre Costo y Precio de Venta para proyectar las utilidades netas del negocio en tiempo real.</li>
+            <li><strong>Configuración Logística y Alarmas:</strong> Se establece un "Stock mínimo" que determinará en qué momento el producto cambia de color a rojo en la tabla. Además, se pre-configura cómo llega empaquetado este artículo (Unidades sueltas, por Paquetes, o en Cajas Master), preparándolo para hacer los futuros ingresos de mercancía en segundos.</li>
+        </ul>
+
+        <div class="mermaid-wrapper bg-indigo-50 border-indigo-300">
+            <div class="mermaid">
+            flowchart TD
+                Alta(["Clic 'Nuevo Producto' / 'Editar'"]) --> Formulario["Sistema despliega Formulario de Pantalla Dividida (SweetAlert2)"]
+                
+                Formulario --> DatosBase["Sección 1: Identificación y Clasificación"]
+                Formulario --> DatosFin["Sección 2: Inversión, Precios y Matemáticas Logísticas"]
+                
+                DatosBase --> VerificaCatProv{"¿El Proveedor o Categoría existen en las listas?"}
+                VerificaCatProv -->|"Falta en catálogo"| CrearAlVuelo["Clic en botón verde '+': Abre mini-modal asíncrono para crear registro sobre la marcha"]
+                CrearAlVuelo --> Continua["Se guarda en BD. El select se auto-selecciona con el nuevo valor."]
+                VerificaCatProv -->|"Ya existe"| Continua
+                
+                Continua --> Validacion{"Validación Front-End ¿Campos clave llenos?"}
+                Validacion -->|"Incompleto/Vacio"| Alerta["Bloqueo Seguro: Muestra alerta roja, no permite envíos vacíos"]
+                Validacion -->|"Datos Completos"| Guarda["Registro consolidado e insertado en Base de Datos Principal"]
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: CONTROL Y SURTIDO DE STOCK -->
+        <div class="page-break"></div>
+        <h2><i class="fas fa-truck-loading mr-3"></i>3. Calculadora de Surtido Logístico Automática</h2>
+        <p>
+            Un problema recurrente en el retail es la merma por errores humanos al sumar inventario. Atrás quedaron los días de contar cajas en el piso, multiplicarlas en una calculadora de bolsillo y luego teclear el resultado final en la computadora. Esta herramienta logística convierte la recepción de mercancía en un proceso automatizado y a prueba de errores, traduciendo formatos de empaque industriales a unidades de venta de forma instantánea.
+        </p>
+
+        <h3>Mecánicas de Inserción Acelerada</h3>
+        <ul>
+            <li><strong>Surtido al Detalle (Simple):</strong> Cuando la mercancía se recibe suelta en bolsas o por pieza. El usuario simplemente digita la cantidad recibida y el sistema hace una suma plana.</li>
+            <li><strong>Surtido Empaquetado (Medio Mayoreo):</strong> Para mercancías agrupadas en empaques cerrados (Ej. Six-packs de refrescos o Tiras de papas). El usuario digita cuántos paquetes físicos llegaron y el sistema le pregunta cuántas piezas tiene un paquete. La multiplicación corre en segundo plano.</li>
+            <li><strong>Surtido Industrial (Volumen):</strong> Ideal para Pallets y compras al por mayor. El usuario detalla que llegaron 10 Cajas, y que cada Caja contiene 24 Paquetes, y que cada Paquete contiene 2 piezas. El motor logístico realiza la ecuación de tres variables en tiempo real, previniendo descuadres de cientos de piezas por equivocaciones aritméticas en la cabeza del almacenista.</li>
+        </ul>
+
+        <div class="mermaid-wrapper bg-emerald-50 border-emerald-300">
+            <div class="mermaid">
+            flowchart TD
+                LlegaMercancia(["Llega Camión y Almacenista verifica factura"]) --> Calculadora["Clic en botón 'Ingresar Stock' -> Apertura de Calculadora Inteligente"]
+                
+                Calculadora --> Opcion["El usuario selecciona la configuración de empaque de la factura"]
+                
+                Opcion -->|"Volumen Industrial (Tarimas)"| Cajas["Captura: Número de Cajas | Paquetes dentro de la Caja | Piezas por Paquete"]
+                Opcion -->|"Medio Mayoreo (Tiras)"| Paquetes["Captura: Número de Paquetes físicos | Piezas por paquete individual"]
+                Opcion -->|"Venta al Detalle (Suelto)"| Suelto["Captura: Piezas Unitarias totales comprobadas"]
+                
+                Cajas & Paquetes & Suelto --> Previsualizacion["Motor Matemático en JS calcula multiplicaciones: Piezas Nuevas Netas + Stock Actual = Stock Final"]
+                
+                Previsualizacion --> Confirmar{"Auditoría Visual: El usuario lee la proyección en la pantalla azul"}
+                Confirmar -->|"La suma es correcta"| BdActualizada["Al confirmar, el Backend inyecta exactamente la cantidad matemática resultante al Inventario"]
+            </div>
+        </div>
+
+        <!-- SECCIÓN 4: GESTIÓN DE CATEGORÍAS UNIFICADA -->
+        <div class="page-break"></div>
+        <h2><i class="fas fa-tags mr-3"></i>4. Centro de Comando de Categorías Unificado</h2>
+        <p>
+            Hemos unificado lo que antes requeriría tres pantallas distintas de configuración en una sola ventana flotante ultra veloz. Los administradores pueden gestionar la clasificación general del sistema sin perder de vista su tabla de inventario que permanece en el fondo. Además, permite un manejo masivo de la información mediante eventos de teclado para usuarios avanzados.
+        </p>
+
+        <div class="info-box">
+            <h4><i class="fas fa-shield-alt mr-2"></i>Seguridad Anti-Orfandad (Prevención de Pérdidas)</h4>
+            <p class="m-0 text-slate-700">En sistemas ERP deficientes, si un empleado elimina una categoría (por ejemplo, "Herramientas de Jardín"), todos los productos ligados a esa categoría pueden corromperse o desaparecer de la base de datos de forma silenciosa. En VectorLab hemos implementado un <strong>Seguro Anti-Orfandad</strong>. Si se elimina una categoría, el sistema detecta qué productos dependían de ella y los migra de forma segura y automática a una categoría predeterminada (Ninguna / General). Esto salva el capital del cliente y previene auditorías fallidas.</p>
+        </div>
+
+        <h3>Características Especiales y UX</h3>
+        <ul>
+            <li><strong>Creación "Inline" a la Velocidad de la Luz:</strong> Un campo de texto fijado siempre en la parte superior. Funciona como la barra de un chat: escribes "Abarrotes" y presionas la tecla `Enter`. La categoría se crea, la lista se refresca instantáneamente y la ventana de éxito dura milisegundos para permitirte seguir trabajando, sin molestas validaciones que interrumpan el flujo.</li>
+            <li><strong>Propagación en Cascada:</strong> Si cambias el nombre de "Lacteos" por "Lácteos (Refrigerados)", el sistema actualizará en tiempo real ese nombre en los miles de productos que lo utilizan sin que el usuario tenga que hacer ningún proceso masivo complejo.</li>
+        </ul>
+
+        <div class="mermaid-wrapper bg-violet-50 border-violet-300">
+            <div class="mermaid">
+            flowchart TD
+                GestorCat(["Clic en botón 'Categorías' del encabezado"]) --> Interfaz["Se renderiza la Ventana Flotante del Centro de Mando"]
+                
+                Interfaz --> BarraSuperior["Foco automático en la Barra Superior de Creación (Inline)"]
+                BarraSuperior --> EscribirNombre["El administrador escribe el texto y oprime la tecla Enter"]
+                EscribirNombre --> CatCreada["Guarda BD, recarga listado y el modal se cierra listo para operar el nuevo filtro"]
+                
+                Interfaz --> Lista["Panel inferior muestra el Histórico completo de Clasificaciones"]
+                Lista --> BotonEditar["Al presionar Lápiz: Prompts de renombre que actualizan en Cascada toda la mercancía ligada"]
+                Lista --> BotonEliminar["Al presionar Basurero: Desencadena Seguro Anti-Orfandad para proteger integridad referencial"]
+            </div>
+        </div>
+
+        <!-- SECCIÓN 5: REPORTES Y EXPORTACIÓN -->
+        <div class="page-break"></div>
+        <h2><i class="fas fa-file-pdf mr-3"></i>5. Comunicación B2B y Canales de Exportación Directa</h2>
+        <p>
+            Hemos transformado un simple botón de "Generar PDF" en una poderosa herramienta omnicanal de ventas. Un gran dolor de cabeza administrativo es tener que descargar un archivo, guardarlo en el escritorio, abrir Outlook, redactar un correo, buscar el archivo y enviarlo. En VectorLab, el reporte legal generado por el sistema se inyecta directamente a los canales de comunicación del cliente en milisegundos.
+        </p>
+
+        <h3>Vías de Distribución Corporativa Incorporadas</h3>
+        <ul>
+            <li><strong>Personalización Quirúrgica (Checkboxes):</strong> El usuario tiene el control total de la información. Puede generar un catálogo con los 15,000 artículos para uso interno contable (dejando todas las casillas sin marcar), o puede marcar manualmente con una "palomita" solo 5 productos específicos para armar una cotización y enviársela de forma privada a un cliente sin revelar el resto de su inventario.</li>
+            <li><strong>Navegador Nativo (Para Impresión Física):</strong> Abre el documento directamente en una nueva pestaña listo para enviarse a la impresora física para colgarse en el almacén o firmarse.</li>
+            <li><strong>WhatsApp Business API:</strong> Requiere solo un clic. Abre un chat directo en WhatsApp Web o en la aplicación móvil de PC con el número predefinido del cliente. Adjunta automáticamente un mensaje de cortesía profesional e inyecta la URL del PDF del sistema (o el documento mismo) listo para enviar.</li>
+            <li><strong>Email Server (Envío Transparente):</strong> Utiliza el servidor SMTP central de VectorLab. Pide el correo destino, y en segundo plano despacha un email elegante con membrete de la empresa y adjunta el PDF sin que el usuario tenga que salir jamás del inventario.</li>
+        </ul>
+
+        <div class="mermaid-wrapper bg-rose-50 border-rose-300">
+            <div class="mermaid">
+            flowchart TD
+                Reporte(["Usuario clic en botón desplegable 'Exportar'"]) --> Seleccion{"Validación del alcance de la información"}
+                
+                Seleccion -->|"Inventario Maestro Total"| SeleccionVacia["El usuario no seleccionó productos individuales"]
+                Seleccion -->|"Cotización / Catálogo a Medida"| Marcado["El usuario marcó casillas específicas de productos estratégicos"]
+                
+                SeleccionVacia & Marcado --> ClicExportar["El sistema recolecta los IDs en memoria y empaqueta la data"]
+                ClicExportar --> MenuExportar["El usuario selecciona la Vía Comercial de Distribución"]
+                
+                MenuExportar --> Via1["Botón Imprimir: Renderiza DOM en nueva pestaña con reglas CSS media print"]
+                MenuExportar --> Via2["Botón Email: Solicita correo destino -> Cola de envíos SMTP en Laravel"]
+                MenuExportar --> Via3["Botón WhatsApp: Codifica la URL de WhatsApp (wa.me/...) con texto empresarial seguro"]
+            </div>
+        </div>
+
+        <!-- SECCIÓN 6: ANEXO TÉCNICO PARA DESARROLLADORES -->
+        <div class="page-break"></div>
+        <div class="tech-box">
+            <h2><i class="fas fa-code mr-3"></i>6. Anexo Técnico: Manual de Desarrollo y Personalización</h2>
+            <p class="text-xl mb-6 font-bold text-slate-800">Esta sección es de carácter ESTRICTAMENTE TÉCNICO. Está dirigida a Ingenieros de Software, Arquitectos y Equipo de Ventas Técnicas de VectorLab.</p>
+            <p class="text-lg text-slate-600 mb-8">El propósito de este manual profundo es que el desarrollador pueda tomar el código fuente y modificarlo, alterarlo o escalarlo para adaptarlo a flujos de trabajo de clientes corporativos complejos sin romper la lógica asíncrona existente.</p>
+            
+            <h3>6.1. Stack Tecnológico General</h3>
+            <p class="text-slate-600">El sistema renuncia al enfoque de API REST con React/Vue en favor de un enfoque de <strong>Server-Side Rendering (SSR) con hidratación dinámica</strong> para reducir la carga cognitiva del lado del cliente y facilitar el SEO interno. Los componentes clave son:</p>
+            <ul>
+                <li><strong>Backend:</strong> PHP 8.2+ orquestado sobre Laravel Framework 11.</li>
+                <li><strong>Motor Reactivo:</strong> Laravel Livewire (v3). Se encarga de hacer el "Data Binding" entre el servidor y el navegador mediante llamadas XHR / fetch invisibles.</li>
+                <li><strong>Renderizado (View Layer):</strong> Laravel Blade Templates.</li>
+                <li><strong>Estilización Rápida:</strong> Tailwind CSS. Funciona mediante utilidades de clase atómicas.</li>
+                <li><strong>Interactividad y Flujos Modales:</strong> Vanilla JavaScript en conjunción con la librería <strong>SweetAlert2</strong> para modales altamente estructurados.</li>
+            </ul>
+
+            <h3 class="mt-8 border-t border-slate-300 pt-8">6.2. Arquitectura de `app/Livewire/Inventario.php` (El Backend)</h3>
+            <p class="text-slate-600">Este componente es el cerebro de la operación. Funciona preservando el estado de sus propiedades públicas (Properties) a través del ciclo de vida. Cuando venda a un cliente que pida "quiero buscar también por categoría", deberá modificar estas propiedades y los queries Eloquent del método <code>render()</code>.</p>
+            
+            <h4 class="mt-4">Variables de Estado (Data Binding)</h4>
+            <pre><code>public $search = ''; 
+// Se utiliza en la vista con `wire:model.live="search"`. 
+// Genera un retraso automático (debounce) para no sobrecargar el DB al teclear rápido.
+// Lógica SQL: where('nombre', 'LIKE', '%' . $this->search . '%')->orWhere('codigo', 'LIKE', ...)
+
+public $filterProveedor = ''; 
+// Integer que almacena el ID del proveedor (Foreign Key). Activa un where('proveedor_id', $this->filterProveedor).
+
+public $filterFaltantes = false; 
+// Booleano controlado por un Switch en UI. Si es true, añade: whereColumn('stock', '<=', 'stock_minimo').
+
+public $selectedProductos = []; 
+// Array fundamental. Cada checkbox de la vista está atado a este array con `wire:model="selectedProductos"`.
+// Si está vacío al exportar, se asume inventario completo. Si tiene 3 IDs, exporta solo esos 3 productos.</code></pre>
+
+            <h3 class="mt-8 border-t border-slate-300 pt-8">6.3. Event Bus y Escuchas (Comunicación JS ↔ PHP)</h3>
+            <p class="text-slate-600">VectorLab <strong>NO UTILIZA peticiones AJAX crudas (<code>$.ajax</code> o <code>fetch</code>) manuales</strong> para enviar formularios. Todo se maneja a través del Bus de Eventos de Livewire mediante los atributos <code>#[On('nombreEvento')]</code>.</p>
+            <p class="text-slate-600">El flujo estándar de comunicación es:</p>
+            <ol class="list-decimal pl-8 mb-6 text-slate-600 font-mono text-sm space-y-2">
+                <li>Usuario llena campos en un modal de SweetAlert (JS).</li>
+                <li>La función <code>preConfirm</code> en JS captura los valores del DOM (`document.getElementById()`).</li>
+                <li>El JS dispara: <code>Livewire.dispatch('guardarProducto', [valoresEnJavascript])</code>.</li>
+                <li>El PHP atrapa el evento en el método anotado y lo inserta a la Base de Datos.</li>
+                <li>El PHP responde al JS disparando un aviso: <code>$this->dispatch('swal:success', ['título' => 'Éxito'])</code>.</li>
+            </ol>
+            
+            <h4 class="mt-4">Ejemplo Fidedigno de Código Backend</h4>
+            <pre><code>// EJEMPLO CORE: Recepción de Surtido de Stock desde public/js/inventario.js
+#[On('actualizarStock')]
+public function actualizarStock($id, $piezasAgregadas, $tipo)
+{
+    // 1. Encuentra el modelo mediante ORM Eloquent
+    $producto = Producto::find($id);
+    
+    // 2. Modifica el registro contable en RAM
+    $producto->stock += $piezasAgregadas;
+    
+    // 3. Persiste (COMMIT) a la base de datos SQL
+    $producto->save();
+    
+    // 4. Callback para disparar la palomita verde de SweetAlert en el navegador
+    $this->dispatch('swal:success', [
+        'title' => 'Éxito',
+        'text' => 'El stock ha sido sumado al inventario general.'
+    ]);
+    
+    // IMPORTANTE: Al finalizar este método, Livewire recarga automáticamente 
+    // la tabla HTML en el cliente, mostrando el nuevo stock instantáneamente.
+}</code></pre>
+
+            <h3 class="mt-8 border-t border-slate-300 pt-8">6.4. Data Binding Híbrido Inyectado (Optimizaciones de JS)</h3>
+            <p class="text-slate-600">Al trabajar con Modales HTML crudos creados dinámicamente en JavaScript (SweetAlert2), construir etiquetas <code>&lt;select&gt;</code> (combobox) con opciones dinámicas desde la Base de Datos es complejo. Para evitar colapsar la Base de Datos con una consulta AJAX cada vez que se abre el formulario de "Nuevo Producto", las colecciones estructurales se inyectan en RAM del navegador una sola vez en la carga inicial de <code>inventario.blade.php</code>:</p>
+            <pre><code>&lt;!-- Ubicado al final del archivo resources/views/livewire/inventario.blade.php --&gt;
+&lt;script&gt;
+    // La directiva @json de Blade convierte la colección de Eloquent PHP en un Array de Objetos JSON.
+    window.inventarioProveedores = @json($proveedores);
+    window.inventarioCategorias = @json($categorias);
+    
+    // Ahora, en inventario.js, funciones como generarHtmlCategorias() simplemente iteran 
+    // sobre window.inventarioCategorias para crear <option> rápidamente.
+&lt;/script&gt;</code></pre>
+            
+            <h3 class="mt-8 border-t border-slate-300 pt-8">6.5. Árbol y Mapa de Archivos Fuente del Módulo</h3>
+            <p class="text-slate-600">Para cualquier modificación, soporte técnico o ampliación, refiérase a esta estructura exacta:</p>
+            <ul class="font-mono text-sm space-y-3">
+                <li><code>app/Livewire/Inventario.php</code> : El Controlador Controlador principal. Contiene todas las consultas DB, los Listeners y la inicialización de estado.</li>
+                <li><code>resources/views/livewire/inventario.blade.php</code> : La Vista (View). Tabla HTML, Layout, directivas de paginación e inyección de eventos globales.</li>
+                <li><code>public/js/inventario.js</code> : La Lógica de Interfaz. Generación de strings de HTML para SweetAlert2, manejo del DOM, atajos de teclado y envío de datos (<code>Livewire.dispatch()</code>).</li>
+                <li><code>public/js/proveedores.js</code> : Lógica compartida inyectada al módulo. Provee la función `nuevoProveedor()` que permite dar de alta contactos desde la misma vista del inventario.</li>
+                <li><code>app/Models/Producto.php</code> : El Modelo de Datos. Define la tabla en DB (`productos`) y sus relaciones Eloquent (`belongsTo(Categoria::class)`).</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- Script de Configuración para Mermaid -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#e0f2fe',
+                primaryTextColor: '#0f172a',
+                primaryBorderColor: '#38bdf8',
+                lineColor: '#64748b',
+                secondaryColor: '#f1f5f9',
+                tertiaryColor: '#fff',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '22px', 
+                fontFamily: 'Inter',
+                nodeBorder: '#2563eb'
+            },
+            flowchart: {
+                htmlLabels: true,
+                curve: 'basis',
+                nodeSpacing: 70, 
+                rankSpacing: 70
+            }
+        });
+    </script>
+</body>
+</html>

@@ -304,8 +304,14 @@ class Inventario extends Component
     #[On('exportSelected')]
     public function exportSelected()
     {
-        $ids = implode(',', $this->selectedProductos);
-        return redirect()->route('inventario.export', ['ids' => $ids]);
+        $params = [];
+        if (!empty($this->selectedProductos)) {
+            $params['ids'] = implode(',', $this->selectedProductos);
+        }
+        if ($this->filterFaltantes) {
+            $params['faltantes'] = 1;
+        }
+        return redirect()->route('inventario.export', $params);
     }
 
     #[On('sendPdfEmail')]

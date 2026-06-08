@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/punto-de-venta', \App\Livewire\PuntoDeVenta::class)->name('pos');
     Route::get('/arqueos', \App\Livewire\Arqueos::class)->name('arqueos');
     Route::get('/usuarios', \App\Livewire\Usuarios::class)->name('usuarios');
+    Route::get('/configuracion/negocio', \App\Livewire\Settings\BusinessProfile::class)->name('configuracion.negocio');
     Route::get('/gastos-operativos', \App\Livewire\GastosOperativos::class)->name('gastos_operativos');
     Route::get('/cotizador', \App\Livewire\Cotizador::class)->name('cotizador');
 });

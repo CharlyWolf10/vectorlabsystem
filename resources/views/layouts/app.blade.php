@@ -110,6 +110,11 @@
                                 <span class="ml-3 text-sm font-medium">Control de Usuarios</span>
                             </a>
                             
+                            <a href="{{ route('configuracion.negocio') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('configuracion.negocio') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
+                                <i class="fas fa-cog w-6 text-center group-hover:text-white {{ request()->routeIs('configuracion.negocio') ? 'text-white' : 'text-vl-text-muted' }}"></i>
+                                <span class="ml-3 text-sm font-medium">Configuración</span>
+                            </a>
+
                             <div class="pt-4 pb-2 mt-4 border-t border-gray-700">
                                 <p class="text-xs font-semibold text-vl-text-muted uppercase tracking-wider">Desarrollo</p>
                             </div>
