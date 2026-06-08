@@ -108,7 +108,7 @@ class Inventario extends Component
                     'codigo' => mb_strtoupper($data['codigo'] ?? $producto->codigo),
                     'nombre' => mb_strtoupper($data['nombre']),
                     'precio_compra' => $precio_compra,
-                    'precio_venta' => $precio_venta,
+                    'precio_venta' => $precio_venta > 0 ? $precio_venta : $producto->precio_venta,
                     'aplica_iva' => $aplicaIva,
                     'stock_minimo' => $stock_minimo,
                     'proveedor_id' => $data['proveedor_id'] ?? null,
@@ -170,7 +170,7 @@ class Inventario extends Component
             ]);
         }
         
-        $this->dispatch('swal:success', ['title' => $id ? '¡Editado!' : '¡Agregado!', 'text' => $id ? 'El producto ha sido editado correctamente.' : 'El producto ha sido agregado al inventario.']);
+        $this->dispatch('swal:success', ['title' => isset($data['id']) ? '¡Editado!' : '¡Agregado!', 'text' => isset($data['id']) ? 'El producto ha sido editado correctamente.' : 'El producto ha sido agregado al inventario.']);
     }
 
     /**
