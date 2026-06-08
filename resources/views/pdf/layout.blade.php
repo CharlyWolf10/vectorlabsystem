@@ -59,6 +59,22 @@
             background: #0056b3;
         }
 
+        @if(isset($bg_pdf) && $bg_pdf)
+        .bottom-bg-image {
+            position: fixed;
+            bottom: -100px;
+            left: -40px;
+            right: -40px;
+            height: 400px;
+            z-index: -1100;
+            opacity: 0.15;
+            text-align: right;
+        }
+        .bottom-bg-image img {
+            height: 100%;
+            object-fit: cover;
+        }
+        @else
         .bottom-bar {
             position: fixed;
             bottom: -100px;
@@ -67,7 +83,6 @@
             height: 25px;
             background: #0056b3;
         }
-        
         .bottom-bar-accent {
             position: fixed;
             bottom: -75px;
@@ -76,6 +91,7 @@
             height: 5px;
             background: #cbd5e1;
         }
+        @endif
 
         /* HEADER */
         header { 
@@ -182,8 +198,15 @@
 
     <!-- Top & Bottom Decoration Bars -->
     <div class="top-bar"></div>
-    <div class="bottom-bar"></div>
-    <div class="bottom-bar-accent"></div>
+    
+    @if(isset($bg_pdf) && $bg_pdf)
+        <div class="bottom-bg-image">
+            <img src="{{ $bg_pdf }}" alt="Background">
+        </div>
+    @else
+        <div class="bottom-bar"></div>
+        <div class="bottom-bar-accent"></div>
+    @endif
 
     <!-- Watermark -->
     <div id="watermark">

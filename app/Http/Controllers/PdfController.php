@@ -23,6 +23,17 @@ class PdfController extends Controller
         return null;
     }
 
+    private function getBgBase64()
+    {
+        $path = public_path('assets/img/bg_pdf.png');
+        if (file_exists($path)) {
+            $type = pathinfo($path, PATHINFO_EXTENSION);
+            $data = file_get_contents($path);
+            return 'data:image/' . $type . ';base64,' . base64_encode($data);
+        }
+        return null;
+    }
+
     public function exportInventario(Request $request)
     {
         if ($request->has('ids')) {
@@ -42,6 +53,7 @@ class PdfController extends Controller
             'productos' => $productos,
             'perfil' => $perfil,
             'logo' => $this->getLogoBase64($perfil),
+            'bg_pdf' => $this->getBgBase64(),
             'is_faltantes' => $isFaltantes
         ];
         
@@ -65,7 +77,8 @@ class PdfController extends Controller
             'date' => date('d/m/Y'),
             'proveedores' => $proveedores,
             'perfil' => $perfil,
-            'logo' => $this->getLogoBase64($perfil)
+            'logo' => $this->getLogoBase64($perfil),
+            'bg_pdf' => $this->getBgBase64()
         ];
         
         $pdf = Pdf::loadView('pdf.compras', $data);
@@ -88,7 +101,8 @@ class PdfController extends Controller
             'date' => date('d/m/Y'),
             'clientes' => $clientes,
             'perfil' => $perfil,
-            'logo' => $this->getLogoBase64($perfil)
+            'logo' => $this->getLogoBase64($perfil),
+            'bg_pdf' => $this->getBgBase64()
         ];
         
         $pdf = Pdf::loadView('pdf.clientes', $data);
@@ -118,7 +132,8 @@ class PdfController extends Controller
             'producto' => $producto,
             'historial' => $historial,
             'perfil' => $perfil,
-            'logo' => $this->getLogoBase64($perfil)
+            'logo' => $this->getLogoBase64($perfil),
+            'bg_pdf' => $this->getBgBase64()
         ];
         
         $pdf = Pdf::loadView('pdf.historial', $data);
