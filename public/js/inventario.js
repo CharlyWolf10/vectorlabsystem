@@ -710,7 +710,7 @@ function editarProducto(id, codigo, nombre, compra, aplica_iva, minimo, proveedo
             });
             
             // Set stock minimo
-            document.getElementById('prod_minimo').value = parseInt('${minimo}') || 0;
+            document.getElementById('prod_minimo').value = parseInt(minimo) || 0;
             document.getElementById('prod_minimo_tipo').value = 'unidad';
         },
         preConfirm: () => {
@@ -1152,10 +1152,10 @@ window.addEventListener('mostrarHistorial', event => {
     html += `
             </ul>
         </div>
-        <div class="mt-4 text-center border-t border-gray-200 pt-4">
-            <a id="btnExportarPdfHistorial" href="/inventario/${id}/historial/export" target="_blank" class="inline-flex items-center justify-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+        <div class="mt-6 flex justify-end">
+            <button onclick="confirmarExportarPdfHistorial(${id}, event)" class="inline-flex items-center justify-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
-            </a>
+            </button>
         </div>
     `;
 
@@ -1167,6 +1167,36 @@ window.addEventListener('mostrarHistorial', event => {
         showConfirmButton: false
     });
 });
+
+/**
+ * Pide confirmación antes de exportar a PDF el historial
+ */
+function confirmarExportarPdfHistorial(id, event) {
+    if (event) event.preventDefault();
+    
+    const filtro = document.getElementById('filtroAccion') ? document.getElementById('filtroAccion').value : '';
+    const url = `/inventario/${id}/historial/export` + (filtro ? `?filtro=${filtro}` : '');
+    
+    Swal.fire({
+        title: '¿Exportar a PDF?',
+        text: '¿Estás seguro que quieres exportar esto en PDF?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, exportar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.open(url, '_blank');
+            Swal.fire(
+                '¡Exportado!',
+                'Tu documento ha sido exportado con éxito.',
+                'success'
+            );
+        }
+    });
+}
 
 /**
  * Filtra los elementos del historial en base al select y actualiza la URL del PDF

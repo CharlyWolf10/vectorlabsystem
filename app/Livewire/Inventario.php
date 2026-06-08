@@ -112,7 +112,7 @@ class Inventario extends Component
                     'aplica_iva' => $aplicaIva,
                     'stock_minimo' => $stock_minimo,
                     'proveedor_id' => $data['proveedor_id'] ?? null,
-                    'categoria_id' => $categoriaId,
+                    'categoria' => mb_strtoupper($data['categoria'] ?? ''),
                 ]);
 
                 if (!empty($detalles)) {
@@ -136,7 +136,7 @@ class Inventario extends Component
                     'stock' => $stock,
                     'stock_minimo' => $stock_minimo,
                     'proveedor_id' => $data['proveedor_id'] ?? null,
-                    'categoria_id' => $categoriaId,
+                    'categoria' => mb_strtoupper($data['categoria'] ?? ''),
                     'aplica_iva' => $aplicaIva,
                 ]);
                 
@@ -158,7 +158,7 @@ class Inventario extends Component
                 'stock' => $stock,
                 'stock_minimo' => $stock_minimo,
                 'proveedor_id' => $data['proveedor_id'] ?? null,
-                'categoria_id' => $categoriaId,
+                'categoria' => mb_strtoupper($data['categoria'] ?? ''),
                 'aplica_iva' => $aplicaIva,
             ]);
 
@@ -363,6 +363,19 @@ class Inventario extends Component
                     'detalles' => is_array($h->detalles) ? $h->detalles : json_decode($h->detalles, true)
                 ];
             });
+            
+            // Check if CREADO event exists
+            $hasCreado = $historialRaw->contains('accion', 'CREADO');
+            if (!$hasCreado) {
+                // If not, artificially add it at the end (oldest)
+                $historial->push([
+                    'fecha' => $producto->created_at->format('d/m/Y h:i A'),
+                    'usuario' => 'Sistema',
+                    'accion' => 'CREADO',
+                    'detalles' => ['Producto creado en el sistema']
+                ]);
+            }
+            
             $this->dispatch('mostrarHistorial', historial: $historial, nombre: $producto->nombre, id: $producto->id);
         }
     }

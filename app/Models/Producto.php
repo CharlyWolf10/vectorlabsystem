@@ -19,7 +19,8 @@ class Producto extends Model
         'categoria',
         'ingreso_tipo_default',
         'ingreso_paquetes_default',
-        'ingreso_unidades_default'
+        'ingreso_unidades_default',
+        'aplica_iva'
     ];
 
     public function proveedor()
