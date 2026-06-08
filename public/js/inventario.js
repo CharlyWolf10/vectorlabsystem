@@ -1266,3 +1266,5 @@ function ingresarStockModal(id, nombre, stock_actual, ingreso_tipo, ingreso_paqu
         }
     });
 }
+
+window.addEventListener('open-url', event => { window.open(event.detail.url, '_blank'); });

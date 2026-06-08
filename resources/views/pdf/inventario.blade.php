@@ -12,9 +12,6 @@
                 <th>Producto</th>
                 <th>Proveedor</th>
                 <th class="text-right">Costo</th>
-                @if(empty($is_faltantes) || !$is_faltantes)
-                <th class="text-right">Precio</th>
-                @endif
                 <th class="text-center">Stock</th>
             </tr>
         </thead>
@@ -25,9 +22,6 @@
                 <td><strong class="font-bold">{{ $producto->nombre }}</strong></td>
                 <td>{{ $producto->proveedor ? $producto->proveedor->nombre : 'N/A' }}</td>
                 <td class="text-right text-red">${{ number_format($producto->precio_compra, 2) }}</td>
-                @if(empty($is_faltantes) || !$is_faltantes)
-                <td class="text-right text-green">${{ number_format($producto->precio_venta, 2) }}</td>
-                @endif
                 <td class="text-center">{{ $producto->stock }}</td>
             </tr>
             @endforeach

@@ -311,7 +311,8 @@ class Inventario extends Component
         if ($this->filterFaltantes) {
             $params['faltantes'] = 1;
         }
-        return redirect()->route('inventario.export', $params);
+        $url = route('inventario.export', $params);
+        $this->dispatch('open-url', url: $url);
     }
 
     #[On('sendPdfEmail')]
