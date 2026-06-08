@@ -71,10 +71,17 @@ class PdfController extends Controller
     public function exportHistorial(Request $request, $id)
     {
         $producto = Producto::findOrFail($id);
-        $historial = \App\Models\HistorialInventario::where('producto_id', $id)
+        $filtro = $request->get('filtro');
+        
+        $query = \App\Models\HistorialInventario::where('producto_id', $id)
             ->with('user')
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->orderBy('created_at', 'desc');
+            
+        if (!empty($filtro)) {
+            $query->where('accion', $filtro);
+        }
+        
+        $historial = $query->get();
             
         $data = [
             'title' => 'Historial de Producto: ' . $producto->nombre,

@@ -1094,7 +1094,20 @@ window.addEventListener('mostrarHistorial', event => {
         return;
     }
     
-    let html = '<div class="text-left" style="padding-left: 10px; margin-top: 20px;"><ul style="border-left: 2px solid #e5e7eb; margin-left: 1rem; padding-left: 0; list-style: none;">';
+    let html = `
+        <div class="mb-4 text-left">
+            <label for="filtroAccion" class="block text-sm font-medium text-gray-700">Filtrar por acción:</label>
+            <select id="filtroAccion" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" onchange="filtrarHistorial(${id})">
+                <option value="">Todas las acciones</option>
+                <option value="CREADO">CREADO</option>
+                <option value="EDITADO">EDITADO</option>
+                <option value="INGRESO_STOCK">INGRESO_STOCK</option>
+                <option value="ELIMINADO">ELIMINADO</option>
+                <option value="RESTAURADO">RESTAURADO</option>
+            </select>
+        </div>
+        <div class="text-left" style="padding-left: 10px; margin-top: 20px;"><ul style="border-left: 2px solid #e5e7eb; margin-left: 1rem; padding-left: 0; list-style: none;">
+    `;
     historial.forEach(h => {
         let detallesHtml = '';
         if (h.detalles && Array.isArray(h.detalles)) {
@@ -1116,7 +1129,7 @@ window.addEventListener('mostrarHistorial', event => {
         }
 
         html += `
-            <li style="position: relative; margin-bottom: 2rem; padding-left: 2rem;">
+            <li class="historial-item" data-accion="${h.accion}" style="position: relative; margin-bottom: 2rem; padding-left: 2rem;">
                 <span style="position: absolute; left: -13px; top: 0px; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; box-shadow: 0 0 0 8px white;" class="${colorClass} text-white">
                     <i class="fas ${iconClass} text-xs"></i>
                 </span>
@@ -1130,7 +1143,7 @@ window.addEventListener('mostrarHistorial', event => {
             </ul>
         </div>
         <div class="mt-4 text-center border-t border-gray-200 pt-4">
-            <a href="/inventario/${id}/historial/export" target="_blank" class="inline-flex items-center justify-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+            <a id="btnExportarPdfHistorial" href="/inventario/${id}/historial/export" target="_blank" class="inline-flex items-center justify-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
             </a>
         </div>
@@ -1144,6 +1157,26 @@ window.addEventListener('mostrarHistorial', event => {
         showConfirmButton: false
     });
 });
+
+/**
+ * Filtra los elementos del historial en base al select y actualiza la URL del PDF
+ */
+function filtrarHistorial(id) {
+    const filtro = document.getElementById('filtroAccion').value;
+    const items = document.querySelectorAll('.historial-item');
+    items.forEach(item => {
+        if (filtro === '' || item.getAttribute('data-accion') === filtro) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    const exportBtn = document.getElementById('btnExportarPdfHistorial');
+    if (exportBtn) {
+        exportBtn.href = `/inventario/${id}/historial/export` + (filtro ? `?filtro=${filtro}` : '');
+    }
+}
 
 /**
  * Abre el modal de SweetAlert exclusivo para ingresar nuevo stock a un producto.
