@@ -18,6 +18,9 @@
                     <x-nav-link :href="route('compras')" :active="request()->routeIs('compras')">
                         {{ __('Compras y Pagos') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('proveedores')" :active="request()->routeIs('proveedores')">
+                        {{ __('Proveedores') }}
+                    </x-nav-link>
                     @if(Auth::user()->role === 'admin')
                     <x-nav-link :href="route('gastos_operativos')" :active="request()->routeIs('gastos_operativos')">
                         {{ __('Gastos Operativos') }}
@@ -82,7 +85,10 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
             @if(Auth::user()->role === 'admin')
-            <x-responsive-nav-link :href="route('gastos_operativos')" :active="request()->routeIs('gastos_operativos')">
+            <x-responsive-nav-link :href="route('proveedores')" :active="request()->routeIs('proveedores')">
+                {{ __('Proveedores') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('gastos_operativos')" :active="request()->requestIs('gastos_operativos')">
                 {{ __('Gastos Operativos') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('cotizador')" :active="request()->routeIs('cotizador')">

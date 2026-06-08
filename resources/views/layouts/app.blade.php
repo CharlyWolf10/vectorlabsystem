@@ -64,6 +64,11 @@
                                 <span class="ml-3 text-sm font-medium">Compras y Pagos</span>
                             </a>
                             
+                            <a href="{{ route('proveedores') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('proveedores') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
+                                <i class="fas fa-truck w-6 text-center group-hover:text-white {{ request()->routeIs('proveedores') ? 'text-white' : 'text-vl-text-muted' }}"></i>
+                                <span class="ml-3 text-sm font-medium">Proveedores</span>
+                            </a>
+                            
                             <a href="{{ route('inventario') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('inventario') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
                                 <i class="fas fa-boxes w-6 text-center group-hover:text-white {{ request()->routeIs('inventario') ? 'text-white' : 'text-vl-text-muted' }}"></i>
                                 <span class="ml-3 text-sm font-medium">Inventario</span>
@@ -103,6 +108,16 @@
                             <a href="{{ route('usuarios') }}" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group {{ request()->routeIs('usuarios') ? 'bg-vl-blue hover:bg-vl-blue' : 'text-vl-text-muted' }}">
                                 <i class="fas fa-user-shield w-6 text-center group-hover:text-white {{ request()->routeIs('usuarios') ? 'text-white' : 'text-vl-text-muted' }}"></i>
                                 <span class="ml-3 text-sm font-medium">Control de Usuarios</span>
+                            </a>
+                            
+                            <div class="pt-4 pb-2 mt-4 border-t border-gray-700">
+                                <p class="text-xs font-semibold text-vl-text-muted uppercase tracking-wider">Desarrollo</p>
+                            </div>
+                            
+                            <a href="/documentacion/index.html" target="_blank" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 group text-vl-text-muted">
+                                <i class="fas fa-book w-6 text-center text-blue-400 group-hover:text-blue-300"></i>
+                                <span class="ml-3 text-sm font-medium text-blue-100">Documentación del Sistema</span>
+                                <i class="fas fa-external-link-alt ml-auto text-xs text-gray-500"></i>
                             </a>
                         @endif
                     </nav>
