@@ -118,16 +118,22 @@
 <body>
 
     <!-- Watermark -->
+    @if($logo)
     <div id="watermark">
-        <img src="{{ $logo ?? 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png' }}" alt="Watermark">
+        <img src="{{ $logo }}" alt="Watermark">
     </div>
+    @endif
 
     <!-- Header -->
     <header>
         <table class="info-table">
             <tr>
                 <td style="width: 40%; text-align: left; vertical-align: bottom;">
-                    <img src="{{ $logo ?? 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png' }}" class="logo" alt="Logo">
+                    @if($logo)
+                        <img src="{{ $logo }}" class="logo" alt="Logo">
+                    @else
+                        <h2 style="margin: 0; color: #0056b3; font-size: 24px; font-weight: bold;">Vector Lab</h2>
+                    @endif
                 </td>
                 <td style="width: 60%; text-align: right; vertical-align: bottom;">
                     <div class="business-name">{{ isset($perfil) && $perfil ? $perfil->nombre : 'Vector Lab' }}</div>

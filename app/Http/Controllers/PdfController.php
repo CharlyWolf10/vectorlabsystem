@@ -10,6 +10,19 @@ use App\Models\BusinessProfile;
 
 class PdfController extends Controller
 {
+    private function getLogoBase64($perfil)
+    {
+        if ($perfil && $perfil->logo_path) {
+            $path = storage_path('app/public/' . $perfil->logo_path);
+            if (file_exists($path)) {
+                $type = pathinfo($path, PATHINFO_EXTENSION);
+                $data = file_get_contents($path);
+                return 'data:image/' . $type . ';base64,' . base64_encode($data);
+            }
+        }
+        return null;
+    }
+
     public function exportInventario(Request $request)
     {
         if ($request->has('ids')) {
@@ -28,7 +41,7 @@ class PdfController extends Controller
             'date' => date('d/m/Y'),
             'productos' => $productos,
             'perfil' => $perfil,
-            'logo' => $perfil && $perfil->logo_path ? asset($perfil->logo_path) : 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png',
+            'logo' => $this->getLogoBase64($perfil),
             'is_faltantes' => $isFaltantes
         ];
         
@@ -52,7 +65,7 @@ class PdfController extends Controller
             'date' => date('d/m/Y'),
             'proveedores' => $proveedores,
             'perfil' => $perfil,
-            'logo' => $perfil && $perfil->logo_path ? asset($perfil->logo_path) : 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png'
+            'logo' => $this->getLogoBase64($perfil)
         ];
         
         $pdf = Pdf::loadView('pdf.compras', $data);
@@ -75,7 +88,7 @@ class PdfController extends Controller
             'date' => date('d/m/Y'),
             'clientes' => $clientes,
             'perfil' => $perfil,
-            'logo' => $perfil && $perfil->logo_path ? asset($perfil->logo_path) : 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png'
+            'logo' => $this->getLogoBase64($perfil)
         ];
         
         $pdf = Pdf::loadView('pdf.clientes', $data);
@@ -105,7 +118,7 @@ class PdfController extends Controller
             'producto' => $producto,
             'historial' => $historial,
             'perfil' => $perfil,
-            'logo' => $perfil && $perfil->logo_path ? asset($perfil->logo_path) : 'https://charlywolf10.github.io/VectorLab/assets/img/logo.png'
+            'logo' => $this->getLogoBase64($perfil)
         ];
         
         $pdf = Pdf::loadView('pdf.historial', $data);
