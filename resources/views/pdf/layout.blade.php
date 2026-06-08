@@ -118,10 +118,10 @@
         /* FOOTER */
         footer { 
             position: fixed; 
-            bottom: -50px; 
+            bottom: -70px; 
             left: 0px; 
             right: 0px; 
-            height: 40px; 
+            height: 60px; 
             color: #718096;
             font-size: 10px;
         }
@@ -253,14 +253,23 @@
     <footer>
         <table style="width: 100%; border: none; margin: 0; padding: 0;">
             <tr>
-                <td style="width: 33%; text-align: left; border: none; color: #64748b;">
-                    <strong>Generado:</strong> {{ date('d/m/Y H:i') }}
-                </td>
-                <td style="width: 33%; text-align: center; color: #0056b3; font-weight: 900; border: none; text-transform: uppercase; font-size: 11px;">
-                    {{ isset($perfil) && $perfil ? $perfil->nombre : 'Vector Lab' }}
-                </td>
-                <td style="width: 33%; text-align: right; border: none; color: #64748b;">
+                <td style="width: 25%; text-align: left; vertical-align: bottom; border: none; color: #64748b;">
+                    <strong>Generado:</strong><br>{{ date('d/m/Y H:i') }}<br><br>
                     <strong>Página <span class="page-number"></span></strong>
+                </td>
+                <td style="width: 75%; text-align: right; vertical-align: bottom; color: #1e293b; border: none; font-size: 10px; line-height: 1.4;">
+                    <div style="color: #0056b3; font-weight: 900; text-transform: uppercase; font-size: 13px; margin-bottom: 4px; letter-spacing: 1px;">
+                        {{ isset($perfil) && $perfil ? $perfil->nombre : 'Vector Lab' }}
+                    </div>
+                    @if(isset($perfil) && $perfil)
+                        @if($perfil->direccion) {{ $perfil->direccion }} <br> @endif
+                        @if($perfil->telefono) <strong>Tel:</strong> {{ $perfil->telefono }} &nbsp;|&nbsp; @endif
+                        @if($perfil->correo) <strong>Email:</strong> {{ $perfil->correo }} <br> @endif
+                        @if($perfil->sitio_web) <strong>Web:</strong> {{ $perfil->sitio_web }} &nbsp;|&nbsp; @endif
+                        @if($perfil->rfc) <strong>RFC:</strong> {{ $perfil->rfc }} @endif
+                    @else
+                        Sistema de Gestión Integral Avanzado
+                    @endif
                 </td>
             </tr>
         </table>
