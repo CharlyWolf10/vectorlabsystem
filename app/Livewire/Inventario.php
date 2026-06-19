@@ -298,7 +298,8 @@ class Inventario extends Component
             $this->dispatch('swal:error', ['title' => 'Atención', 'text' => 'Debes seleccionar al menos un producto para exportar.']);
             return;
         }
-        $this->dispatch('abrirOpcionesExportacion');
+        // Directamente abrir la ventana flotante de previsualización
+        $this->exportSelected();
     }
 
     #[On('exportSelected')]
@@ -312,7 +313,8 @@ class Inventario extends Component
             $params['faltantes'] = 1;
         }
         $url = route('inventario.export', $params);
-        $this->dispatch('open-url', url: $url);
+        $previewUrl = route('inventario.export', array_merge($params, ['preview' => true]));
+        $this->dispatch('openExportPreview', previewUrl: $previewUrl, exportPdfUrl: $url, title: 'Reporte de Inventario');
     }
 
     #[On('sendPdfEmail')]

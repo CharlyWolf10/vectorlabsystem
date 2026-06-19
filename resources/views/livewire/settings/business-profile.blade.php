@@ -76,6 +76,47 @@
                                 @endif
                             </div>
                         </div>
+
+                        <!-- Imágenes Adicionales / Referencias -->
+                        <div class="md:col-span-2 mt-6 pt-6 border-t border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900 mb-2"><i class="fas fa-images text-indigo-500 mr-2"></i> Imágenes y Recursos Adicionales</h3>
+                            <p class="text-sm text-gray-500 mb-4">Sube imágenes, vectores o gráficos adicionales que quieras guardar en el sistema para usarlos como referencias, fondos o iconos en tus reportes.</p>
+                            
+                            <input id="newImages" type="file" multiple class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" wire:model="newImages" accept="image/*" />
+                            @error('newImages.*') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+
+                            <!-- Previsualización de imágenes nuevas -->
+                            @if ($newImages)
+                                <div class="mt-4">
+                                    <p class="text-sm text-gray-500 font-medium mb-2">Imágenes listas para subir:</p>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        @foreach ($newImages as $img)
+                                            <div class="relative border border-dashed border-gray-300 rounded p-1 bg-gray-50">
+                                                <img src="{{ $img->temporaryUrl() }}" class="h-24 w-full object-contain">
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Imágenes guardadas -->
+                            @if (count($existingImages) > 0)
+                                <div class="mt-6">
+                                    <p class="text-sm text-gray-500 font-medium mb-2">Imágenes alojadas en tu sistema:</p>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        @foreach ($existingImages as $existingImg)
+                                            <div class="relative border border-gray-200 shadow-sm rounded p-1 bg-white flex items-center justify-center group">
+                                                <img src="{{ asset($existingImg->path) }}" class="h-24 w-full object-contain">
+                                                <button type="button" wire:click.prevent="eliminarImagen({{ $existingImg->id }})" wire:confirm="¿Estás seguro de que deseas eliminar esta imagen del sistema?" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow" title="Eliminar imagen">
+                                                    <i class="fas fa-times text-xs"></i>
+                                                </button>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+
                     </div>
 
                     <div class="mt-8 border-t pt-5">

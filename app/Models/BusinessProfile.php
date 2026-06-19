@@ -15,4 +15,9 @@ class BusinessProfile extends Model
         'sitio_web',
         'logo_path',
     ];
+
+    public function images()
+    {
+        return $this->hasMany(BusinessImage::class);
+    }
 }

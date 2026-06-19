@@ -20,6 +20,24 @@ class PdfController extends Controller
                 return 'data:image/' . $type . ';base64,' . base64_encode($data);
             }
         }
+        // Fallback to vectorlabletras.png
+        $path = public_path('assets/img/vectorlabletras.png');
+        if (file_exists($path)) {
+            $type = pathinfo($path, PATHINFO_EXTENSION);
+            $data = file_get_contents($path);
+            return 'data:image/' . $type . ';base64,' . base64_encode($data);
+        }
+        return null;
+    }
+
+    private function getWatermarkBase64()
+    {
+        $path = public_path('assets/img/lobo.png');
+        if (file_exists($path)) {
+            $type = pathinfo($path, PATHINFO_EXTENSION);
+            $data = file_get_contents($path);
+            return 'data:image/' . $type . ';base64,' . base64_encode($data);
+        }
         return null;
     }
 
@@ -53,9 +71,15 @@ class PdfController extends Controller
             'productos' => $productos,
             'perfil' => $perfil,
             'logo' => $this->getLogoBase64($perfil),
+            'watermark' => $this->getWatermarkBase64(),
             'bg_pdf' => $this->getBgBase64(),
-            'is_faltantes' => $isFaltantes
+            'is_faltantes' => $isFaltantes,
+            'isPreview' => $request->has('preview')
         ];
+        
+        if ($request->has('preview')) {
+            return view('pdf.inventario', $data);
+        }
         
         $pdf = Pdf::loadView('pdf.inventario', $data);
         return $pdf->stream('reporte_inventario_' . date('Y_m_d') . '.pdf');
@@ -78,8 +102,14 @@ class PdfController extends Controller
             'proveedores' => $proveedores,
             'perfil' => $perfil,
             'logo' => $this->getLogoBase64($perfil),
-            'bg_pdf' => $this->getBgBase64()
+            'watermark' => $this->getWatermarkBase64(),
+            'bg_pdf' => $this->getBgBase64(),
+            'isPreview' => $request->has('preview')
         ];
+        
+        if ($request->has('preview')) {
+            return view('pdf.compras', $data);
+        }
         
         $pdf = Pdf::loadView('pdf.compras', $data);
         return $pdf->stream('directorio_proveedores_' . date('Y_m_d') . '.pdf');
@@ -102,8 +132,14 @@ class PdfController extends Controller
             'clientes' => $clientes,
             'perfil' => $perfil,
             'logo' => $this->getLogoBase64($perfil),
-            'bg_pdf' => $this->getBgBase64()
+            'watermark' => $this->getWatermarkBase64(),
+            'bg_pdf' => $this->getBgBase64(),
+            'isPreview' => $request->has('preview')
         ];
+        
+        if ($request->has('preview')) {
+            return view('pdf.clientes', $data);
+        }
         
         $pdf = Pdf::loadView('pdf.clientes', $data);
         return $pdf->stream('directorio_clientes_' . date('Y_m_d') . '.pdf');
@@ -133,10 +169,16 @@ class PdfController extends Controller
             'historial' => $historial,
             'perfil' => $perfil,
             'logo' => $this->getLogoBase64($perfil),
-            'bg_pdf' => $this->getBgBase64()
+            'watermark' => $this->getWatermarkBase64(),
+            'bg_pdf' => $this->getBgBase64(),
+            'isPreview' => $request->has('preview')
         ];
         
+        if ($request->has('preview')) {
+            return view('pdf.historial', $data);
+        }
+        
         $pdf = Pdf::loadView('pdf.historial', $data);
-        return $pdf->stream('historial_producto_' . $producto->codigo . '_' . date('Y_m_d') . '.pdf');
+        return $pdf->stream('historial_' . $producto->codigo . '_' . date('Y_m_d') . '.pdf');
     }
 }

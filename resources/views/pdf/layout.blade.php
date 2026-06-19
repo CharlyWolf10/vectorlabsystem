@@ -17,37 +17,26 @@
         }
 
         /* WATERMARK */
-        @if($logo)
         #watermark {
             position: fixed;
-            top: 30%;
+            top: 25%;
             left: 10%;
             width: 80%;
-            opacity: 0.15; /* A little stronger */
+            opacity: 0.15; /* A little stronger for wolf */
             z-index: -1000;
             text-align: center;
+        }
+        
+        #watermark img {
+            width: 100%;
+            max-width: 600px;
         }
         
         #watermark img {
             width: 80%;
             max-width: 500px;
         }
-        @else
-        #watermark {
-            position: fixed;
-            top: 40%;
-            left: 10%;
-            width: 80%;
-            opacity: 0.08; 
-            z-index: -1000;
-            text-align: center;
-            font-size: 110px;
-            font-weight: 900;
-            color: #0056b3;
-            transform: rotate(-35deg);
-            letter-spacing: 5px;
-        }
-        @endif
+
 
         /* BACKGROUND DECORATION */
         .top-bar {
@@ -59,7 +48,18 @@
             background: #0056b3;
         }
 
-        @if(isset($bg_pdf) && $bg_pdf)
+        @if(isset($isPreview) && $isPreview)
+        .bottom-bg-interactive {
+            position: fixed;
+            bottom: -50px;
+            left: -40px;
+            right: -40px;
+            height: 350px;
+            z-index: -1100;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0, 71, 171, 0.9) 100%);
+            overflow: hidden;
+        }
+        @elseif(isset($bg_pdf) && $bg_pdf)
         .bottom-bg-image {
             position: fixed;
             bottom: -100px;
@@ -96,24 +96,22 @@
         /* HEADER */
         header { 
             position: fixed; 
-            top: -120px; 
+            top: -140px; 
             left: 0px; 
             right: 0px; 
-            height: 100px; 
+            height: 130px; 
+            text-align: center;
         }
         
         .header-container {
             border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 15px;
+            padding-bottom: 10px;
         }
 
-        .logo { max-width: 200px; max-height: 80px; }
+        .logo { max-width: 250px; max-height: 80px; display: block; margin: 0 auto; }
         
-        .info-table { width: 100%; border: none; margin: 0; padding: 0; }
-        .info-table td { border: none; padding: 0; }
-        
-        .business-name { margin: 0; color: #0056b3; font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
-        .business-details { font-size: 10px; color: #4a5568; line-height: 1.6; margin-top: 5px; }
+        .business-name { margin: 10px 0 2px 0; color: #0056b3; font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+        .business-details { font-size: 11px; color: #4a5568; line-height: 1.4; text-align: center; }
 
         /* FOOTER */
         footer { 
@@ -130,14 +128,13 @@
 
         /* CONTENT STYLES */
         main {
-            margin-top: 10px;
+            margin-top: 10px; /* Adjusted since header is taller */
         }
 
         .report-title-container {
-            background-color: #f1f5f9;
-            border-left: 5px solid #0056b3;
-            padding: 12px 15px;
-            margin-bottom: 25px;
+            text-align: center;
+            margin-bottom: 10px;
+            margin-top: 20px;
         }
 
         .report-title { 
@@ -151,7 +148,8 @@
 
         /* TABLES */
         table.data-table { 
-            width: 100%; 
+            width: 90%; 
+            margin: 0 auto;
             border-collapse: collapse; 
             margin-top: 10px; 
         }
@@ -196,10 +194,15 @@
 </head>
 <body>
 
-    <!-- Top & Bottom Decoration Bars -->
+    <!-- Top Decoration Bar -->
     <div class="top-bar"></div>
     
-    @if(isset($bg_pdf) && $bg_pdf)
+    @if(isset($isPreview) && $isPreview)
+        <!-- Interactive Background for Preview -->
+        <div class="bottom-bg-interactive">
+        </div>
+    @elseif(isset($bg_pdf) && $bg_pdf)
+        <!-- Static Background for PDF -->
         <div class="bottom-bg-image">
             <img src="{{ $bg_pdf }}" alt="Background">
         </div>
@@ -210,42 +213,33 @@
 
     <!-- Watermark -->
     <div id="watermark">
-        @if($logo)
+        @if(isset($watermark) && $watermark)
+            <img src="{{ $watermark }}" alt="Watermark Lobo">
+        @elseif(isset($logo) && $logo)
             <img src="{{ $logo }}" alt="Watermark">
-        @else
-            VECTOR LAB
         @endif
     </div>
 
     <!-- Header -->
     <header>
         <div class="header-container">
-            <table class="info-table">
-                <tr>
-                    <td style="width: 45%; text-align: left; vertical-align: middle;">
-                        @if($logo)
-                            <img src="{{ $logo }}" class="logo" alt="Logo">
-                        @else
-                            <h2 style="margin: 0; color: #0056b3; font-size: 28px; font-weight: 900;">Vector Lab</h2>
-                        @endif
-                    </td>
-                    <td style="width: 55%; text-align: right; vertical-align: middle;">
-                        <div class="business-name">{{ isset($perfil) && $perfil ? $perfil->nombre : 'Vector Lab' }}</div>
-                        <div class="business-details">
-                            @if(isset($perfil) && $perfil)
-                                @if($perfil->rfc) <strong>RFC:</strong> {{ $perfil->rfc }} | @endif
-                                @if($perfil->direccion) {{ $perfil->direccion }} <br> @endif
-                                @if($perfil->telefono) <strong>Tel:</strong> {{ $perfil->telefono }} @endif
-                                @if($perfil->telefono && $perfil->correo) | @endif
-                                @if($perfil->correo) <strong>Email:</strong> {{ $perfil->correo }} @endif
-                                @if($perfil->sitio_web) <br> <strong>Web:</strong> {{ $perfil->sitio_web }} @endif
-                            @else
-                                Sistema de Gestión Integral Avanzado
-                            @endif
-                        </div>
-                    </td>
-                </tr>
-            </table>
+            @if($logo)
+                <img src="{{ $logo }}" class="logo" alt="Logo">
+            @else
+                <h2 style="margin: 0; color: #0056b3; font-size: 28px; font-weight: 900;">Vector Lab</h2>
+            @endif
+            
+            <div class="business-name">{{ isset($perfil) && $perfil ? $perfil->nombre : 'Vector Lab' }}</div>
+            <div class="business-details">
+                @if(isset($perfil) && $perfil)
+                    @if($perfil->rfc) <strong>RFC:</strong> {{ $perfil->rfc }} | @endif
+                    @if($perfil->direccion) {{ $perfil->direccion }} | @endif
+                    @if($perfil->telefono) <strong>Tel:</strong> {{ $perfil->telefono }} | @endif
+                    @if($perfil->correo) <strong>Email:</strong> {{ $perfil->correo }} @endif
+                @else
+                    Sistema de Gestión Integral Avanzado
+                @endif
+            </div>
         </div>
     </header>
 
@@ -262,11 +256,7 @@
                         {{ isset($perfil) && $perfil ? $perfil->nombre : 'Vector Lab' }}
                     </div>
                     @if(isset($perfil) && $perfil)
-                        @if($perfil->direccion) {{ $perfil->direccion }} <br> @endif
-                        @if($perfil->telefono) <strong>Tel:</strong> {{ $perfil->telefono }} &nbsp;|&nbsp; @endif
-                        @if($perfil->correo) <strong>Email:</strong> {{ $perfil->correo }} <br> @endif
-                        @if($perfil->sitio_web) <strong>Web:</strong> {{ $perfil->sitio_web }} &nbsp;|&nbsp; @endif
-                        @if($perfil->rfc) <strong>RFC:</strong> {{ $perfil->rfc }} @endif
+                        @if($perfil->sitio_web) <strong>Sitio Web:</strong> {{ $perfil->sitio_web }} @endif
                     @else
                         Sistema de Gestión Integral Avanzado
                     @endif

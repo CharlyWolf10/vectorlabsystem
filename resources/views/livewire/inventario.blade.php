@@ -13,7 +13,7 @@
             <div class="mb-6 flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-gray-800">Control de Inventario</h2>
                 <div>
-                    <button wire:click="attemptExport" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow">
+                    <button type="button" wire:click="attemptExport" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow">
                         <i class="fas fa-file-pdf mr-2"></i> Exportar a PDF
                     </button>
                     <button onclick="abrirGestorCategorias()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow mr-2">
